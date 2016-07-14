@@ -1,0 +1,61 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/moviePosterFragmentFrameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses.PlayingNowMoviesFragment">
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/movieSwipeToRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/movieDisplayRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/emptyFavouritesCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:cardBackgroundColor="@color/md_teal_200"
+        app:cardCornerRadius="10dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp">
+
+            <TextView
+                android:id="@+id/emptyFavMessageTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="No Favourites Found"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="26dp"
+                android:textStyle="italic" />
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/favouritesRefreshCard"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/emptyFavMessageTextView"
+                android:layout_centerHorizontal="true"
+                app:cardBackgroundColor="@color/colorPrimaryDark"
+                android:layout_margin="20dp"
+                app:cardCornerRadius="25dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_refresh" />
+            </android.support.v7.widget.CardView>
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</FrameLayout>

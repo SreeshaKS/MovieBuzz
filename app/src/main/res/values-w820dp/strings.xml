@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="menu_search_with_movieName">Search Movie With Name</string>
+    <string name="developer_name">Sreesha S Kuruvadi</string>
+    <string name="title_biography">Biography</string>
+    <string name="birthday_sample_string">Birthday : 2nd May 1972</string>
+    <string name="person_name_sample_string">Person Name</string>
+    <string name="place_of_birth_sample_string">Place of Birth</string>
+    <string name="place_birth_pholder_text">"Birth Place : "</string>
+    <string name="birthday_placeholder_text">"Birthday : "</string>
+</resources>

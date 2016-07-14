@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".MovieDataRenderingClasses.DetailView.DisplayDetailedMovieData"
+    tools:showIn="@layout/activity_display_detailed_movie_data">
+
+    <FrameLayout
+        android:id="@+id/detail_fragment_frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MovieDataRenderingClasses.DetailView.DisplayExpandedMovieDataFragment"
+        tools:layout="@layout/activity_display_expanded_movie_data"/>
+</RelativeLayout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:layout="@layout/preference_category_custom_layout"
+        android:title="@string/data_sync_options_preference_category_title">
+    <ListPreference
+        android:entries="@array/sort_options_list_entries"
+        android:entryValues="@array/sort_options_list_values"
+        android:summary="@string/sort_options_list_preference_default_value"
+        android:defaultValue="@string/sort_options_list_preference_default_value"
+        android:key="@string/sort_options_list_key"
+        android:title="@string/sort_options_list_title" />
+        <CheckBoxPreference
+            android:key="@string/favourites_checkbox_preference_key"
+            android:title="@string/favourites_checkBox_title"
+            android:defaultValue="@string/default_favourites_checkBox_preferece_value"
+            />
+        <CheckBoxPreference
+            android:key="@string/poster_storage_checkbox_preference_key"
+            android:title="@string/poster_storage_preference_title"
+            android:defaultValue="true"
+            android:summaryOn="@string/poster_storage_favoured_store_summary"
+            android:summaryOff="@string/poster_storage_all_movies_store_summary"
+            />
+    </PreferenceCategory>
+
+</PreferenceScreen>

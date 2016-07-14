@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/reviewAuthorTruncatedCard"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center">
+
+            <android.support.v7.widget.CardView
+                android:id="@+id/authorDisplayCardView"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
+                    <TextView
+                        android:id="@+id/authorTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="center"
+                        android:layout_margin="5dp"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="center"
+                        android:text="Sreesha"
+                        android:textSize="22sp" />
+
+                    <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/shareFab"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_margin="10dp"
+                        android:layout_toRightOf="@+id/authorTextView"
+                        android:src="@android:drawable/ic_menu_share" />
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
+
+            <TextView
+                android:id="@+id/reviewContentTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/authorDisplayCardView"
+                android:layout_margin="5dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="@string/sample_movie_detail_overview" />
+
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/reviewExpandedContentCard"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/reviewAuthorTruncatedCard"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/reviewExpandedContentTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="3dp"
+                    android:scrollHorizontally="true"
+                    android:text="@string/sample_movie_detail_overview" />
+
+            <TextView
+                android:id="@+id/reviewLinkTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/reviewExpandedContentTextView"
+                android:layout_centerHorizontal="true"
+                android:autoLink="web"
+                android:hint="ClickForMoreReviews"
+                android:linksClickable="true"
+                android:text="http://j.mp/1dUnvpG"
+                android:textSize="10sp" />
+
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+
+</RelativeLayout>

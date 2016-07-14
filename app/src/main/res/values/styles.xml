@@ -1,0 +1,55 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="MovieDisplay" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/md_red_700</item>
+        <item name="colorPrimaryDark">@color/md_red_900</item>
+        <item name="colorAccent">@color/white</item>
+    </style>
+
+    <style name="MoviePosterDisplayActivityTheme" parent="Theme.AppCompat.Light.NoActionBar" />
+
+    <style name="RatingBarTheme">
+        <item name="android:colorAccent">@color/md_yellow_900</item>
+    </style>
+
+    <style name="MovieTitleTextStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">@dimen/movie_title_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="SettingsActivityTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:colorPrimary">@color/md_grey_700</item>
+        <item name="android:colorPrimaryDark">@color/md_grey_900</item>
+        <item name="android:colorAccent">@color/white</item>
+    </style>
+
+    <style name="AppInfoAppTheme" parent="AppTheme.NoActionBar">
+        <item name="android:colorPrimary">@color/md_blue_900</item>
+        <item name="android:colorPrimaryDark">@color/blue_grey_900</item>
+        <item name="android:colorAccent">@color/white</item>
+    </style>
+
+    <style name="PopularPeopleActivityTheme" parent="AppTheme.NoActionBar">
+        <item name="android:colorPrimary">#424242</item>
+        <item name="android:colorPrimaryDark">#212121</item>
+        <item name="android:colorAccent">#FDD835</item>
+    </style>
+</resources>

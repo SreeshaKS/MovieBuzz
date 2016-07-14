@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sreesha.android.moviebuzz">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/movie_app_icon"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MovieDataRenderingClasses.MovieGridDisplayClasses.MoviePosterDisplayActivity"
+            android:theme="@style/MoviePosterDisplayActivityTheme" />
+        <activity
+            android:name=".Settings.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".MovieDataRenderingClasses.MovieGridDisplayClasses.MoviePosterGridActivity"
+            android:theme="@style/SettingsActivityTheme" />
+        <activity
+            android:name=".MovieDataRenderingClasses.MovieGridDisplayClasses.MoviePosterGridActivity"
+            android:label="@string/title_activity_movie_poster_grid"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".MovieDataRenderingClasses.MovieGridDisplayClasses.SearchActivity" />
+        </activity>
+
+        <provider
+            android:name=".DataHandlerClasses.MovieDataProvider"
+            android:authorities="com.sreesha.android.moviebuzz" />
+
+        <activity
+            android:name=".MovieDataRenderingClasses.DetailView.DisplayDetailedMovieData"
+            android:label="@string/title_activity_display_detailed_movie_data"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".MovieDataRenderingClasses.MovieDetailTabsView.MovieTabsDetailActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".MovieDataRenderingClasses.MovieGridDisplayClasses.MovieDBAPIRefActivity" />
+        <activity
+            android:name=".Settings.AppInfoActivity"
+            android:label="@string/title_activity_app_info"
+            android:theme="@style/AppInfoAppTheme" />
+        <activity
+            android:name=".MovieDataRenderingClasses.PeopleDisplay.PeopleDisplayActivity"
+            android:label="@string/title_activity_people_display"
+            android:theme="@style/PopularPeopleActivityTheme" />
+        <activity
+            android:name=".MovieDataRenderingClasses.PeopleDisplay.PeopleProfileFragment"
+            android:label="@string/title_activity_people_profile_fragment"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".MovieDataRenderingClasses.PeopleDisplay.PeopleProfileActivity"
+            android:label="@string/title_activity_people_profile"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+    </application>
+
+</manifest>
