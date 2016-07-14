@@ -18,9 +18,9 @@ Feedback is most welcome :)
 You can contact me here !
 Email : kssreesha@gmail.com
 
-[!(https://github.com/SreeshaKS/MovieBuzz/blob/master/GooglePlayButton.png)](https://play.google.com/store/apps/details?id=com.sreesha.android.moviebuzz)
+[![](https://github.com/SreeshaKS/MovieBuzz/blob/master/GooglePlayButton.png)](https://play.google.com/store/apps/details?id=com.sreesha.android.moviebuzz)
 
-[!(https://github.com/SreeshaKS/MovieBuzz/blob/master/MovieBuzzINfoGraphic.png)](https://play.google.com/store/apps/details?id=com.sreesha.android.moviebuzz)
+[![](https://github.com/SreeshaKS/MovieBuzz/blob/master/MovieBuzzINfoGraphic.png)](https://play.google.com/store/apps/details?id=com.sreesha.android.moviebuzz)
 
 ##License
 
