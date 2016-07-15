@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -19,6 +21,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -54,6 +57,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Sreesha on 16-05-2016.
@@ -82,6 +86,8 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private static final int SPEECH_REQUEST_CODE = 0;
 
     private String mParam1;
     private String mParam2;
@@ -118,6 +124,8 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
 
     MovieDataDBHelper mMovieDataDBHelper;
     SQLiteDatabase db;
+
+    CardView mSpeechCard;
 
     public BottomSheetSearchReveal() {
         // Required empty public constructor
@@ -184,6 +192,19 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
 
 
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == SPEECH_REQUEST_CODE && resultCode == getActivity().RESULT_OK) {
+            List<String> results = data.getStringArrayListExtra(
+                    RecognizerIntent.EXTRA_RESULTS);
+            String spokenText = results.get(0);
+            deleteSearchData();
+            performSearch(spokenText);
+            // Do something with spokenText
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void downloadFreshData() {
@@ -265,6 +286,17 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
                     return true;
                 }
                 return false;
+            }
+        });
+        mSpeechCard = (CardView) view.findViewById(R.id.speechCard);
+        mSpeechCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+// Start the activity, the intent will be populated with the speech text
+                startActivityForResult(intent, SPEECH_REQUEST_CODE);
             }
         });
     }
