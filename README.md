@@ -24,6 +24,7 @@ Email : kssreesha@gmail.com
 
 
 ##How to use this project
+
 #1)Create an account in themoviedb.org
 #2)Acquire an API Key
 #3)Insert hte API Key in this file 
