@@ -27,9 +27,9 @@ Email : kssreesha@gmail.com
 
 #1)Create an account in themoviedb.org
 #2)Acquire an API Key
-#3)Insert hte API Key in this file 
+#3)Insert the API Key in this file 
 #https://github.com/SreeshaKS/MovieBuzz/edit/master/app/src/main/java/com/sreesha/android/moviebuzz/Networking/APIUrls.java
-#4)Run your project.
+#4)Run the project.
 
 
 ##License
