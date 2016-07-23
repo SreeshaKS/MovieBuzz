@@ -22,6 +22,16 @@ Email : kssreesha@gmail.com
 
 [![](https://github.com/SreeshaKS/MovieBuzz/blob/master/GooglePlayButton.png)](https://play.google.com/store/apps/details?id=com.sreesha.android.moviebuzz)
 
+
+##How to use this project
+
+#1)Create an account in themoviedb.org
+#2)Acquire an API Key
+#3)Insert the API Key in this file 
+#https://github.com/SreeshaKS/MovieBuzz/edit/master/app/src/main/java/com/sreesha/android/moviebuzz/Networking/APIUrls.java
+#4)Run the project.
+
+
 ##License
 
 Copyright 2016 Sreesha S Kuruvadi
