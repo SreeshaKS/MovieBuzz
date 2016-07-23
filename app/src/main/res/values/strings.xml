@@ -163,4 +163,7 @@
     <string name="place_of_birth_sample_string">Place of Birth</string>
     <string name="place_birth_pholder_text">"Birth Place : "</string>
     <string name="birthday_placeholder_text">"Birthday : "</string>
+    <string name="movie_title_desc_string">Movie Title</string>
+    <string name="accessibility_poster_desc">Movie Poster</string>
+    <string name="accessibility_release_date_desc">Release Date</string>
 </resources>

@@ -1,14 +1,18 @@
 package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.view.View;
 
 /**
- * Created by Sreesha on 23-07-2016.
+ * Created by Sreesha on 14-04-2016.
  */
-public class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollListener {
+@TargetApi(Build.VERSION_CODES.M)
+public class EndlessRecyclerViewScrollChangeListener implements RecyclerView.OnScrollChangeListener {
     private LinearLayoutManager mLinearLayoutManager;
     private StaggeredGridLayoutManager mStaggeredGridLayoutManager;
 
@@ -22,7 +26,8 @@ public class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollList
     int lastVisibleItemPosition;
     OnMoreDataRequestedListener mOnMoreDataRequestedListener;
     RecyclerView mRecyclerView;
-    public EndlessRecyclerViewScrollListener(
+
+    public EndlessRecyclerViewScrollChangeListener(
             StaggeredGridLayoutManager staggeredGridLayoutManager
             , OnMoreDataRequestedListener onMoreDataRequestedListener
             , RecyclerView recyclerView) {
@@ -32,6 +37,7 @@ public class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollList
         mLastVisibleItemArray = new int[mStaggeredGridLayoutManager.getSpanCount()];
         visibleThreshold = visibleThreshold * mStaggeredGridLayoutManager.getSpanCount();
     }
+
     public int getLastVisibleItem(int[] lastVisibleItemPositions) {
         int maxSize = 0;
         for (int i = 0; i < lastVisibleItemPositions.length; i++) {
@@ -43,8 +49,9 @@ public class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollList
         }
         return maxSize;
     }
+
     @Override
-    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+    public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
         if (mStaggeredGridLayoutManager != null) {
             Log.e("RecycEndlessDebug", "Calculating");
             visibleItemCount = mRecyclerView.getChildCount();
@@ -75,6 +82,7 @@ public class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollList
             }
         }
     }
+
     public static void setLoadingToFalse() {
         loading = false;
     }

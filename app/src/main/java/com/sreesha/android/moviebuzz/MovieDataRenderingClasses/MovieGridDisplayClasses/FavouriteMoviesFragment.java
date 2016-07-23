@@ -42,9 +42,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-@TargetApi(Build.VERSION_CODES.M)
+
 public class FavouriteMoviesFragment extends Fragment implements OnMoreDataRequestedListener
-        , RecyclerView.OnScrollChangeListener
         , AsyncSearchTask.SearchResultDispatchInterface {
 
     private static final String ARG_PARAM1 = "param1";
@@ -256,8 +255,6 @@ public class FavouriteMoviesFragment extends Fragment implements OnMoreDataReque
         mSwipeToRefreshLayout.setRefreshing(false);
         mPosterGridFragmentCoOrLayout = (CoordinatorLayout) view.findViewById(R.id.posterGridCoordinatorLayout);
     }
-
-    @TargetApi(Build.VERSION_CODES.M)
     private void initializeRecyclerView() {
              /*Get The current configuration of the display and get the orientation*/
         int orientation = getResources().getConfiguration().orientation;
@@ -271,10 +268,16 @@ public class FavouriteMoviesFragment extends Fragment implements OnMoreDataReque
 
         mMovieDisplayRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
 
+        if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            mMovieDisplayRecyclerView.setOnScrollChangeListener(new EndlessRecyclerViewScrollChangeListener(
+                    mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
+            ));
+        } else {
+            mMovieDisplayRecyclerView.setOnScrollListener(new EndlessRecyclerViewScrollListener(
+                    mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
+            ));
+        }
 
-        mMovieDisplayRecyclerView.setOnScrollChangeListener(new EndlessRecyclerViewScrollListener(
-                mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
-        ));
         mMovieDisplayRecyclerView.setAdapter(mRecyclerViewCursorAdapter);
 
         if (isStateRestored && mCurrentCompletelyVisibleItemPosition != null) {
@@ -409,14 +412,14 @@ public class FavouriteMoviesFragment extends Fragment implements OnMoreDataReque
 
     }
 
-    @Override
+  /*  @Override
     public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
         mCurrentCompletelyVisibleItemPosition = new int[SPAN_COUNT];
         mCurrentCompletelyVisibleItemPosition = mStaggeredGridLayoutManager
                 .findFirstCompletelyVisibleItemPositions(
                         mCurrentCompletelyVisibleItemPosition
                 );
-    }
+    }*/
 
     @Override
     public void onSearchResultAcquired(MovieDataInstance instance) {

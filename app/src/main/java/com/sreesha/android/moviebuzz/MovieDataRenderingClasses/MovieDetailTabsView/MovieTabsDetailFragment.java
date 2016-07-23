@@ -254,7 +254,7 @@ public class MovieTabsDetailFragment extends Fragment
                             , temp);
             if (mPosterBitmap != null) {
                 Log.e("StorageDebug", "RunningAsyncTask");
-                runAsyncMediaStorage();
+                //runAsyncMediaStorage();
             }
 
             isMovieFavoured = true;
@@ -388,6 +388,8 @@ public class MovieTabsDetailFragment extends Fragment
             loadImageWithPicasso(mPosterURL, mPosterImageView, "poster");
             favouriteFloatingActionButton.setLabelText("Not Favoured");
         }
+        loadImageWithPicasso(mBackDropURL, mBackDropImageView, "backDrop");
+        loadImageWithPicasso(mPosterURL, mPosterImageView, "poster");
         if (mMovieData != null /*&& mIsStateRestored*/) {
             Log.e("TabsDebug", "Destroying and initializing loaders");
             destroyAllLoaders();
@@ -532,7 +534,7 @@ public class MovieTabsDetailFragment extends Fragment
                         Toast.makeText(getActivity(), "Movie Favoured", Toast.LENGTH_SHORT).show();
                     /*TODO:Update UI To Show That Movie is Favoured*/
                         favouriteFloatingActionButton.setLabelText("Favoured");
-                        runAsyncMediaRetrieval(mPosterImageView, mBackDropImageView);
+                        //runAsyncMediaRetrieval(mPosterImageView, mBackDropImageView);
                     }
                     break;
                 case FAVOURITES_LOADER_ID:

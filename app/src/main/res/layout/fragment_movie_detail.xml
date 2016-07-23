@@ -69,11 +69,12 @@
                         android:rating="5.0" />
 
                     <LinearLayout
+                        android:id="@+id/movieInfoLinearLayout"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
+                        android:layout_below="@+id/movieDetailPosterCardView"
+                        android:layout_centerHorizontal="true"
                         android:layout_marginLeft="10dp"
-                        android:layout_toEndOf="@+id/movieDetailPosterCardView"
                         android:orientation="vertical"
                         android:padding="5dp">
 
@@ -152,13 +153,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@+id/ratingBar"
-                        android:layout_marginBottom="@dimen/movie_poster_margin"
-                        android:layout_marginLeft="@dimen/movie_poster_margin"
-                        android:layout_marginRight="2dp"
-                        android:layout_marginTop="@dimen/movie_poster_margin"
-                        android:background="@drawable/ripple"
+                        android:layout_centerHorizontal="true"
+                        android:layout_margin="8dp"
                         android:clickable="true"
-                        android:foreground="?android:attr/selectableItemBackground"
                         android:orientation="vertical"
                         app:cardBackgroundColor="@color/md_grey_700">
 
@@ -168,8 +165,8 @@
 
                             <ImageView
                                 android:id="@+id/moviePosterImageView"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="185dp"
+                                android:layout_height="278dp"
                                 android:layout_gravity="center"
                                 android:scaleType="centerCrop" />
                         </FrameLayout>
@@ -180,7 +177,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_alignParentBottom="true"
-                        android:layout_below="@+id/movieDetailPosterCardView"
+                        android:layout_below="@+id/movieInfoLinearLayout"
                         android:layout_centerHorizontal="true"
                         android:layout_margin="5dp" />
                 </RelativeLayout>

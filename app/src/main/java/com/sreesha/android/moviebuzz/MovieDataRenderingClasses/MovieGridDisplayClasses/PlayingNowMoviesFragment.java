@@ -32,11 +32,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-@TargetApi(Build.VERSION_CODES.M)
 public class PlayingNowMoviesFragment extends Fragment
         implements
         OnMoreDataRequestedListener
-        , RecyclerView.OnScrollChangeListener
         , AsyncSearchTask.SearchResultDispatchInterface {
 
     private static final String ARG_PARAM1 = "param1";
@@ -169,9 +167,15 @@ public class PlayingNowMoviesFragment extends Fragment
         mMovieDisplayRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
 
 
-        mMovieDisplayRecyclerView.setOnScrollChangeListener(new EndlessRecyclerViewScrollListener(
-                mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
-        ));
+        if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            mMovieDisplayRecyclerView.setOnScrollChangeListener(new EndlessRecyclerViewScrollChangeListener(
+                    mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
+            ));
+        } else {
+            mMovieDisplayRecyclerView.setOnScrollListener(new EndlessRecyclerViewScrollListener(
+                    mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
+            ));
+        }
         mMovieDisplayRecyclerView.setAdapter(mMovieListDisplayAdapter);
         if (isStateRestored && mCurrentCompletelyVisibleItemPosition != null) {
             Log.e("Debug", "RecyclerViewInitialized,State Being Restored");
@@ -252,11 +256,6 @@ public class PlayingNowMoviesFragment extends Fragment
     @Override
     public void onDetach() {
         super.onDetach();
-    }
-
-    @Override
-    public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-
     }
 
     @Override

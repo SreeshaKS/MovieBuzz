@@ -27,7 +27,6 @@
                 android:layout_height="wrap_content"
                 android:elevation="5dp"
                 android:padding="10dp"
-                android:translationZ="@dimen/tabs_app_bar_height"
                 app:cardBackgroundColor="@color/colorPrimary"
                 app:cardCornerRadius="2dp">
 

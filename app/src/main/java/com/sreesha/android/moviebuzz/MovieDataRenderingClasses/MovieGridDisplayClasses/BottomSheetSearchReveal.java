@@ -41,6 +41,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieContract;
 import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieDataDBHelper;
@@ -62,9 +63,8 @@ import java.util.List;
 /**
  * Created by Sreesha on 16-05-2016.
  */
-@TargetApi(Build.VERSION_CODES.M)
 public class BottomSheetSearchReveal extends BottomSheetDialogFragment implements OnMoreDataRequestedListener
-        , RecyclerView.OnScrollChangeListener
+
         , AsyncSearchTask.SearchResultDispatchInterface {
     private BottomSheetBehavior.BottomSheetCallback mBottomSheetBehaviorCallback
             = new BottomSheetBehavior.BottomSheetCallback() {
@@ -318,7 +318,6 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     private void initializeRecyclerView() {
              /*Get The current configuration of the display and get the orientation*/
         int orientation = getResources().getConfiguration().orientation;
@@ -338,7 +337,7 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
                     }
                 });
 
-        /*mMovieDisplayRecyclerView.setOnScrollChangeListener(new EndlessRecyclerViewScrollListener(
+        /*mMovieDisplayRecyclerView.setOnScrollChangeListener(new EndlessRecyclerViewScrollChangeListener(
                 mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
         ));*/
         mMovieDisplayRecyclerView.setAdapter(mRecyclerViewCursorAdapter);
@@ -447,7 +446,7 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
 
                     mSwipeToRefreshLayout.setRefreshing(false);
                     mSwipeToRefreshLayout.setEnabled(false);
-                    EndlessRecyclerViewScrollListener.setLoadingToFalse();
+                    EndlessRecyclerViewScrollChangeListener.setLoadingToFalse();
                     getLoaderManager().destroyLoader(LOADER_ID);
                     getLoaderManager().restartLoader(LOADER_ID, null, loaderCallBacks);
                 }
@@ -495,7 +494,11 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
         public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
             Log.e("Debug", "onLoadFinishedCalled Cursor has : " + data.getCount() + " items");
             if (mRecyclerViewCursorAdapter != null) {
-                mRecyclerViewCursorAdapter.swapCursor(data);
+                if (data.getCount() != 0) {
+                    mRecyclerViewCursorAdapter.swapCursor(data);
+                } else {
+                    Toast.makeText(getActivity(), "NO RESULTS FOUND", Toast.LENGTH_SHORT).show();
+                }
             }
         }
 
@@ -517,14 +520,14 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
 
     }
 
-    @Override
+   /* @Override
     public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
         mCurrentCompletelyVisibleItemPosition = new int[SPAN_COUNT];
         mCurrentCompletelyVisibleItemPosition = mStaggeredGridLayoutManager
                 .findFirstCompletelyVisibleItemPositions(
                         mCurrentCompletelyVisibleItemPosition
                 );
-    }
+    }*/
 
     @Override
     public void onSearchResultAcquired(MovieDataInstance instance) {

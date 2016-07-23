@@ -15,6 +15,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.OnScrollListener;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.Display;
@@ -40,9 +41,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-@TargetApi(Build.VERSION_CODES.M)
+
 public class HighestRatedMoviesFragment extends Fragment implements OnMoreDataRequestedListener
-        , RecyclerView.OnScrollChangeListener
         , AsyncSearchTask.SearchResultDispatchInterface {
 
     private static final String ARG_PARAM1 = "param1";
@@ -79,6 +79,8 @@ public class HighestRatedMoviesFragment extends Fragment implements OnMoreDataRe
 
     AsyncTask loadFreshDataTask = null, loadMoreDataTask = null;
     FrameLayout mPosterGridFragmentFrameLayout;
+
+    OnScrollListener mRecyclerViewScrollListener;
 
     public HighestRatedMoviesFragment() {
         // Required empty public constructor
@@ -226,7 +228,7 @@ public class HighestRatedMoviesFragment extends Fragment implements OnMoreDataRe
                 });
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+
     private void initializeRecyclerView() {
              /*Get The current configuration of the display and get the orientation*/
         int orientation = getResources().getConfiguration().orientation;
@@ -245,10 +247,16 @@ public class HighestRatedMoviesFragment extends Fragment implements OnMoreDataRe
                         computerAndRegisterSpanCount();
                     }
                 });
+        if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            mMovieDisplayRecyclerView.setOnScrollChangeListener(new EndlessRecyclerViewScrollChangeListener(
+                    mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
+            ));
+        } else {
+            mMovieDisplayRecyclerView.setOnScrollListener(new EndlessRecyclerViewScrollListener(
+                    mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
+            ));
+        }
 
-        mMovieDisplayRecyclerView.setOnScrollChangeListener(new EndlessRecyclerViewScrollListener(
-                mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
-        ));
         mMovieDisplayRecyclerView.setAdapter(mRecyclerViewCursorAdapter);
         if (isStateRestored && mCurrentCompletelyVisibleItemPosition != null) {
             Log.e("Debug", "RecyclerViewInitialized,State Being Restored");
@@ -297,7 +305,7 @@ public class HighestRatedMoviesFragment extends Fragment implements OnMoreDataRe
             )
             ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
         }
-        if (SPAN_COUNT != 0&&mStaggeredGridLayoutManager!=null)
+        if (SPAN_COUNT != 0 && mStaggeredGridLayoutManager != null)
             mStaggeredGridLayoutManager.setSpanCount(SPAN_COUNT);
     }
 
@@ -354,7 +362,7 @@ public class HighestRatedMoviesFragment extends Fragment implements OnMoreDataRe
                     }
 
                     mSwipeToRefreshLayout.setRefreshing(false);
-                    EndlessRecyclerViewScrollListener.setLoadingToFalse();
+                    EndlessRecyclerViewScrollChangeListener.setLoadingToFalse();
                     /*getLoaderManager().destroyLoader(LOADER_ID);
                     getLoaderManager().restartLoader(LOADER_ID, null, loaderCallBacks);*/
                 }
@@ -403,7 +411,11 @@ public class HighestRatedMoviesFragment extends Fragment implements OnMoreDataRe
             Log.e("Debug", "onLoadFinishedCalled Cursor has : " + data.getCount() + " items");
             if (mRecyclerViewCursorAdapter != null) {
                 mRecyclerViewCursorAdapter.swapCursor(data);
-                EndlessRecyclerViewScrollListener.setLoadingToFalse();
+                if(Build.VERSION.SDK_INT==Build.VERSION_CODES.M){
+                    EndlessRecyclerViewScrollChangeListener.setLoadingToFalse();
+                }else{
+                    EndlessRecyclerViewScrollListener.setLoadingToFalse();
+                }
             }
         }
 
@@ -425,14 +437,6 @@ public class HighestRatedMoviesFragment extends Fragment implements OnMoreDataRe
 
     }
 
-    @Override
-    public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-        mCurrentCompletelyVisibleItemPosition = new int[SPAN_COUNT];
-        mCurrentCompletelyVisibleItemPosition = mStaggeredGridLayoutManager
-                .findFirstCompletelyVisibleItemPositions(
-                        mCurrentCompletelyVisibleItemPosition
-                );
-    }
 
     @Override
     public void onSearchResultAcquired(MovieDataInstance instance) {

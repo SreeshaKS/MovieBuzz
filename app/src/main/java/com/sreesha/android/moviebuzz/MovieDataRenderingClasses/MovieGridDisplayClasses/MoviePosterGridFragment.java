@@ -1,6 +1,5 @@
 package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.content.CursorLoader;
@@ -43,10 +42,10 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-@TargetApi(Build.VERSION_CODES.M)
+
 public class MoviePosterGridFragment extends Fragment
         implements OnMoreDataRequestedListener
-        , RecyclerView.OnScrollChangeListener
+
         , DispatchNavigationInterface
         , AsyncSearchTask.SearchResultDispatchInterface {
 
@@ -80,7 +79,7 @@ public class MoviePosterGridFragment extends Fragment
     AsyncTask loadFreshDataTask = null, loadMoreDataTask = null;
 
     private enum MOVIE_TYPE {
-        POPULAR_MOVIES, HIGHEST_RATED_MOVIES, UPCOMING_MOVIES, NOW_PLAYING_MOVIES,SEARCH_MOVIE_TYPE
+        POPULAR_MOVIES, HIGHEST_RATED_MOVIES, UPCOMING_MOVIES, NOW_PLAYING_MOVIES, SEARCH_MOVIE_TYPE
     }
 
     MOVIE_TYPE mMovieType = MOVIE_TYPE.POPULAR_MOVIES;
@@ -154,7 +153,8 @@ public class MoviePosterGridFragment extends Fragment
         SORT_PREFERENCE = preferences
                 .getString(
                         getString(R.string.sort_options_list_key
-                                , getString(R.string.sort_options_list_preference_default_value)/*Default Value For Preference*/
+                                , getString(R.string.sort_options_list_preference_default_value)
+                                /*Default Value For Preference*/
                         )
                         , "sort_preference"/*Default Value For Key*/
                 );
@@ -226,73 +226,73 @@ public class MoviePosterGridFragment extends Fragment
         mSwipeToRefreshLayout.setRefreshing(true);
             /*Start AsyncTask to Query the server*/
 
-            Log.e("MovieTypes", "Downoading Data");
-            loadFreshDataTask = new DownloadData(new AsyncResult() {
-                @Override
-                public void onResultJSON(JSONObject object) throws JSONException {
-                    Log.e("MovieTypes", object.toString());
-                }
+        Log.e("MovieTypes", "Downoading Data");
+        loadFreshDataTask = new DownloadData(new AsyncResult() {
+            @Override
+            public void onResultJSON(JSONObject object) throws JSONException {
+                Log.e("MovieTypes", object.toString());
+            }
 
-                @Override
-                public void onResultString(String stringObject) {
-                    if(getActivity()!=null) {
-                        Log.e("MovieTypes", stringObject);
-                        ((MoviePosterGridActivity) getActivity())
-                                .showNetworkConnectivityDialogue("Please connect to a working network connection");
-                        PreferenceManager
-                                .getDefaultSharedPreferences(getActivity())
-                                .edit()
-                                .putBoolean(PreferenceKeys.IS_DATA_ALREADY_LOADED, false)
-                                .commit();
-                    }
+            @Override
+            public void onResultString(String stringObject) {
+                if (getActivity() != null) {
+                    Log.e("MovieTypes", stringObject);
+                    ((MoviePosterGridActivity) getActivity())
+                            .showNetworkConnectivityDialogue("Please connect to a working network connection");
+                    PreferenceManager
+                            .getDefaultSharedPreferences(getActivity())
+                            .edit()
+                            .putBoolean(PreferenceKeys.IS_DATA_ALREADY_LOADED, false)
+                            .commit();
                 }
+            }
 
-                @Override
-                public void onResultParsedIntoMovieList(ArrayList<MovieDataInstance> movieList) {
-                    if(getActivity()!=null) {
-                        Log.e("Parsed", "ParseDone");
-                        Log.e("MovieTypes", "ParseDone");
-                        mSwipeToRefreshLayout.setRefreshing(false);
+            @Override
+            public void onResultParsedIntoMovieList(ArrayList<MovieDataInstance> movieList) {
+                if (getActivity() != null) {
+                    Log.e("Parsed", "ParseDone");
+                    Log.e("MovieTypes", "ParseDone");
+                    mSwipeToRefreshLayout.setRefreshing(false);
                     /*Should not get Activated on normal swipe down at the beginning of the RecyclerView
                      * Therefore disable SwipeToRefreshLayout And enable it when required*/
-                        switch (mMovieType) {
-                            case UPCOMING_MOVIES:
-                            case NOW_PLAYING_MOVIES:
-                                Log.e("MovieTypes", "AcquiredNew List : " + movieList.size());
-                                MoviePosterGridFragment.this.mMovieList = new ArrayList<MovieDataInstance>();
-                                MoviePosterGridFragment.this.mMovieList = movieList;
-                                initializeRecyclerView();
-                                break;
-                            default:
-                                Log.e("MovieTypes", "Normal Movies Showing");
-                                initializeRecyclerView();
-                                getLoaderManager().restartLoader(LOADER_ID, null, loaderCallBacks);
+                    switch (mMovieType) {
+                        case UPCOMING_MOVIES:
+                        case NOW_PLAYING_MOVIES:
+                            Log.e("MovieTypes", "AcquiredNew List : " + movieList.size());
+                            MoviePosterGridFragment.this.mMovieList = new ArrayList<MovieDataInstance>();
+                            MoviePosterGridFragment.this.mMovieList = movieList;
+                            initializeRecyclerView();
+                            break;
+                        default:
+                            Log.e("MovieTypes", "Normal Movies Showing");
+                            initializeRecyclerView();
+                            getLoaderManager().restartLoader(LOADER_ID, null, loaderCallBacks);
                     /*Update preferences , Data Has Been Downloaded
              , Data can be loaded from Content Provider
                     on Next Application boot or on next configurationChange*/
-                                PreferenceManager
-                                        .getDefaultSharedPreferences(getActivity())
-                                        .edit()
-                                        .putBoolean(PreferenceKeys.IS_DATA_ALREADY_LOADED, true)
-                                        .commit();
-                        }
+                            PreferenceManager
+                                    .getDefaultSharedPreferences(getActivity())
+                                    .edit()
+                                    .putBoolean(PreferenceKeys.IS_DATA_ALREADY_LOADED, true)
+                                    .commit();
                     }
                 }
-
-                @Override
-                public void onTrailersResultParsed(ArrayList<MovieTrailerInstance> trailerList) {
-
-                }
-
-                @Override
-                public void onReviewsResultParsed(ArrayList<MovieReviewInstance> reviewList) {
-
-                }
             }
-                    , getActivity()
-            ).execute(URL.build().toString());
+
+            @Override
+            public void onTrailersResultParsed(ArrayList<MovieTrailerInstance> trailerList) {
+
+            }
+
+            @Override
+            public void onReviewsResultParsed(ArrayList<MovieReviewInstance> reviewList) {
+
+            }
+        }
+                , getActivity()
+        ).execute(URL.build().toString());
         //Initialize RecyclerView And Load Data from Content Provider
-            initializeRecyclerView();
+        initializeRecyclerView();
         Log.e("URL", URL.build().toString());
     }
 
@@ -324,10 +324,16 @@ public class MoviePosterGridFragment extends Fragment
         mStaggeredGridLayoutManager.setOrientation(StaggeredGridLayoutManager.VERTICAL);
         //computerAndRegisterSpanCount();
         mMovieDisplayRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
+        if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
 
-        mMovieDisplayRecyclerView.setOnScrollChangeListener(new EndlessRecyclerViewScrollListener(
-                mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
-        ));
+            mMovieDisplayRecyclerView.setOnScrollChangeListener(new EndlessRecyclerViewScrollChangeListener(
+                    mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
+            ));
+        } else {
+            mMovieDisplayRecyclerView.setOnScrollListener(new EndlessRecyclerViewScrollListener(
+                    mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
+            ));
+        }
         switch (mMovieType) {
             case UPCOMING_MOVIES:
             case NOW_PLAYING_MOVIES:
@@ -470,7 +476,7 @@ public class MoviePosterGridFragment extends Fragment
                                     mMovieDisplayRecyclerView.setAdapter(mMovieListDisplayAdapter);
                                 }
                                 mSwipeToRefreshLayout.setRefreshing(false);
-                                EndlessRecyclerViewScrollListener.setLoadingToFalse();
+                                EndlessRecyclerViewScrollChangeListener.setLoadingToFalse();
                             }
 
                             break;
@@ -501,15 +507,6 @@ public class MoviePosterGridFragment extends Fragment
         Log.e("Movie URL", URL.appendQueryParameter(APIUrls.API_PAGE_PARAM, String.format("%d", (currentPage + 1)))
                 .build()
                 .toString());
-    }
-
-    @Override
-    public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
-        mCurrentCompletelyVisibleItemPosition = new int[SPAN_COUNT];
-        mCurrentCompletelyVisibleItemPosition = mStaggeredGridLayoutManager
-                .findFirstCompletelyVisibleItemPositions(
-                        mCurrentCompletelyVisibleItemPosition
-                );
     }
 
     @Override
@@ -685,14 +682,19 @@ public class MoviePosterGridFragment extends Fragment
                                 Log.e("MovieTypesDebug", "Now and Upcoming Movies");
                                 mMovieListDisplayAdapter.notifyDataSetChanged();
                                 mSwipeToRefreshLayout.setRefreshing(false);
-                                EndlessRecyclerViewScrollListener.setLoadingToFalse();
+
                                 break;
                             default:
                                 Log.e("MovieTypesDebug", "NOT Now and Upcoming Movies");
                                 mRecyclerViewCursorAdapter.swapCursor(data);
                                 Log.e("LoaderOnBindViewCB", "Loading Finished Setting isMoreDataLoadingToFalse");
                                 mSwipeToRefreshLayout.setRefreshing(false);
-                                EndlessRecyclerViewScrollListener.setLoadingToFalse();
+
+                        }
+                        if(Build.VERSION.SDK_INT==Build.VERSION_CODES.M){
+                            EndlessRecyclerViewScrollChangeListener.setLoadingToFalse();
+                        }else{
+                            EndlessRecyclerViewScrollListener.setLoadingToFalse();
                         }
                         break;
                     case FAVOURITES_MOVIES_LOADER_ID:

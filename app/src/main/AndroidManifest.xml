@@ -63,10 +63,6 @@
             android:label="@string/title_activity_people_display"
             android:theme="@style/PopularPeopleActivityTheme" />
         <activity
-            android:name=".MovieDataRenderingClasses.PeopleDisplay.PeopleProfileFragment"
-            android:label="@string/title_activity_people_profile_fragment"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".MovieDataRenderingClasses.PeopleDisplay.PeopleProfileActivity"
             android:label="@string/title_activity_people_profile"
             android:theme="@style/AppTheme.NoActionBar"></activity>

@@ -27,6 +27,7 @@ import android.widget.FrameLayout;
 
 import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieContract;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses.AsyncSearchTask;
+import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses.EndlessRecyclerViewScrollChangeListener;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses.EndlessRecyclerViewScrollListener;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses.MoviePosterGridActivity;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses.MovieRecyclerViewCursorAdapter;
@@ -45,9 +46,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-@TargetApi(Build.VERSION_CODES.M)
 public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequestedListener
-        , RecyclerView.OnScrollChangeListener
         , AsyncSearchTask.SearchResultDispatchInterface
         , MovieTabsDetailFragment.MovieDetailedDataFragmentInterface {
 
@@ -114,7 +113,7 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_similar_movies, container, false);
 
-        mRecyclerViewCursorAdapter = new MovieRecyclerViewCursorAdapter(getActivity(), null,true);
+        mRecyclerViewCursorAdapter = new MovieRecyclerViewCursorAdapter(getActivity(), null, true);
         mRecyclerViewCursorAdapter.setOnMoreDataRequestedListener(this);
 
         /*Get the current display configuration
@@ -174,7 +173,7 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
 
             @Override
             public void onResultString(String stringObject) {
-                if (getActivity() != null&&getActivity() instanceof MoviePosterGridActivity) {
+                if (getActivity() != null && getActivity() instanceof MoviePosterGridActivity) {
                     Log.e("MovieTypes", stringObject);
 
                     ((MoviePosterGridActivity) getActivity())
@@ -245,7 +244,6 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
         mPosterGridFragmentCoOrLayout = (CoordinatorLayout) view.findViewById(R.id.posterGridCoordinatorLayout);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     private void initializeRecyclerView() {
              /*Get The current configuration of the display and get the orientation*/
         int orientation = getResources().getConfiguration().orientation;
@@ -260,9 +258,15 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
         mMovieDisplayRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
 
 
-        mMovieDisplayRecyclerView.setOnScrollChangeListener(new EndlessRecyclerViewScrollListener(
-                mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
-        ));
+        if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            mMovieDisplayRecyclerView.setOnScrollChangeListener(new EndlessRecyclerViewScrollChangeListener(
+                    mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
+            ));
+        } else {
+            mMovieDisplayRecyclerView.setOnScrollListener(new EndlessRecyclerViewScrollListener(
+                    mStaggeredGridLayoutManager, this, mMovieDisplayRecyclerView
+            ));
+        }
         mMovieDisplayRecyclerView.setAdapter(mRecyclerViewCursorAdapter);
 
         if (isStateRestored && mCurrentCompletelyVisibleItemPosition != null) {
@@ -333,7 +337,11 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
 
     @Override
     public void onMoreDataRequested(int currentPage) {
-        EndlessRecyclerViewScrollListener.setLoadingToFalse();
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
+            EndlessRecyclerViewScrollChangeListener.setLoadingToFalse();
+        } else {
+            EndlessRecyclerViewScrollListener.setLoadingToFalse();
+        }
     }
 
     android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor> loaderCallBacks
@@ -395,14 +403,14 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
 
     }
 
-    @Override
+   /* @Override
     public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
         mCurrentCompletelyVisibleItemPosition = new int[SPAN_COUNT];
         mCurrentCompletelyVisibleItemPosition = mStaggeredGridLayoutManager
                 .findFirstCompletelyVisibleItemPositions(
                         mCurrentCompletelyVisibleItemPosition
                 );
-    }
+    }*/
 
     @Override
     public void onSearchResultAcquired(MovieDataInstance instance) {
