@@ -26,7 +26,7 @@ public class APIUrls {
 
     private static final String PATH_REVIEW = "reviews";
 
-    private static final String API_KEY = "INSERT_YOUR_API_KEY_HERE";
+    private static final String API_KEY = "INSERT_YOUR_API_KEY";
     public static final String API_PAGE_PARAM = "page";
     private static final String API_KEY_PARAM = "api_key";
     public static final String API_SORT_PARAM = "sort_by";

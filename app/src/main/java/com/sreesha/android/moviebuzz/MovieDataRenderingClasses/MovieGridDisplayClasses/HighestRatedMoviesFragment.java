@@ -297,7 +297,7 @@ public class HighestRatedMoviesFragment extends Fragment implements OnMoreDataRe
             )
             ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
         } else {
-            SPAN_COUNT = (int) Math.ceil((convertPixelsToDP(
+            SPAN_COUNT = (int) Math.round((convertPixelsToDP(
                     mPosterGridFragmentFrameLayout.getWidth())
                     + convertPixelsToDP(
                     (int) getResources()

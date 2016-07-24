@@ -3,8 +3,12 @@ package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplay
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.preference.PreferenceManager;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -179,6 +183,41 @@ public class MovieRecyclerViewCursorAdapter
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 holder.moviePosterImageView.setImageBitmap(bitmap);
+                Palette.PaletteAsyncListener asyncListener = new Palette.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(Palette palette) {
+                        holder.movieDetailCard
+                                .setCardBackgroundColor(
+                                        palette
+                                                .getVibrantColor(
+                                                        mContext
+                                                                .getResources()
+                                                                .getColor(R.color.colorPrimary)
+                                                )
+                                );
+                        holder.movieOriginalTitleTextView.setTextColor(
+                                mContext.getResources().getColor(R.color.white)
+                        );
+                        holder.movieReleaseDateTextView.setTextColor(
+                                mContext.getResources().getColor(R.color.white)
+                        );
+                        LayerDrawable stars = (LayerDrawable) holder.movieRatingBar.getProgressDrawable();
+                        stars.getDrawable(2).setColorFilter(
+                                mContext.getResources()
+                                        .getColor(R.color.white)
+                                , PorterDuff.Mode.SRC_ATOP);
+                        /*holder.movieDetailCard
+                                .setCardBackgroundColor(
+                                        palette
+                                                .getLightMutedColor(
+                                                        mContext
+                                                                .getResources()
+                                                                .getColor(R.color.colorPrimary)
+                                                )
+                                );*/
+                    }
+                };
+                Palette.from(bitmap).generate(asyncListener);
             }
 
             @Override

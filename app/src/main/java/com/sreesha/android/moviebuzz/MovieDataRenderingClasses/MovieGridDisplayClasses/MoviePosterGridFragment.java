@@ -1,6 +1,7 @@
 package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v4.content.CursorLoader;
 import android.content.SharedPreferences;
@@ -28,6 +29,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieContract;
+import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieDataDBHelper;
 import com.sreesha.android.moviebuzz.Networking.MovieDataInstance;
 import com.sreesha.android.moviebuzz.Networking.APIUrls;
 import com.sreesha.android.moviebuzz.Networking.AsyncResult;
@@ -77,6 +79,10 @@ public class MoviePosterGridFragment extends Fragment
     ArrayList<MovieDataInstance> searchResultMovieList = new ArrayList<>();
 
     AsyncTask loadFreshDataTask = null, loadMoreDataTask = null;
+
+
+    MovieDataDBHelper mMovieDataDBHelper;
+    SQLiteDatabase db;
 
     private enum MOVIE_TYPE {
         POPULAR_MOVIES, HIGHEST_RATED_MOVIES, UPCOMING_MOVIES, NOW_PLAYING_MOVIES, SEARCH_MOVIE_TYPE
@@ -185,7 +191,7 @@ public class MoviePosterGridFragment extends Fragment
                     @Override
                     public void onGlobalLayout() {
                         if (getActivity() != null) {
-                            computerAndRegisterSpanCount();
+                            computeAndRegisterSpanCount();
                         }
 
                     }
@@ -203,6 +209,8 @@ public class MoviePosterGridFragment extends Fragment
                 .getString(getString(R.string.sort_options_list_key)
                         , getString(R.string.sort_options_list_preference_default_value))
         );
+        mMovieDataDBHelper = new MovieDataDBHelper(getContext());
+        db = mMovieDataDBHelper.getWritableDatabase();
         super.onCreate(savedInstanceState);
     }
 
@@ -304,6 +312,7 @@ public class MoviePosterGridFragment extends Fragment
             @Override
             public void onRefresh() {
                 hasSortOrderChanged = true;
+                //deleteAllMovieData();
                 initializeViewElementsAndDownloadFreshData();
             }
         });
@@ -311,6 +320,17 @@ public class MoviePosterGridFragment extends Fragment
         * ThereforeDisable SwipeToRefreshLayout And enable it when required*/
         mSwipeToRefreshLayout.setRefreshing(false);
         mPosterGridFragmentCoOrLayout = (CoordinatorLayout) view.findViewById(R.id.posterGridCoordinatorLayout);
+    }
+
+    void deleteAllMovieData() {
+        if (db.isOpen()) {
+            db.delete(MovieContract.MovieData.TABLE_MOVIE_DATA, null
+                    , null);
+        } else {
+            db = mMovieDataDBHelper.getWritableDatabase();
+            db.delete(MovieContract.MovieData.TABLE_MOVIE_DATA, null
+                    , null);
+        }
     }
 
     private void initializeRecyclerView() {
@@ -322,7 +342,7 @@ public class MoviePosterGridFragment extends Fragment
                 , LinearLayoutManager.VERTICAL
         );
         mStaggeredGridLayoutManager.setOrientation(StaggeredGridLayoutManager.VERTICAL);
-        //computerAndRegisterSpanCount();
+        //computeAndRegisterSpanCount();
         mMovieDisplayRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
         if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
 
@@ -379,7 +399,7 @@ public class MoviePosterGridFragment extends Fragment
         }
     }
 
-    private void computerAndRegisterSpanCount() {
+    private void computeAndRegisterSpanCount() {
         Log.e("Span Debug", "Screen Width : " + convertPixelsToDP(
                 mPosterGridFragmentCoOrLayout.getWidth()) + "Computer Value" + (convertPixelsToDP(
                 mPosterGridFragmentCoOrLayout.getWidth())
@@ -397,13 +417,21 @@ public class MoviePosterGridFragment extends Fragment
             )
             ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
         } else {
-            SPAN_COUNT = (int) Math.ceil((convertPixelsToDP(
+            SPAN_COUNT = (int) Math.round((convertPixelsToDP(
                     mPosterGridFragmentCoOrLayout.getWidth())
                     + convertPixelsToDP(
                     (int) getResources()
                             .getDimension(R.dimen.movie_poster_margin)
             )
             ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
+            Log.d("SpanCount", "Count : " + SPAN_COUNT
+                    + "\n\t\tLayout Width : " + convertPixelsToDP(
+                    mPosterGridFragmentCoOrLayout.getWidth())
+                    + convertPixelsToDP(
+                    (int) getResources()
+                            .getDimension(R.dimen.movie_poster_margin)
+            ) + "\n" +
+                    "\t\tPoster Width " + POSTER_WIDTH);
         }
         if (SPAN_COUNT != 0 && mStaggeredGridLayoutManager != null)
             mStaggeredGridLayoutManager.setSpanCount(SPAN_COUNT);
@@ -691,9 +719,9 @@ public class MoviePosterGridFragment extends Fragment
                                 mSwipeToRefreshLayout.setRefreshing(false);
 
                         }
-                        if(Build.VERSION.SDK_INT==Build.VERSION_CODES.M){
+                        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M) {
                             EndlessRecyclerViewScrollChangeListener.setLoadingToFalse();
-                        }else{
+                        } else {
                             EndlessRecyclerViewScrollListener.setLoadingToFalse();
                         }
                         break;
@@ -730,5 +758,8 @@ public class MoviePosterGridFragment extends Fragment
                 loadMoreDataTask.cancel(true);
                 loadMoreDataTask = null;
             }
+        if (db.isOpen()) {
+            db.close();
+        }
     }
 }

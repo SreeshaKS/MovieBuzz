@@ -1,6 +1,11 @@
 package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,7 +16,9 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.sreesha.android.moviebuzz.Animation.CustomAnimator;
 import com.sreesha.android.moviebuzz.Networking.MovieDataInstance;
 import com.sreesha.android.moviebuzz.Networking.APIUrls;
@@ -77,12 +84,75 @@ public class MovieDisplayAdapter extends RecyclerView.Adapter<MovieDisplayAdapte
                 + movieList.get(position)
                 .getPOSTER_PATH();
 
+        /*Picasso
+                .with(mContext)
+                .load(URL)
+                .into(holder.moviePosterImageView);*/
+        loadImagesUsingPicasso(holder);
+    }
+    public void loadImagesUsingPicasso(final ViewHolder holder) {
+        Target posterImageTarget = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                holder.moviePosterImageView.setImageBitmap(bitmap);
+                Palette.PaletteAsyncListener asyncListener = new Palette.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(Palette palette) {
+                        holder.movieDetailCard
+                                .setCardBackgroundColor(
+                                        palette
+                                                .getVibrantColor(
+                                                        mContext
+                                                                .getResources()
+                                                                .getColor(R.color.colorPrimary)
+                                                )
+                                );
+                        holder.movieOriginalTitleTextView.setTextColor(
+                                mContext.getResources().getColor(R.color.white)
+                        );
+                        holder.movieReleaseDateTextView.setTextColor(
+                                mContext.getResources().getColor(R.color.white)
+                        );
+                        LayerDrawable stars = (LayerDrawable) holder.movieRatingBar.getProgressDrawable();
+                        stars.getDrawable(2).setColorFilter(
+                                mContext.getResources()
+                                        .getColor(R.color.white)
+                                , PorterDuff.Mode.SRC_ATOP);
+                        /*holder.movieDetailCard
+                                .setCardBackgroundColor(
+                                        palette
+                                                .getLightMutedColor(
+                                                        mContext
+                                                                .getResources()
+                                                                .getColor(R.color.colorPrimary)
+                                                )
+                                );*/
+                    }
+                };
+                Palette.from(bitmap).generate(asyncListener);
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        };
+        if (holder.moviePosterImageView.getTag() != null) {
+            holder.moviePosterImageView.setTag(posterImageTarget);
+        }
         Picasso
                 .with(mContext)
                 .load(URL)
-                .into(holder.moviePosterImageView);
+                .networkPolicy(NetworkPolicy.NO_CACHE)
+                .placeholder(R.drawable.ic_movie_white_48dp)
+                .error(R.drawable.ic_error_white_48dp)
+                .into(posterImageTarget);
     }
-
     @Override
     public void onViewAttachedToWindow(ViewHolder holder) {
         super.onViewAttachedToWindow(holder);

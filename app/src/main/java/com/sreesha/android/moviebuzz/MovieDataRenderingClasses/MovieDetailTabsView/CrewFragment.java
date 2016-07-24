@@ -202,7 +202,7 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
             )
             ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
         } else {
-            SPAN_COUNT = (int) Math.ceil((convertPixelsToDP(
+            SPAN_COUNT = (int) Math.round((convertPixelsToDP(
                     mCrewFragmentFrameLayout.getWidth())
                     + convertPixelsToDP(
                     (int) getResources()
