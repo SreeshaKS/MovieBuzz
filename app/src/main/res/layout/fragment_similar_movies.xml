@@ -36,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="No Similar Movies Found"
+                android:text="@string/no_similar_movies_found_string"
                 android:textColor="@color/colorPrimaryDark"
                 android:textSize="26dp"
                 android:textStyle="italic" />

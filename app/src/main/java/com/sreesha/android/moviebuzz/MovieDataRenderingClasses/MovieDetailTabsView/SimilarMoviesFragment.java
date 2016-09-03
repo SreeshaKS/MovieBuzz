@@ -127,7 +127,6 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
         if (savedInstanceState != null) {
             initializeViewElements(view);
             restoreSavedInstances(savedInstanceState);
-            Log.e("Saved Instance", "Restoring Instances");
 
         } else {
             /*if the activity is starting for the first
@@ -174,7 +173,6 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
             @Override
             public void onResultString(String stringObject) {
                 if (getActivity() != null && getActivity() instanceof MoviePosterGridActivity) {
-                    Log.e("MovieTypes", stringObject);
 
                     ((MoviePosterGridActivity) getActivity())
                             .showNetworkConnectivityDialogue("Please connect to a working network connection");
@@ -184,11 +182,10 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
             @Override
             public void onResultParsedIntoMovieList(ArrayList<MovieDataInstance> movieList) {
                 if (getActivity() != null) {
-                    Log.e("Parsed", "ParseDone");
-                    Log.e("MovieTypes", "ParseDone");
                     mSwipeToRefreshLayout.setRefreshing(false);
                     /*Should not get Activated on normal swipe down at the beginning of the RecyclerView
                      * Therefore disable SwipeToRefreshLayout And enable it when required*/
+                    initializeRecyclerView();
                     getLoaderManager().restartLoader(LOADER_ID, null, loaderCallBacks);
                 }
             }
@@ -206,7 +203,6 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
                 , getActivity()
         ).execute(URL.build().toString());
         initializeRecyclerView();
-        Log.e("URL", URL.build().toString());
     }
 
     private void restoreSavedInstances(Bundle savedInstanceState) {
@@ -217,14 +213,12 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
     }
 
     private void initializeViewElements(View view) {
-        Log.e("OrientationDebug", "OrientationMightHaveChanged");
 
         mFavouritesRefreshCard = (CardView) view.findViewById(R.id.favouritesRefreshCard);
 
         mFavouritesRefreshCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("FavLoaderDebug", "LoaderRestart Dispatched");
                 dispatchFavouritesReload();
             }
         });
@@ -270,7 +264,6 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
         mMovieDisplayRecyclerView.setAdapter(mRecyclerViewCursorAdapter);
 
         if (isStateRestored && mCurrentCompletelyVisibleItemPosition != null) {
-            Log.e("Debug", "RecyclerViewInitialized,State Being Restored");
             restoreRecyclerViewPosition();
         }
     }
@@ -291,33 +284,29 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
     }
 
     private void computerAndRegisterSpanCount() {
-        Log.e("Span Debug", "Screen Width : " + convertPixelsToDP(
-                mPosterGridFragmentFrameLayout.getWidth()) + "Computer Value" + (convertPixelsToDP(
-                mPosterGridFragmentFrameLayout.getWidth())
-                + convertPixelsToDP(
-                (int) getResources()
-                        .getDimension(R.dimen.movie_poster_margin)
-        )
-        ));
-        if (MoviePosterGridActivity.isInTwoPaneMode()) {
-            SPAN_COUNT = Math.round((convertPixelsToDP(
-                    mPosterGridFragmentFrameLayout.getWidth())
-                    + convertPixelsToDP(
-                    (int) getResources()
-                            .getDimension(R.dimen.movie_poster_margin)
-            )
-            ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
-        } else {
-            SPAN_COUNT = (int) Math.round((convertPixelsToDP(
-                    mPosterGridFragmentFrameLayout.getWidth())
-                    + convertPixelsToDP(
-                    (int) getResources()
-                            .getDimension(R.dimen.movie_poster_margin)
-            )
-            ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
+        try {
+            if (MoviePosterGridActivity.isInTwoPaneMode()) {
+                SPAN_COUNT = (int)Math.ceil((convertPixelsToDP(
+                        mPosterGridFragmentFrameLayout.getWidth())
+                        + convertPixelsToDP(
+                        (int) getResources()
+                                .getDimension(R.dimen.movie_poster_margin)
+                )
+                ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
+            } else {
+                SPAN_COUNT = (int) Math.ceil((convertPixelsToDP(
+                        mPosterGridFragmentFrameLayout.getWidth())
+                        + convertPixelsToDP(
+                        (int) getResources()
+                                .getDimension(R.dimen.movie_poster_margin)
+                )
+                ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
+            }
+            if (SPAN_COUNT > 0 && mStaggeredGridLayoutManager != null)
+                mStaggeredGridLayoutManager.setSpanCount(SPAN_COUNT);
+        } catch (ArithmeticException e) {
+            e.printStackTrace();
         }
-        if (SPAN_COUNT != 0 && mStaggeredGridLayoutManager != null)
-            mStaggeredGridLayoutManager.setSpanCount(SPAN_COUNT);
     }
 
     @Override
@@ -351,7 +340,6 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
             switch (id) {
                 case LOADER_ID:
                     if (mMovieDataInstance != null) {
-                        Log.e("SimilarMoviesLoader", "LoaderOnCreate");
                         return new CursorLoader(
                                 getActivity()
                                 , MovieContract.MovieData.MOVIE_CONTENT_URI
@@ -368,11 +356,11 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
 
         @Override
         public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
-            Log.e("SimilarMoviesLoader", "onLoadFinishedCalled Cursor has : " + data.getCount() + " items");
             if (mRecyclerViewCursorAdapter != null) {
                 if (!(data.getCount() == 0)) {
                     mEmptyFavouritesCardView.setVisibility(View.GONE);
                     mMovieDisplayRecyclerView.setVisibility(View.VISIBLE);
+                    initializeRecyclerView();
                     mRecyclerViewCursorAdapter.swapCursor(data);
                 } else {
                     downloadFreshData();
@@ -382,7 +370,6 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
 
         @Override
         public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
-            Log.e("Debug", "onLoaderResetCalled");
             mRecyclerViewCursorAdapter.swapCursor(null);
         }
     };
@@ -421,14 +408,11 @@ public class SimilarMoviesFragment extends Fragment implements OnMoreDataRequest
     public void OnMovieDataChanged(MovieDataInstance mMovieData) {
         if (mRecyclerViewCursorAdapter != null && mMovieDataInstance != null) {
             try {
-                Log.e("CastCrewDebug", "OnMovieDataCHangedCalled");
                 mMovieDataInstance = mMovieData;
 
                 //getLoaderManager().destroyLoader(CAST_LOADER_ID);
                 //getLoaderManager().initLoader(CAST_LOADER_ID, null, mLoaderCallBacks);
-                Log.e("CastCrewDebug", "Calling Loader Manager");
             } catch (IllegalStateException e) {
-                Log.e("CastCrewDebug", "Exception Inside OnMovieDataChanged : " + e.getMessage());
                 e.printStackTrace();
             }
         }

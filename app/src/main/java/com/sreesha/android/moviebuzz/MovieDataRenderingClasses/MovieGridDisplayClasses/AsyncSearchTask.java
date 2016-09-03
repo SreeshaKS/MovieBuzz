@@ -29,15 +29,12 @@ public class AsyncSearchTask extends AsyncTask<String, MovieDataInstance, String
         for (; ; ) {
             if (cancelAsyncTask) {
                 cancel(false);
-                Log.e("SearchDebug", "Canceling Async Task");
                 return null;
             }
             if (searchString != null && mMovieList != null && mMovieList.size() != 0) {
                 for (MovieDataInstance instance : mMovieList) {
-                    Log.e("SearchDebug", "Running Search");
                     if (instance.getTitle().toLowerCase().contains(searchString.toLowerCase())
                             || instance.getOriginalTitle().toLowerCase().contains(searchString.toLowerCase())) {
-                        Log.e("SearchDebug", "ResultFound : Title" + instance.getTitle());
                         publishProgress(instance);
                     }
                 }

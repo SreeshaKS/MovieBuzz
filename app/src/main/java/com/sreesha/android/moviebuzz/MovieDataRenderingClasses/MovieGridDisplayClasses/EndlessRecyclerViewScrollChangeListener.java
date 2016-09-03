@@ -53,16 +53,13 @@ public class EndlessRecyclerViewScrollChangeListener implements RecyclerView.OnS
     @Override
     public void onScrollChange(View v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
         if (mStaggeredGridLayoutManager != null) {
-            Log.e("RecycEndlessDebug", "Calculating");
             visibleItemCount = mRecyclerView.getChildCount();
             totalItemCount = mStaggeredGridLayoutManager.getItemCount();
             mLastVisibleItemArray = new int[mStaggeredGridLayoutManager.getSpanCount()];
             mLastVisibleItemArray = mStaggeredGridLayoutManager.findLastVisibleItemPositions(null);
             lastVisibleItemPosition = getLastVisibleItem(mLastVisibleItemArray);
             if (loading) {
-                Log.e("RecycEndlessDebug", "Loading is true");
                 if (totalItemCount > previousTotal) {
-                    Log.e("RecycEndlessDebug", "Setting loading to false");
                     loading = false;
                     previousTotal = totalItemCount;
                 }
@@ -73,7 +70,6 @@ public class EndlessRecyclerViewScrollChangeListener implements RecyclerView.OnS
                             /*|| (totalItemCount - visibleItemCount)
                             <= (mLastVisibleItemArray[1] + visibleThreshold)*/
             )) {
-                Log.e("RecycEndlessDebug", "Requesting for more data");
                 current_page++;
 
                 mOnMoreDataRequestedListener.onMoreDataRequested(current_page);

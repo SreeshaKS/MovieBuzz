@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:gravity="center"
-                android:text="Please connect to a working internet connection"
+                android:text="@string/please_connect_to_a_working_internet_connection_string"
                 android:textSize="26sp"
                 android:textStyle="bold" />
 

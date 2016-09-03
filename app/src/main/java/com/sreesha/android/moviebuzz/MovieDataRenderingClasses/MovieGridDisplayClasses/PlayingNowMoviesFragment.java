@@ -92,11 +92,9 @@ public class PlayingNowMoviesFragment extends Fragment
         if (savedInstanceState != null) {
             initializeViewElements(view);
             restoreSavedInstances(savedInstanceState);
-            Log.e("Saved Instance", "Restoring Instances");
 
         } else {
             initializeViewElements(view);
-            Log.e("Saved Instance", "Loading Data Freshly");
             downloadFreshData();
         }
         return view;
@@ -110,7 +108,6 @@ public class PlayingNowMoviesFragment extends Fragment
     }
 
     private void initializeViewElements(View view) {
-        Log.e("OrientationDebug", "OrientationMightHaveChanged");
         mPosterGridFragmentFrameLayout = (FrameLayout) view.findViewById(R.id.moviePosterFragmentFrameLayout);
         mMovieDisplayRecyclerView = (RecyclerView) view.findViewById(R.id.movieDisplayRecyclerView);
         mSwipeToRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.movieSwipeToRefreshLayout);
@@ -178,7 +175,6 @@ public class PlayingNowMoviesFragment extends Fragment
         }
         mMovieDisplayRecyclerView.setAdapter(mMovieListDisplayAdapter);
         if (isStateRestored && mCurrentCompletelyVisibleItemPosition != null) {
-            Log.e("Debug", "RecyclerViewInitialized,State Being Restored");
             restoreRecyclerViewPosition();
         }
     }
@@ -209,7 +205,6 @@ public class PlayingNowMoviesFragment extends Fragment
         loadFreshDataTask = new DownloadData(new AsyncResult() {
             @Override
             public void onResultJSON(JSONObject object) throws JSONException {
-                Log.e("MovieTypes", object.toString());
             }
 
             @Override
@@ -220,8 +215,6 @@ public class PlayingNowMoviesFragment extends Fragment
             @Override
             public void onResultParsedIntoMovieList(ArrayList<MovieDataInstance> movieList) {
                 if (getActivity() != null) {
-                    Log.e("Parsed", "ParseDone");
-                    Log.e("MovieTypes", "ParseDone");
                     mSwipeToRefreshLayout.setRefreshing(false);
                     /*Should not get Activated on normal swipe down at the beginning of the RecyclerView
                      * Therefore disable SwipeToRefreshLayout And enable it when required*/
@@ -243,8 +236,6 @@ public class PlayingNowMoviesFragment extends Fragment
         }
                 , getActivity()
         ).execute(URL.build().toString());
-
-        Log.e("URL", URL.build().toString());
     }
 
     @Override
@@ -264,14 +255,6 @@ public class PlayingNowMoviesFragment extends Fragment
     }
 
     private void computerAndRegisterSpanCount() {
-        Log.e("Span Debug", "Screen Width : " + convertPixelsToDP(
-                mPosterGridFragmentFrameLayout.getWidth()) + "Computer Value" + (convertPixelsToDP(
-                mPosterGridFragmentFrameLayout.getWidth())
-                + convertPixelsToDP(
-                (int) getResources()
-                        .getDimension(R.dimen.movie_poster_margin)
-        )
-        ));
         if (MoviePosterGridActivity.isInTwoPaneMode()) {
             SPAN_COUNT = Math.round((convertPixelsToDP(
                     mPosterGridFragmentFrameLayout.getWidth())
@@ -309,7 +292,6 @@ public class PlayingNowMoviesFragment extends Fragment
             /*Loading Data , Show spinner notification*/
         mSwipeToRefreshLayout.setEnabled(true);
         mSwipeToRefreshLayout.setRefreshing(true);
-        Log.e("Loading Page : ", "" + currentPage);
             /*Prevent FurtherCallBacks from onBindViewHolder from spawning multiple Async Tasks
             * Setting mIsMoreDataLoading=true , ensures the code waits for a particular page to load
             * before new page is requested*/

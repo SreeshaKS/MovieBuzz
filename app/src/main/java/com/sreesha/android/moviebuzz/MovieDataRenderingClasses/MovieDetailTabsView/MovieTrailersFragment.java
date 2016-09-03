@@ -207,7 +207,6 @@ public class MovieTrailersFragment extends Fragment implements MovieTabsDetailFr
                 public void onTrailersResultParsed(ArrayList<MovieTrailerInstance> trailerList) {
                     if (getActivity() != null) {
                         if (trailerList.size() != 0) {
-                            Log.e("DownloadData", "Parsed Trailers : \t" + trailerList.size());
                             getLoaderManager().restartLoader(TRAILERS_LOADER_ID, null, mLoaderCallBacks);
                             mSwipeToRefreshLayout.setRefreshing(false);
                         } else if (getActivity() != null && trailerList.size() == 0) {
@@ -250,10 +249,10 @@ public class MovieTrailersFragment extends Fragment implements MovieTabsDetailFr
             if (mMovieData != null) {
                 switch (id) {
                     case TRAILERS_LOADER_ID:
-                        Log.e("DetailCursorDebug", "Trailers : " + id);
                         return new CursorLoader(
                                 getActivity()
-                                , MovieContract.MovieTrailers.buildMovieTrailerUriWithMovieId(String.valueOf(mMovieData.getMovieID()))
+                                , MovieContract.MovieTrailers
+                                .buildMovieTrailerUriWithMovieId(String.valueOf(mMovieData.getMovieID()))
                                 , null
                                 , null
                                 , null
@@ -271,7 +270,6 @@ public class MovieTrailersFragment extends Fragment implements MovieTabsDetailFr
         public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
             switch (loader.getId()) {
                 case TRAILERS_LOADER_ID:
-                    Log.e("DetailCursorDebug", "Size : " + data.getCount());
                     if (data.getCount() == 0) {
                         fetchMovieTrailersReviews();
                     } else {

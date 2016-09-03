@@ -122,7 +122,6 @@ public class DisplayExpandedMovieDataFragment extends Fragment
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        Log.e("onActivityCreated", "");
         initializeLoaders();
         super.onActivityCreated(savedInstanceState);
     }
@@ -154,7 +153,6 @@ public class DisplayExpandedMovieDataFragment extends Fragment
         setHasOptionsMenu(true);
         initializeViewElements(view);
         if (mMovieData != null) {
-            Log.e("onCreateView", "UpdatingUI and Fetching Data");
             updateUIWithMovieData();
             //fetchMovieTrailersReviews();
         }
@@ -190,7 +188,6 @@ public class DisplayExpandedMovieDataFragment extends Fragment
                 @Override
                 public void onTrailersResultParsed(ArrayList<MovieTrailerInstance> trailerList) {
                     if (getActivity() != null) {
-                        Log.e("DownloadData", "Parsed Trailers : \t" + trailerList.size());
                         getLoaderManager().restartLoader(TRAILERS_LOADER_ID, null, DisplayExpandedMovieDataFragment.this);
                     }
                 }
@@ -198,7 +195,6 @@ public class DisplayExpandedMovieDataFragment extends Fragment
                 @Override
                 public void onReviewsResultParsed(ArrayList<MovieReviewInstance> reviewList) {
                     if (getActivity() != null) {
-                        Log.e("DownloadData", "Parsed Reviews : \t" + reviewList.size());
                         getLoaderManager().restartLoader(REVIEWS_LOADER_ID, null, DisplayExpandedMovieDataFragment.this);
                     }
                 }
@@ -208,8 +204,6 @@ public class DisplayExpandedMovieDataFragment extends Fragment
                     APIUrls.buildMovieReviewsURL(mMovieData.getMovieID() + "").toString()
                     , APIUrls.buildMovieTrailerURL(mMovieData.getMovieID() + "").toString()
             );
-        Log.e("TrailerDebug", "Trailers URL : " + APIUrls.buildMovieTrailerURL(mMovieData.getMovieID() + "").toString());
-        Log.e("TrailerDebug", "Reviews URL : " + APIUrls.buildMovieReviewsURL(mMovieData.getMovieID() + "").toString());
     }
 
     private void updateUIWithMovieData() {
@@ -220,7 +214,6 @@ public class DisplayExpandedMovieDataFragment extends Fragment
         moviePopularityTextView.setText(String.format(getString(R.string.string_format_popularity)
                 , mMovieData.getPopularity()));
         movieTitleTextView.setText(mMovieData.getTitle());
-        Log.e("TitleDebug", mMovieData.getTitle() + "\t" + mMovieData.getOriginalTitle());
         if (!mMovieData.getTitle().trim().equalsIgnoreCase(mMovieData.getOriginalTitle().trim())) {
             movieOriginalTitleTextView.setVisibility(View.VISIBLE);
             movieOriginalTitleTextView.setText(mMovieData.getOriginalTitle());
@@ -347,7 +340,6 @@ public class DisplayExpandedMovieDataFragment extends Fragment
                             .insert(MovieContract.UserFavourite.FAVOURITES_CONTENT_URI
                                     , temp);
                     if (mPosterBitmap != null) {
-                        Log.e("StorageDebug", "RunningAsyncTask");
                         runAsyncMediaStorage();
                     }
 

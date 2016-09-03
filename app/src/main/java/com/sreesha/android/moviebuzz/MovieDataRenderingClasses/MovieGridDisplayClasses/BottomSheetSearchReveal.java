@@ -342,7 +342,6 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
         ));*/
         mMovieDisplayRecyclerView.setAdapter(mRecyclerViewCursorAdapter);
         if (isStateRestored && mCurrentCompletelyVisibleItemPosition != null) {
-            Log.e("Debug", "RecyclerViewInitialized,State Being Restored");
             restoreRecyclerViewPosition();
         }
     }
@@ -363,14 +362,6 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
     }
 
     private void computerAndRegisterSpanCount() {
-        Log.e("Span Debug", "Screen Width : " + convertPixelsToDP(
-                mPosterGridFragmentFrameLayout.getWidth()) + "Computer Value" + (convertPixelsToDP(
-                mPosterGridFragmentFrameLayout.getWidth())
-                + convertPixelsToDP(
-                (int) getResources()
-                        .getDimension(R.dimen.movie_poster_margin)
-        )
-        ));
         if (MoviePosterGridActivity.isInTwoPaneMode()) {
             SPAN_COUNT = Math.round((convertPixelsToDP(
                     mPosterGridFragmentFrameLayout.getWidth())
@@ -415,7 +406,6 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
             /*Loading Data , Show spinner notification*/
         mSwipeToRefreshLayout.setEnabled(true);
         mSwipeToRefreshLayout.setRefreshing(true);
-        Log.e("Loading Page : ", "" + currentPage);
             /*Prevent FurtherCallBacks from onBindViewHolder from spawning multiple Async Tasks
             * Setting mIsMoreDataLoading=true , ensures the code waits for a particular page to load
             * before new page is requested*/
@@ -474,7 +464,6 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
             = new android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
         public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            Log.e("Debug", "onCreateLoaderCalled");
             switch (id) {
                 case LOADER_ID:
                     return new CursorLoader(
@@ -492,7 +481,6 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
 
         @Override
         public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
-            Log.e("Debug", "onLoadFinishedCalled Cursor has : " + data.getCount() + " items");
             if (mRecyclerViewCursorAdapter != null) {
                 if (data.getCount() != 0) {
                     mRecyclerViewCursorAdapter.swapCursor(data);
@@ -504,7 +492,6 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
 
         @Override
         public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
-            Log.e("Debug", "onLoaderResetCalled");
             mRecyclerViewCursorAdapter.swapCursor(null);
         }
     };
@@ -538,8 +525,6 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
 
-        Log.e("BottomSheetDebug", "setUpDialog");
-
         View contentView = View.inflate(getActivity(), R.layout.fragment_search_reveal, null);
         dialog.setContentView(contentView);
         CoordinatorLayout.LayoutParams params
@@ -549,7 +534,6 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
         CoordinatorLayout.Behavior behavior = params.getBehavior();
 
         if (behavior != null && behavior instanceof BottomSheetBehavior) {
-            Log.e("BottomSheetDebug", "settingCallBack");
             ((BottomSheetBehavior) behavior)
                     .setBottomSheetCallback(mBottomSheetBehaviorCallback);
         }
@@ -579,13 +563,11 @@ public class BottomSheetSearchReveal extends BottomSheetDialogFragment implement
 
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    Log.e("SearchDebug", "SearchQuery Submitted");
                     return false;
                 }
 
                 @Override
                 public boolean onQueryTextChange(String newText) {
-                    Log.e("SearchDebug", "SearchQuery Changed");
                     return false;
                 }
             });

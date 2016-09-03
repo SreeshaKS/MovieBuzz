@@ -17,8 +17,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieContract;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.DetailView.OnMoreReviewDataRequestedListener;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.DetailView.ReviewRecyclerViewCursorAdapter;
@@ -26,9 +34,11 @@ import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayC
 import com.sreesha.android.moviebuzz.Networking.APIUrls;
 import com.sreesha.android.moviebuzz.Networking.AsyncResult;
 import com.sreesha.android.moviebuzz.Networking.DownloadData;
+import com.sreesha.android.moviebuzz.Networking.FBC;
 import com.sreesha.android.moviebuzz.Networking.MovieDataInstance;
 import com.sreesha.android.moviebuzz.Networking.MovieReviewInstance;
 import com.sreesha.android.moviebuzz.Networking.MovieTrailerInstance;
+import com.sreesha.android.moviebuzz.Networking.User;
 import com.sreesha.android.moviebuzz.R;
 
 import org.json.JSONException;
@@ -36,14 +46,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ReviewsFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ReviewsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment.MovieReviewsFragmentInterface {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -67,22 +69,23 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
     private boolean mIsStateRestored = false;
     FrameLayout mReviewsFrameLayout;
     SwipeRefreshLayout mSwipeToRefreshLayout;
+    TextView mNetworkErrorMessageTextView;
 
     @Override
     public void onStart() {
         super.onStart();
-        Log.e("TabsDebug", "OnStart");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.e("TabsDebug", "Review OnResume");
     }
 
     public ReviewsFragment() {
         // Required empty public constructor
     }
+
+    private DatabaseReference mDatabase;
 
     /**
      * Use this factory method to create a new instance of
@@ -105,7 +108,6 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e("TabsDebug", "Review OnCreate");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -113,6 +115,29 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
         if (savedInstanceState != null) {
             mMovieData = savedInstanceState.getParcelable(MOVIE_PARCELABLE_SAVED_KEY);
             mIsStateRestored = true;
+        }
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            Log.d("FireBaseAuth", "User Logged In : "
+                    + user.getDisplayName() + "\n" + user.getUid());
+            final String userId = user.getUid();
+            mDatabase.child(FBC.USER).child(userId).addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            // Get user value
+                            User user = dataSnapshot.getValue(User.class);
+                            Log.d("FBCDebug", dataSnapshot.toString());
+                            // ...
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+        } else {
+            Log.d("FireBaseAuth", "User Not Logged In");
         }
     }
 
@@ -129,7 +154,6 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
         initializeViewElements(view);
         setUpAndInitializeRecyclerView(mReviewsRecyclerView
                 , new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-        Log.e("TabsDebug", "Review OnCreateView");
         return view;
     }
 
@@ -141,7 +165,6 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
     private void setUpAndInitializeRecyclerView(
             RecyclerView recyclerView
             , LinearLayoutManager recyclerViewLayoutManager) {
-        Log.e("TabsDebug", "SettingUpRecyclerView");
         reviewsRecyclerViewAdapter = new ReviewRecyclerViewCursorAdapter(getActivity(), null, mMovieData);
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
         recyclerView.setAdapter(reviewsRecyclerViewAdapter);
@@ -170,6 +193,7 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
         mReviewsFrameLayout = (FrameLayout) view.findViewById(R.id.reviewsFrameLayout);
         mSwipeToRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeToRefreshLayout);
         mSwipeToRefreshLayout.setRefreshing(false);
+        mNetworkErrorMessageTextView = (TextView) view.findViewById(R.id.networkErrorMessageTextView);
         mSwipeToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -194,8 +218,9 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
             internetConnectionErrorMessageCard.setVisibility(View.INVISIBLE);
             mReviewsRecyclerView.setVisibility(View.VISIBLE);
             mReviewsRecyclerView.setEnabled(true);
-        }
-        else {
+        } else {
+            mNetworkErrorMessageTextView.setText(
+                    getResources().getString(R.string.please_connect_to_a_working_internet_connection_string));
             internetConnectionErrorMessageCard.setVisibility(View.VISIBLE);
             mReviewsRecyclerView.setVisibility(View.INVISIBLE);
             mReviewsRecyclerView.setEnabled(false);
@@ -205,7 +230,6 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.e("TabsDebug", "Review OnAttach");
     }
 
     public void setMovieData(MovieDataInstance mMovieData) {
@@ -215,18 +239,17 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.e("TabsDebug", "OnDetach");
     }
 
     @Override
     public void OnMovieDataChanged(MovieDataInstance movieData) {
-        if (reviewsRecyclerViewAdapter != null && mReviewsRecyclerView != null&&movieData!=null) {
+        if (reviewsRecyclerViewAdapter != null && mReviewsRecyclerView != null && movieData != null) {
             mMovieData = movieData;
             getLoaderManager().destroyLoader(REVIEWS_LOADER_ID);
             getLoaderManager().initLoader(REVIEWS_LOADER_ID, null, loaderCallBacks);
             reviewsRecyclerViewAdapter.setMovieDataInstance(mMovieData);
             notifyUIOfConnectionStatus(true);
-        }else if (movieData==null){
+        } else if (movieData == null) {
             notifyUIOfConnectionStatus(false);
         }
     }
@@ -243,6 +266,7 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
                 public void onResultString(String stringObject) {
                     if (getActivity() != null) {
                         if (!stringObject.equals(DownloadData.RESULT_EMPTY_DATA_SET)) {
+
                             if (MoviePosterGridActivity.isInTwoPaneMode()) {
                                 ((MoviePosterGridActivity) getActivity())
                                         .showNetworkConnectivityDialogue("Please Connect to a working Network");
@@ -271,14 +295,13 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
                 @Override
                 public void onReviewsResultParsed(ArrayList<MovieReviewInstance> reviewList) {
                     if (getActivity() != null && reviewList.size() != 0) {
-                        Log.e("DownloadData", "Parsed Reviews : \t" + reviewList.size());
-                        Snackbar.make(mReviewsFrameLayout
-                                , "Displaying " + reviewList.size() + " Reviews", Snackbar.LENGTH_SHORT);
+                        if (internetConnectionErrorMessageCard.getVisibility() == View.VISIBLE) {
+                            internetConnectionErrorMessageCard.setVisibility(View.GONE);
+                        }
                         getLoaderManager().restartLoader(REVIEWS_LOADER_ID, null, loaderCallBacks);
-                    } else if(getActivity() != null &&reviewList.size() == 0){
-                        Log.e("DownloadData", "Empty Reviews : \t" + reviewList.size());
-                        Toast.makeText(getActivity(),"No Reviews Found",Toast.LENGTH_SHORT).show();
-                        Snackbar.make(mReviewsFrameLayout, "No Reviews Found :/", Snackbar.LENGTH_LONG);
+                    } else if (getActivity() != null && reviewList.size() == 0) {
+                        internetConnectionErrorMessageCard.setVisibility(View.VISIBLE);
+                        mNetworkErrorMessageTextView.setText(R.string.no_reviews_found_string);
                     }
                     mSwipeToRefreshLayout.setRefreshing(false);
                 }
@@ -288,7 +311,6 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
                     APIUrls.buildMovieReviewsURL(mMovieData.getMovieID() + "").toString()
                     , null
             );
-            Log.e("TrailerDebug", "Reviews URL : " + APIUrls.buildMovieReviewsURL(mMovieData.getMovieID() + "").toString());
         }
     }
 
@@ -299,7 +321,6 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
             if (mMovieData != null) {
                 switch (id) {
                     case REVIEWS_LOADER_ID:
-                        Log.e("DetailCursorDebug", "Reviews : " + id);
                         return new CursorLoader(
                                 getActivity()
                                 , MovieContract.MovieReviews.buildMovieReviewUriWithMovieId(String.valueOf(mMovieData.getMovieID()))
@@ -320,10 +341,12 @@ public class ReviewsFragment extends Fragment implements MovieTabsDetailFragment
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
             switch (loader.getId()) {
                 case REVIEWS_LOADER_ID:
-                    Log.e("DetailCursorDebug", "Size : " + data.getCount());
                     if (data.getCount() == 0) {
                         fetchMovieTrailersReviews();
                     } else {
+                        if (internetConnectionErrorMessageCard.getVisibility() == View.VISIBLE) {
+                            internetConnectionErrorMessageCard.setVisibility(View.GONE);
+                        }
                         if (reviewsRecyclerViewAdapter != null) {
                             reviewsRecyclerViewAdapter.swapCursor(data);
                         }

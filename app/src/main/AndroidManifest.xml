@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sreesha.android.moviebuzz">
-
+    <!--<uses-sdk
+        android:minSdkVersion="16"
+        tools:overrideLibrary="com.firebase.ui"/>-->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -12,7 +15,20 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
+    <!--
+         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
+         Google Maps Android API v2, but you must specify either coarse or fine
+         location permissions for the 'MyLocation' functionality. 
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
+        android:name=".Settings.MovieBuzzApplication"
         android:allowBackup="true"
         android:icon="@drawable/movie_app_icon"
         android:label="@string/app_name"
@@ -31,11 +47,14 @@
             android:name=".MovieDataRenderingClasses.MovieGridDisplayClasses.MoviePosterGridActivity"
             android:label="@string/title_activity_movie_poster_grid"
             android:theme="@style/AppTheme.NoActionBar">
+
+            <!--
             <intent-filter android:label="@string/app_name">
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            -->
 
             <meta-data
                 android:name="android.app.default_searchable"
@@ -65,6 +84,23 @@
         <activity
             android:name=".MovieDataRenderingClasses.PeopleDisplay.PeopleProfileActivity"
             android:label="@string/title_activity_people_profile"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Settings.LoginActivity"
+            android:label="@string/title_activity_login">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MovieDataRenderingClasses.MovieGridDisplayClasses.ReleaseDateActivity"
+            android:label="@string/title_activity_release_date"
+            android:theme="@style/ReleaseDateActivityTheme" />
+        <activity
+            android:name=".MovieDataRenderingClasses.MovieGridDisplayClasses.WatchToWatchActivity"
+            android:label="@string/title_activity_watch_to_watch"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

@@ -22,12 +22,10 @@ public class MoviePosterDisplayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_movie_poster_display);
 
         appbarLayout = (AppBarLayout) findViewById(R.id.app_bar);
-        Log.e("ExpandedPoserDebug","URL:"+getIntent().getStringExtra("mPosterURL"));
         final ImageView expandedPosterImageView = (ImageView) findViewById(R.id.expandedPosterImageView);
         Target expandedPosterTarget = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                Log.e("ExpandedPoserDebug","BitmapLoaded");
                 expandedPosterImageView.setImageBitmap(bitmap);
                 Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                     @Override
@@ -42,7 +40,6 @@ public class MoviePosterDisplayActivity extends AppCompatActivity {
 
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {
-                Log.e("ExpandedPoserDebug","Error in loading");
             }
 
             @Override

@@ -1,5 +1,7 @@
 package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieDetailTabsView;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +20,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v4.widget.SearchViewCompat;
 import android.support.v7.graphics.Palette;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +32,7 @@ import com.github.clans.fab.FloatingActionMenu;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
+import com.sreesha.android.moviebuzz.Animation.CustomAnimator;
 import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieContract;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.DetailView.AsyncMediaStorageClass;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.DetailView.OnMoreReviewDataRequestedListener;
@@ -77,11 +81,20 @@ public class MovieTabsDetailFragment extends Fragment
     Adapter adapter;
     BackDropImagePagerAdapter mBackDropImagePagerAdapter;
     MovieDataInstance mMovieData;
+
     private final int FAVOURITES_LOADER_ID = 12762;
     private final int IS_FAVOURED_LOADER_ID = 12763;
+    private final int IS_WATCHED_LOADER_ID = 12764;
+    private final int IS_TO_WATCHED_LOADER_ID = 12765;
+
     private final int MOVIE_DETAILED_DATA_LOADER_ID = 12764;
     private boolean isMovieFavoured = false;
+    private boolean isMovieWatched = false;
+    private boolean isMovieToBeWatched = false;
+
     ReviewsFragment reviewFragment;
+    CustomReviewsFragment mCustomReviewsFragment;
+
     MovieTrailersFragment trailersFragment;
     MovieDetailDisplayFragment movieDetailDisplayFragment;
     CastFragment mMovieCastFragment;
@@ -95,6 +108,8 @@ public class MovieTabsDetailFragment extends Fragment
     ArrayList<Boolean> pageVisitedArrayList = new ArrayList<>(3);
     FloatingActionButton favouriteFloatingActionButton;
     FloatingActionButton shareFloatingActionButton;
+    FloatingActionButton toWatchFloatingActionButton;
+    FloatingActionButton watchedFloatingActionButton;
     FloatingActionMenu floatingActionMenu;
     ArrayList<MovieImage> backDropImageList;
 
@@ -115,20 +130,18 @@ public class MovieTabsDetailFragment extends Fragment
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.e("TabsDebug", "TabsDetailFragment - OnAttach");
         mContext = context;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.e("TabsDebug", "TabsDetailFragment - onActivityCreated");
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e("TabsDebug", "TabsDetailFragment - onCreate");
+
         mMovieData = getArguments().getParcelable(MOVIE_PARCELABLE_SAVED_KEY);
         if (savedInstanceState != null) {
             mMovieData = savedInstanceState.getParcelable(MOVIE_PARCELABLE_SAVED_KEY);
@@ -139,14 +152,14 @@ public class MovieTabsDetailFragment extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.e("TabsDebug", "TabsDetailFragment - onSaveInstanceState");
+
         outState.putParcelable(MOVIE_PARCELABLE_SAVED_KEY, mMovieData);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.e("TabsDebug", "TabsDetailFragment - onCreateView");
+
         View view = inflater.inflate(R.layout.fragment_movie_tabs_detail, container, false);
         setHasOptionsMenu(true);
         initializeViewElements(view);
@@ -157,6 +170,8 @@ public class MovieTabsDetailFragment extends Fragment
 
         reviewFragment = ReviewsFragment.newInstance(null, null);
         reviewFragment.setMovieData(mMovieData);
+
+        mCustomReviewsFragment = CustomReviewsFragment.newInstance(mMovieData, null);
 
         trailersFragment = MovieTrailersFragment.newInstance(null, null);
         trailersFragment.setMovieData(mMovieData);
@@ -181,7 +196,6 @@ public class MovieTabsDetailFragment extends Fragment
             movieDetailTabLayout.setupWithViewPager(viewPager);
         }
         if (mMovieData != null) {
-            Log.e("TabsDebug", "MovieDataUpdating");
             updateUIWithMovieData(mMovieData);
         }
         return view;
@@ -190,8 +204,6 @@ public class MovieTabsDetailFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        Log.e("TabsDebug", "TabsDetailFragment - onResume");
-
     }
 
     private void initializeViewElements(View view) {
@@ -210,6 +222,9 @@ public class MovieTabsDetailFragment extends Fragment
 
         favouriteFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.favouriteFab);
         shareFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.shareFab);
+        toWatchFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.toWatchFab);
+        watchedFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.watchedFab);
+
         floatingActionMenu = (FloatingActionMenu) view.findViewById(R.id.movieDetailFloatingActionMenu);
         favouriteFloatingActionButton.setOnClickListener(new FloatingActionMenu.OnClickListener() {
             @Override
@@ -221,7 +236,6 @@ public class MovieTabsDetailFragment extends Fragment
             @Override
             public void onClick(View v) {
                 if (mMovieData != null) {
-                    Log.e("TabsDebug", "INShareCardClick");
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_SEND);
                     intent.putExtra(Intent.EXTRA_TEXT, getFormattedMovieDataString());
@@ -230,22 +244,34 @@ public class MovieTabsDetailFragment extends Fragment
                 }
             }
         });
-
+        toWatchFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                triggerToWatchMoviesChanged();
+            }
+        });
+        watchedFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                triggerWatchedMoviesChanged();
+            }
+        });
     }
 
     public void triggerFavouritesChanged() {
         if (isMovieFavoured) {
-            Log.e("TabsDebug", "INFavouritesCardClick");
             getActivity().getContentResolver()
                     .delete(MovieContract
-                            .UserFavourite
-                            .buildFavouritesUriWithMovieId(
-                                    String.valueOf(mMovieData.getMovieID())
-                            ), null, null);
+                                    .UserFavourite
+                                    .buildFavouritesUriWithMovieId(
+                                            String.valueOf(mMovieData.getMovieID())
+                                    ), MovieContract.UserFavourite.COLUMN_MOVIE_TYPE + " =?"
+                            , new String[]{String.valueOf(MovieContract.UserFavourite.FAVOURITE_MOVIE_TYPE)}
+                    );
             isMovieFavoured = false;
                     /*TODO:Update UI To show Un-Favoured Movie*/
-            favouriteFloatingActionButton.setLabelText("Not Favoured");
-            Toast.makeText(getActivity(), "Unfavourited", Toast.LENGTH_LONG).show();
+            favouriteFloatingActionButton.setLabelText(getActivity().getString(R.string.not_favoured_string));
+            Toast.makeText(getActivity(), R.string.unfavoured_string, Toast.LENGTH_LONG).show();
         } else {
             ContentValues temp = new ContentValues();
             temp.put(MovieContract.UserFavourite.COLUMN_MOVIE_ID, mMovieData.getMovieID());
@@ -253,15 +279,101 @@ public class MovieTabsDetailFragment extends Fragment
                     .insert(MovieContract.UserFavourite.FAVOURITES_CONTENT_URI
                             , temp);
             if (mPosterBitmap != null) {
-                Log.e("StorageDebug", "RunningAsyncTask");
                 //runAsyncMediaStorage();
             }
 
             isMovieFavoured = true;
-            favouriteFloatingActionButton.setLabelText("Favoured");
+            favouriteFloatingActionButton.setLabelText(getActivity().getString(R.string.favoured_string));
                     /*TODO:Update UI To show Favoured Movie*/
-            Toast.makeText(getActivity(), "Favourited", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), R.string.favoured_string, Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void triggerWatchedMoviesChanged() {
+        if (isMovieWatched) {
+            deleteFromWatchedMovieList();
+        } else {
+            if (isMovieToBeWatched)
+                deleteFromToWatchList();
+            insertToWatchedMovieList();
+        }
+    }
+
+    void deleteFromWatchedMovieList() {
+        getActivity().getContentResolver()
+                .delete(MovieContract
+                                .UserFavourite
+                                .buildFavouritesUriWithMovieId(
+                                        String.valueOf(mMovieData.getMovieID())
+                                ), MovieContract.UserFavourite.COLUMN_MOVIE_TYPE + " =?"
+                        , new String[]{String.valueOf(MovieContract.UserFavourite.WATCHED_MOVIE_TYPE)});
+        isMovieWatched = false;
+                    /*TODO:Update UI To show Un-Favoured Movie*/
+        watchedFloatingActionButton.setLabelText(getActivity().getString(R.string.not_watched_string));
+        Log.d("Debug", "Deleted from Watched List");
+    }
+
+    void insertToWatchedMovieList() {
+        ContentValues temp = new ContentValues();
+        temp.put(MovieContract.UserFavourite.COLUMN_MOVIE_ID, mMovieData.getMovieID());
+
+        temp.put(MovieContract.UserFavourite.COLUMN_MOVIE_TYPE,
+                MovieContract.UserFavourite.WATCHED_MOVIE_TYPE);
+        getActivity().getContentResolver()
+                .insert(MovieContract.UserFavourite.FAVOURITES_CONTENT_URI
+                        , temp);
+        if (mPosterBitmap != null) {
+            //runAsyncMediaStorage();
+        }
+
+        isMovieWatched = true;
+        watchedFloatingActionButton.setLabelText(getActivity().getString(R.string.watched_string));
+                    /*TODO:Update UI To show Favoured Movie*/
+        Log.d("Debug", "Added To Watched List");
+    }
+
+    public void triggerToWatchMoviesChanged() {
+        if (isMovieToBeWatched) {
+            deleteFromToWatchList();
+        } else {
+            if (isMovieWatched)
+                deleteFromWatchedMovieList();
+            insertToToWatchMovieList();
+        }
+    }
+
+    void deleteFromToWatchList() {
+        getActivity().getContentResolver()
+                .delete(MovieContract
+                                .UserFavourite
+                                .buildFavouritesUriWithMovieId(
+                                        String.valueOf(mMovieData.getMovieID())
+                                ), MovieContract.UserFavourite.COLUMN_MOVIE_TYPE + " =?"
+                        , new String[]{String.valueOf(MovieContract.UserFavourite.TO_WATCH_MOVIE_TYPE)});
+        isMovieToBeWatched = false;
+                    /*TODO:Update UI To show Un-Favoured Movie*/
+        toWatchFloatingActionButton.setLabelText(getActivity().getString(R.string.not_in_to_watch_list));
+        Log.d("Debug", "Deleted From To Watch List");
+    }
+
+    void insertToToWatchMovieList() {
+        ContentValues temp = new ContentValues();
+
+        temp.put(MovieContract.UserFavourite.COLUMN_MOVIE_ID, mMovieData.getMovieID());
+        temp.put(MovieContract.UserFavourite.COLUMN_MOVIE_TYPE,
+                MovieContract.UserFavourite.TO_WATCH_MOVIE_TYPE);
+
+        getActivity().getContentResolver()
+                .insert(MovieContract.UserFavourite.FAVOURITES_CONTENT_URI
+                        , temp);
+        if (mPosterBitmap != null) {
+            //runAsyncMediaStorage();
+        }
+
+        isMovieToBeWatched = true;
+        toWatchFloatingActionButton.setLabelText(getActivity().getString(R.string.to_watch_list_string));
+                    /*TODO:Update UI To show Favoured Movie*/
+        Log.d("Debug", "Added To To Be Watched List");
     }
 
     private void setupBackDropViewPager(ViewPager mBackDropViewPager, String imageURL) {
@@ -275,7 +387,6 @@ public class MovieTabsDetailFragment extends Fragment
                     mImageFragmentArrayList.add(MovieImageDisplayFragment.newInstance(image));
                 }
                 if (mImageFragmentArrayList.size() != 0) {
-                    Log.e("MovieBackDropPager", "Setting Fragment List");
                     mBackDropImagePagerAdapter.setFragmentArrayList(mImageFragmentArrayList);
                 }
                 mBackDropImagePagerAdapter.notifyDataSetChanged();
@@ -294,6 +405,13 @@ public class MovieTabsDetailFragment extends Fragment
 
             @Override
             public void onPageSelected(int position) {
+                Log.d("PageDebug", "onPageSelected Called" + position);
+                if (floatingActionMenu.getVisibility() == View.GONE)
+                    CustomAnimator.createCircularRevealEffect(floatingActionMenu
+                            , floatingActionMenu.getWidth()
+                            , floatingActionMenu.getHeight()
+                            , 0
+                            , floatingActionMenu.getWidth(), 800);
                 switch (position) {
                     case 0:
                         if (!pageVisitedArrayList.get(0)) {
@@ -313,6 +431,18 @@ public class MovieTabsDetailFragment extends Fragment
                             trailersFragment.OnMovieDataChanged(mMovieData);
                         }
                         break;
+                    case 3:
+                        break;
+                    case 4:
+                        break;
+                    case 5:
+                        break;
+                    case 6:
+                        break;
+                    case 7:
+                        Log.d("PageDebug", "page Selected");
+                       floatingActionMenu.setVisibility(View.GONE);
+                        break;
                 }
             }
 
@@ -323,14 +453,15 @@ public class MovieTabsDetailFragment extends Fragment
         adapter = new Adapter(getChildFragmentManager());
         /*TODO:Add FragmentClasses Here*/
 
-        adapter.addFragment(movieDetailDisplayFragment, "Movie");
-        adapter.addFragment(reviewFragment, "Reviews");
-        adapter.addFragment(trailersFragment, "Trailers");
-        adapter.addFragment(mMovieCastFragment, "Cast");
-        adapter.addFragment(mMovieCrewFragment, "Crew");
-        adapter.addFragment(mSimilarMoviesFragment, "Similar Movies");
-        adapter.addFragment(mMoviePhotosFragment, "Images");
 
+        adapter.addFragment(movieDetailDisplayFragment, getActivity().getString(R.string.movie_title_string));
+        adapter.addFragment(reviewFragment, getActivity().getString(R.string.reviews_title_string));
+        adapter.addFragment(trailersFragment, getActivity().getString(R.string.trailers_title_string));
+        adapter.addFragment(mMovieCastFragment, getActivity().getString(R.string.cast_title_string));
+        adapter.addFragment(mMovieCrewFragment, getActivity().getString(R.string.crew_title_string));
+        adapter.addFragment(mSimilarMoviesFragment, getActivity().getString(R.string.similar_movies_title_string));
+        adapter.addFragment(mMoviePhotosFragment, getActivity().getString(R.string.images_title_string));
+        adapter.addFragment(mCustomReviewsFragment, "Your Review");
         viewPager.setAdapter(adapter);
     }
 
@@ -381,7 +512,6 @@ public class MovieTabsDetailFragment extends Fragment
                 + "/"
                 + APIUrls.API_IMG_W_500
                 + mMovieData.getBackDropPath();
-        Log.e("MovieBackDropPager", "Setting Up BackDropapgerWith URL");
         setupBackDropViewPager(mBackDropViewPager, mBackDropURL);
         if (!isMovieFavoured) {
             loadImageWithPicasso(mBackDropURL, mBackDropImageView, "backDrop");
@@ -391,10 +521,11 @@ public class MovieTabsDetailFragment extends Fragment
         loadImageWithPicasso(mBackDropURL, mBackDropImageView, "backDrop");
         loadImageWithPicasso(mPosterURL, mPosterImageView, "poster");
         if (mMovieData != null /*&& mIsStateRestored*/) {
-            Log.e("TabsDebug", "Destroying and initializing loaders");
             destroyAllLoaders();
             getLoaderManager().initLoader(IS_FAVOURED_LOADER_ID, null, loaderCallBacks);
             getLoaderManager().initLoader(FAVOURITES_LOADER_ID, null, loaderCallBacks);
+            getLoaderManager().initLoader(IS_WATCHED_LOADER_ID, null, loaderCallBacks);
+            getLoaderManager().initLoader(IS_TO_WATCHED_LOADER_ID, null, loaderCallBacks);
         }
     }
 
@@ -402,6 +533,8 @@ public class MovieTabsDetailFragment extends Fragment
     private void destroyAllLoaders() {
         getLoaderManager().destroyLoader(IS_FAVOURED_LOADER_ID);
         getLoaderManager().destroyLoader(FAVOURITES_LOADER_ID);
+        getLoaderManager().destroyLoader(IS_WATCHED_LOADER_ID);
+        getLoaderManager().destroyLoader(IS_TO_WATCHED_LOADER_ID);
     }
 
     private void loadImageWithPicasso(final String URL, final ImageView mImageView, final String imageType) {
@@ -480,13 +613,31 @@ public class MovieTabsDetailFragment extends Fragment
             if (mMovieData != null) {
                 switch (id) {
                     case IS_FAVOURED_LOADER_ID:
-                        Log.e("DatabaseDebug", "Loader Created");
                         return new CursorLoader(
                                 getActivity()
-                                , MovieContract.UserFavourite.buildFavouritesUriWithMovieId(String.valueOf(mMovieData.getMovieID()))
+                                , MovieContract.UserFavourite
+                                .buildFavouritesUriWithMovieId(String.valueOf(mMovieData.getMovieID()))
                                 , null
+                                , MovieContract.UserFavourite.COLUMN_MOVIE_TYPE + " =?"
+                                , new String[]{String.valueOf(MovieContract.UserFavourite.FAVOURITE_MOVIE_TYPE)}
+                                , null);
+                    case IS_WATCHED_LOADER_ID:
+                        return new CursorLoader(
+                                getActivity()
+                                , MovieContract.UserFavourite
+                                .buildFavouritesUriWithMovieId(String.valueOf(mMovieData.getMovieID()))
                                 , null
+                                , MovieContract.UserFavourite.COLUMN_MOVIE_TYPE + " =?"
+                                , new String[]{String.valueOf(MovieContract.UserFavourite.WATCHED_MOVIE_TYPE)}
+                                , null);
+                    case IS_TO_WATCHED_LOADER_ID:
+                        return new CursorLoader(
+                                getActivity()
+                                , MovieContract.UserFavourite
+                                .buildFavouritesUriWithMovieId(String.valueOf(mMovieData.getMovieID()))
                                 , null
+                                , MovieContract.UserFavourite.COLUMN_MOVIE_TYPE + " =?"
+                                , new String[]{String.valueOf(MovieContract.UserFavourite.TO_WATCH_MOVIE_TYPE)}
                                 , null);
                     case FAVOURITES_LOADER_ID:
                         String sortOrder;
@@ -519,29 +670,54 @@ public class MovieTabsDetailFragment extends Fragment
         public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
             switch (loader.getId()) {
                 case IS_FAVOURED_LOADER_ID:
-                    Log.e("DatabaseDebug", "Load Finished");
                     //Log.e("DetailCursorDebug", "Size : " + data.getCount());
                     if (data.getCount() == 0) {
                         isMovieFavoured = false;
-                        Log.e("DatabaseDebug", "Movie not found as favoured");
-                        Toast.makeText(getActivity(), "Movie NOT Favoured", Toast.LENGTH_SHORT).show();
                     /*TODO:Update UI To Show That Movie is NOT Favoured*/
                         favouriteFloatingActionButton.setLabelText("Not Favoured");
 
                     } else {
-                        Log.e("DatabaseDebug", "Movie found as favoured");
                         isMovieFavoured = true;
-                        Toast.makeText(getActivity(), "Movie Favoured", Toast.LENGTH_SHORT).show();
                     /*TODO:Update UI To Show That Movie is Favoured*/
                         favouriteFloatingActionButton.setLabelText("Favoured");
                         //runAsyncMediaRetrieval(mPosterImageView, mBackDropImageView);
                     }
                     break;
+                case IS_WATCHED_LOADER_ID:
+                    //Log.e("DetailCursorDebug", "Size : " + data.getCount());
+                    if (data.getCount() == 0) {
+                        isMovieWatched = false;
+                    /*TODO:Update UI To Show That Movie is NOT Favoured*/
+                        watchedFloatingActionButton.setLabelText(
+                                getActivity().getString(R.string.not_watched_string)
+                        );
+
+                    } else {
+                        isMovieWatched = true;
+                    /*TODO:Update UI To Show That Movie is Favoured*/
+                        watchedFloatingActionButton.setLabelText(getActivity().getString(R.string.watched_string));
+                        //runAsyncMediaRetrieval(mPosterImageView, mBackDropImageView);
+                    }
+                    break;
+                case IS_TO_WATCHED_LOADER_ID:
+                    //Log.e("DetailCursorDebug", "Size : " + data.getCount());
+                    if (data.getCount() == 0) {
+                        isMovieToBeWatched = false;
+                    /*TODO:Update UI To Show That Movie is NOT Favoured*/
+                        toWatchFloatingActionButton
+                                .setLabelText(getActivity().getString(R.string.not_in_to_watch_list));
+
+                    } else {
+                        isMovieWatched = true;
+                    /*TODO:Update UI To Show That Movie is Favoured*/
+                        toWatchFloatingActionButton
+                                .setLabelText(getActivity().getString(R.string.to_be_watched_string));
+                        //runAsyncMediaRetrieval(mPosterImageView, mBackDropImageView);
+                    }
+                    break;
                 case FAVOURITES_LOADER_ID:
                     if (data.getCount() == 0) {
-                        Log.e("FavouritesDebug", "Error no Tuples Retrieved");
                     } else {
-                        Log.e("FavouritesDebug", "\tTuples : " + data.getCount());
                     }
 
             }
@@ -582,26 +758,18 @@ public class MovieTabsDetailFragment extends Fragment
                 trailersFragment.OnMovieDataChanged(mMovieData);
                 break;
             case UIUpdatableInterface.MOVIE_DETAIL_FRAGMENT:
-                Log.e("OnMovieDataChanged", "Calling OnMovieDataChanged");
                 movieDetailDisplayFragment.OnMovieDataChanged(mMovieData);
                 break;
             case UIUpdatableInterface.MOVIE_CAST_TABS_FRAGMENT:
-                Log.e("OnMovieDataChanged", "Calling OnMovieDataChanged");
                 mMovieCastFragment.OnMovieDataChanged(mMovieData);
                 break;
             case UIUpdatableInterface.MOVIE_CREW_TABS_FRAGMENT:
-                Log.e("OnMovieDataChanged", "Calling OnMovieDataChanged");
-
                 mMovieCrewFragment.OnMovieDataChanged(mMovieData);
                 break;
             case UIUpdatableInterface.SIMILAR_MOVIES_FRAGMENT:
-                Log.e("OnMovieDataChanged", "Calling OnMovieDataChanged");
-
                 mSimilarMoviesFragment.OnMovieDataChanged(mMovieData);
                 break;
             case UIUpdatableInterface.MOVIE_PHOTOS_FRAGMENT:
-                Log.e("OnMovieDataChanged", "Calling OnMovieDataChanged");
-
                 mMoviePhotosFragment.OnMovieDataChanged(mMovieData);
                 break;
         }
@@ -611,7 +779,6 @@ public class MovieTabsDetailFragment extends Fragment
     public void OnMovieImageDataLoaded(ArrayList<MovieImage> mMovieImageArrayList) {
         this.backDropImageList = mMovieImageArrayList;
         if (mBackDropViewPager != null) {
-            Log.e("MovieBackDropPager", "Setting Up BackDropPagerWith BackDropArrayList");
             setupBackDropViewPager(mBackDropViewPager, null);
         }
     }
@@ -657,7 +824,6 @@ public class MovieTabsDetailFragment extends Fragment
 
         @Override
         public Fragment getItem(int position) {
-            Log.e("TabsDebug", "Fragment Page - " + pageTitleArrayList.get(position));
             return fragmentsArrayList.get(position);
         }
 

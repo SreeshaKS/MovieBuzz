@@ -68,7 +68,6 @@ public class CrewDataCursorAdapter
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
-        Log.e("CastCrewDebug", "onBindViewHolder : " + cursor.getCount());
         final CrewDataInstance instance = CrewDataInstance.getCrewDataInstanceFromCursor(cursor);
         holder.crewNameTextView.setText(instance.getNAME().trim());
         holder.crewDepartmentTextView.setText(instance.getDEPARTMENT().trim());
@@ -142,8 +141,6 @@ public class CrewDataCursorAdapter
                 .placeholder(R.drawable.error_person_avathar)
                 .error(R.drawable.error_person_avathar)
                 .into(imageViewTarget);
-        Log.e("CastCrewDebug : ", URL);
-
     }
 
     @Override

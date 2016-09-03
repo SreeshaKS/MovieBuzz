@@ -6,6 +6,8 @@ import android.support.v7.widget.Toolbar;
 
 import com.sreesha.android.moviebuzz.R;
 
+import java.util.List;
+
 public class AppInfoActivity extends AppCompatActivity {
 
     @Override

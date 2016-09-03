@@ -76,7 +76,6 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e("CastCrewDebug", "onCreate");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -91,7 +90,6 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.e("CastCrewDebug", "onSavednStanceState");
         outState.putParcelable(MOVIE_DATA_PARCELABLE_SAVED_KEY, mMovieData);
         //outState.putParcelable(MOVIE_DATA_PARCELABLE_SAVED_KEY,mMovieData);
     }
@@ -101,15 +99,11 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cast, container, false);
         initializeViewElements(view);
-        Log.e("CastCrewDebug", "onCreateView");
         if (mMovieData != null) {
 
             if (mIsStateRestored) {
-                Log.e("CastCrewDebug", "StateRestored");
-                Toast.makeText(getActivity(),"State Restored . Do required Changed",Toast.LENGTH_LONG).show();
 
             } else {
-                Log.e("CastCrewDebug", "Calling UIUpdatable Callback");
                 initializeRecyclerView();
                 (
                         (MovieTabsDetailFragment)
@@ -125,7 +119,6 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.e("CastCrewDebug", "onActivityCreated");
         getLoaderManager().initLoader(CAST_LOADER_ID, null, mLoaderCallBacks);
 
     }
@@ -133,13 +126,11 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
     @Override
     public void onResume() {
         super.onResume();
-        Log.e("CastCrewDebug", "onResume");
         if (mIsStateRestored) {
-            Log.e("CastCrewDebug", "onResume - Restarting Loader");
             updateUIWithMovieData();
             getLoaderManager().destroyLoader(CAST_LOADER_ID);
             getLoaderManager().initLoader(CAST_LOADER_ID, null, mLoaderCallBacks);
-        }else{
+        } else {
             ((MovieTabsDetailFragment)
                     (getActivity()
                             .getSupportFragmentManager()
@@ -154,7 +145,7 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
                             if (getActivity() != null) {
                                 try {
                                     computeAndRegisterSpanCount();
-                                }catch (IllegalStateException e){
+                                } catch (IllegalStateException e) {
                                     e.printStackTrace();
                                 }
                             }
@@ -177,7 +168,6 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
     }
 
     private void initializeRecyclerView() {
-        Log.e("CastCrewDebug", "initializeRecyclerView()");
         mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mCastRecyclerViewCursorAdapter = new CastDataCursorAdapter(getActivity(), null);
         mCastRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
@@ -185,33 +175,29 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
     }
 
     private void computeAndRegisterSpanCount() {
-        Log.e("Span Debug", "Screen Width : " + convertPixelsToDP(
-                mCastFragmentFrameLayout.getWidth()) + "Computer Value" + (convertPixelsToDP(
-                mCastFragmentFrameLayout.getWidth())
-                + convertPixelsToDP(
-                (int) getResources()
-                        .getDimension(R.dimen.movie_poster_margin)
-        )
-        ));
-        if (MoviePosterGridActivity.isInTwoPaneMode()) {
-            SPAN_COUNT = Math.round((convertPixelsToDP(
-                    mCastFragmentFrameLayout.getWidth())
-                    + convertPixelsToDP(
-                    (int) getResources()
-                            .getDimension(R.dimen.movie_poster_margin)
-            )
-            ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
-        } else {
-            SPAN_COUNT = (int) Math.round((convertPixelsToDP(
-                    mCastFragmentFrameLayout.getWidth())
-                    + convertPixelsToDP(
-                    (int) getResources()
-                            .getDimension(R.dimen.movie_poster_margin)
-            )
-            ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
+        try {
+            if (MoviePosterGridActivity.isInTwoPaneMode()) {
+                SPAN_COUNT = (int)Math.ceil((convertPixelsToDP(
+                        mCastFragmentFrameLayout.getWidth())
+                        + convertPixelsToDP(
+                        (int) getResources()
+                                .getDimension(R.dimen.movie_poster_margin)
+                )
+                ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
+            } else {
+                SPAN_COUNT = (int) Math.ceil((convertPixelsToDP(
+                        mCastFragmentFrameLayout.getWidth())
+                        + convertPixelsToDP(
+                        (int) getResources()
+                                .getDimension(R.dimen.movie_poster_margin)
+                )
+                ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
+            }
+            if (SPAN_COUNT > 0 && mStaggeredGridLayoutManager != null)
+                mStaggeredGridLayoutManager.setSpanCount(SPAN_COUNT);
+        } catch (ArithmeticException e) {
+            e.printStackTrace();
         }
-        if (SPAN_COUNT != 0 && mStaggeredGridLayoutManager != null)
-            mStaggeredGridLayoutManager.setSpanCount(SPAN_COUNT);
     }
 
     /*Density-independent pixels is equal to one physical pixel on a 160dpi screen->Considered As the Baseline
@@ -234,7 +220,6 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
             switch (id) {
                 case CAST_LOADER_ID:
                     if (mMovieData != null) {
-                        Log.e("CastCrewDebug", "LoaderCreated");
                         return new CursorLoader(
                                 getActivity()
                                 , MovieContract.CastData.MOVIE_CAST_CONTENT_URI
@@ -264,11 +249,9 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            Log.e("CastCrewDebug", "onLoadFinished");
             switch (loader.getId()) {
                 case CAST_LOADER_ID:
                     if (!(data.getCount() == 0)) {
-                        Log.e("CastCrewDebug", "Swapping Cursor");
                         if (mCastRecyclerViewCursorAdapter != null) {
                             mCastRecyclerViewCursorAdapter.swapCursor(data);
                         } else {
@@ -276,12 +259,10 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
                             mCastRecyclerViewCursorAdapter.swapCursor(data);
                         }
                     } else {
-                        Log.e("CastCrewDebug", "No Data Found Downloading");
                         downloadMovieSpecificData();
                     }
                     break;
                 default:
-                    Log.e("CastCrewDebug", "Default Case in Loader Finished");
             }
         }
 
@@ -298,14 +279,12 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
                         new AsyncMovieSpecificsResults() {
                             @Override
                             protected void onResultJSON(JSONObject object) throws JSONException {
-                                Log.e("CastCrewDebug", object.toString());
                             }
 
                             @Override
                             protected void onResultParsedIntoCastList(ArrayList<CastDataInstance> castList) {
                                 if (getActivity() != null) {
                                     if (castList.size() != 0) {
-                                        Log.e("CastCrewDebug", "Downloaded Fresh Data ,Cast List : " + castList.size());
                                         getLoaderManager().restartLoader(CAST_LOADER_ID, null, mLoaderCallBacks);
                                     } else if (castList.size() == 0) {
                                         Toast.makeText(getActivity(), "NO Cast Found", Toast.LENGTH_SHORT).show();
@@ -318,7 +297,6 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
                             protected void onResultParsedIntoCrewList(ArrayList<CrewDataInstance> crewList) {
                                 if (getActivity() != null) {
                                     if (crewList.size() != 0) {
-                                        Log.e("CastCrewDebug", "Crew List : " + crewList.size());
                                     } else if (crewList.size() == 0) {
                                         Toast.makeText(getActivity(), "No Crew Found", Toast.LENGTH_SHORT).show();
                                     }
@@ -327,8 +305,6 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
 
                             @Override
                             protected void onResultString(String stringObject, String errorString, String parseStatus) {
-                                Log.e("CastCrewDebug", "Error String : " + errorString
-                                        + "\nParse Status : " + parseStatus);
                                 if (getActivity() != null) {
 
                                 }
@@ -343,6 +319,7 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
                             protected void onResultParsedIntoPopularPersonInfo(ArrayList<PopularPeopleInstance> popularPeopleInstanceArrayList) {
 
                             }
+
                             @Override
                             protected void onResultParsedIntoPersonData(PersonInstance instance) {
 
@@ -376,15 +353,11 @@ public class CastFragment extends Fragment implements MovieTabsDetailFragment.Mo
     public void OnMovieDataChanged(MovieDataInstance movieInstance) {
         if (mCastRecyclerViewCursorAdapter != null && mMovieData != null) {
             try {
-                Log.e("CastCrewDebug", "OnMovieDataCHangedCalled");
                 mMovieData = movieInstance;
 
                 //getLoaderManager().destroyLoader(CAST_LOADER_ID);
                 //getLoaderManager().initLoader(CAST_LOADER_ID, null, mLoaderCallBacks);
-                Log.e("CastCrewDebug", "Calling Loader Manager");
             } catch (IllegalStateException e) {
-
-                Log.e("CastCrewDebug", "Exception Inside OnMovieDataChanged : " + e.getMessage());
                 e.printStackTrace();
             }
         }

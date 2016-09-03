@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:text="Genre"
+        android:text="@string/genre_string"
         android:textStyle="bold" />
 
 </android.support.v7.widget.CardView>

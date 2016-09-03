@@ -56,19 +56,16 @@ public class PopularPeopleRecyclerAdapter extends RecyclerView.Adapter<PopularPe
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        Log.e("MovieTypes", "onBindViewHolder");
         holder.personContainerCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (v.getContext() instanceof PeopleDisplayActivity) {
                     if (popularPeopleList
                             .get(holder.getAdapterPosition()) == null) {
-                        Log.d("NullDebug", "Data null ");
                     } else {
                         ((PeopleDisplayActivity) v.getContext())
                                 .onPersonClicked(popularPeopleList
                                         .get(holder.getAdapterPosition()));
-                        Log.d("NullDebug", "Data NOT null ");
                     }
 
                 }

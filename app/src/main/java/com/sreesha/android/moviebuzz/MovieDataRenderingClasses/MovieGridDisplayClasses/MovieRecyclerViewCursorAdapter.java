@@ -1,6 +1,7 @@
 package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -25,6 +26,7 @@ import com.squareup.picasso.Target;
 import com.sreesha.android.moviebuzz.Animation.CustomAnimator;
 import com.sreesha.android.moviebuzz.DataHandlerClasses.CursorRecyclerViewAdapter;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.DetailView.AsyncMediaStorageClass;
+import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieDetailTabsView.MovieTabsDetailActivity;
 import com.sreesha.android.moviebuzz.Networking.APIUrls;
 import com.sreesha.android.moviebuzz.Networking.MovieDataInstance;
 import com.sreesha.android.moviebuzz.R;
@@ -53,7 +55,6 @@ public class MovieRecyclerViewCursorAdapter
             e.printStackTrace();
         }
         isFreshInstantiation = true;
-        Log.e("DetailCursorDebug", "InitReviewsAdapter");
     }
 
     public MovieRecyclerViewCursorAdapter(Context context, Cursor cursor, boolean similarMovies) {
@@ -68,7 +69,6 @@ public class MovieRecyclerViewCursorAdapter
             e.printStackTrace();
         }
         isFreshInstantiation = true;
-        Log.e("DetailCursorDebug", "InitReviewsAdapter");
     }
 
     @Override
@@ -80,7 +80,6 @@ public class MovieRecyclerViewCursorAdapter
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final Cursor cursor) {
-        Log.e("Debug", "onBindViewHolderCalled");
         final MovieDataInstance instance = MovieDataInstance.getMovieDataInstanceFromCursor(cursor);
 
         if (isFreshInstantiation && MoviePosterGridActivity.isInTwoPaneMode()) {
@@ -90,13 +89,10 @@ public class MovieRecyclerViewCursorAdapter
             if (mMovieSelectionListener != null)
                 mMovieSelectionListener.onMovieClicked(parcelableIntentList, instance);
         }
-        Log.e("LoaderOnBindViewCB", "Outside IF Cursor Item Count:\t" + cursor.getCount()
-                + "\nCursor Item Position" + cursor.getPosition());
         loadUIWithCursorData(
                 holder
                 , instance
         );
-        Log.e("GenreDebug", instance.getGENRE_ID_JSON_ARRAY_STRING());
         holder.posterCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,6 +100,14 @@ public class MovieRecyclerViewCursorAdapter
                 parcelableIntentList.add(instance);
                 if (mMovieSelectionListener != null)
                     mMovieSelectionListener.onMovieClicked(parcelableIntentList, instance);
+                if (v.getContext() instanceof WatchToWatchActivity){
+                    v.getContext()
+                            .startActivity(new Intent(v.getContext(), MovieTabsDetailActivity.class)
+                            .putParcelableArrayListExtra(
+                                    v.getContext()
+                                            .getString(R.string.intent_movie_data_key)
+                                    , parcelableIntentList));
+                }
             }
         });
         if (!PreferenceManager.getDefaultSharedPreferences(mContext)
@@ -126,7 +130,7 @@ public class MovieRecyclerViewCursorAdapter
 
         /*Disable User Interaction with the rating bar*/
         holder.movieRatingBar.setIsIndicator(true);
-        holder.movieOriginalTitleTextView.setText(instance.getOriginalTitle());
+        holder.movieOriginalTitleTextView.setText(instance.getTitle());
         /*Disable User Interaction with the rating bar*/
         holder.movieRatingBar.setIsIndicator(true);
         /*Convert the Average voting from a scale of 0 to 10 to a scale of 0 to 5*/
@@ -163,17 +167,14 @@ public class MovieRecyclerViewCursorAdapter
                 @Override
                 public void onBitmapRendered(String errorMessage, Bitmap bitmap) {
                     if (bitmap != null && errorMessage.equals(AsyncMediaStorageClass.RESULT_SUCCESS)) {
-                        Log.e("PicassoDebug", "Loading Favourite image poster Using Picasso Error message : " + errorMessage);
                         holder.moviePosterImageView.setImageBitmap(bitmap);
                     } else {
-                        Log.e("PicassoDebug", "Loading Favourite Image poster Using Picasso Error message : " + errorMessage);
                         loadImagesUsingPicasso(holder);
                     }
                 }
             }).execute();
             holder.moviePosterImageView.setTag(storageAsyncTask);
         } else {
-            Log.e("PicassoDebug", "Loading Image poster Using Picasso ");
             loadImagesUsingPicasso(holder);
         }
     }

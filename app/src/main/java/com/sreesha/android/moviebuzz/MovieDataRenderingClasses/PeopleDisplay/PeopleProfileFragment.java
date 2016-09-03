@@ -299,7 +299,6 @@ public class PeopleProfileFragment extends Fragment {
             @Override
             protected void onResultParsedIntoPersonData(PersonInstance instance) {
                 if (getActivity() != null) {
-                    Log.d("PersonData", instance.getBIOGRAPHY());
                     mPersonDataInstance = instance;
                     updateUIWithPersonData();
                 }
@@ -325,7 +324,6 @@ public class PeopleProfileFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            Log.e("TabsDebug", "Fragment Page - " + pageTitleArrayList.get(position));
             return fragmentsArrayList.get(position);
         }
 

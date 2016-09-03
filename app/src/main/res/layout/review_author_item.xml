@@ -75,30 +75,32 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/reviewAuthorTruncatedCard"
+        android:layout_centerInParent="true"
         android:layout_gravity="center"
         android:layout_margin="5dp"
-        android:layout_centerInParent="true"
         android:visibility="gone">
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/reviewExpandedContentTextView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="3dp"
-                    android:scrollHorizontally="true"
-                    android:text="@string/sample_movie_detail_overview" />
+
+            <TextView
+                android:id="@+id/reviewExpandedContentTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="3dp"
+                android:scrollHorizontally="true"
+                android:text="@string/sample_movie_detail_overview" />
 
             <TextView
                 android:id="@+id/reviewLinkTextView"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/reviewExpandedContentTextView"
                 android:layout_centerHorizontal="true"
                 android:autoLink="web"
+                android:gravity="center"
                 android:hint="ClickForMoreReviews"
                 android:linksClickable="true"
                 android:text="http://j.mp/1dUnvpG"

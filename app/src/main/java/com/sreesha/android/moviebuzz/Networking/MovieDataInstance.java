@@ -58,7 +58,7 @@ public class MovieDataInstance implements Parcelable {
             , long VOTE_COUNT
             , Boolean VIDEO_BOOL
             , Double VOTE_AVERAGE
-            ,String GENRE_ID_JSON_ARRAY_STRING
+            , String GENRE_ID_JSON_ARRAY_STRING
     ) {
         this.PAGE_NO = PAGE_NO;
         this.TOTAL_RESULTS = TOTAL_RESULTS;
@@ -77,7 +77,7 @@ public class MovieDataInstance implements Parcelable {
         this.VOTE_COUNT = VOTE_COUNT;
         this.VIDEO_BOOL = VIDEO_BOOL;
         this.VOTE_AVERAGE = VOTE_AVERAGE;
-        this.GENRE_ID_JSON_ARRAY_STRING=GENRE_ID_JSON_ARRAY_STRING;
+        this.GENRE_ID_JSON_ARRAY_STRING = GENRE_ID_JSON_ARRAY_STRING;
         Log.e("VoteDebug", "" + VOTE_AVERAGE);
     }
 
@@ -99,7 +99,7 @@ public class MovieDataInstance implements Parcelable {
         VOTE_COUNT = in.readLong();
         VOTE_AVERAGE = in.readDouble();
         POPULARITY = in.readDouble();
-        GENRE_ID_JSON_ARRAY_STRING=in.readString();
+        GENRE_ID_JSON_ARRAY_STRING = in.readString();
     }
 
     public static final Creator<MovieDataInstance> CREATOR = new Creator<MovieDataInstance>() {
@@ -323,7 +323,7 @@ public class MovieDataInstance implements Parcelable {
                 cursor.getColumnIndex(MovieContract.MovieData.COLUMN_VIDEO)) == 1
                 , (double) cursor.getInt(
                 cursor.getColumnIndex(MovieContract.MovieData.COLUMN_VOTE_AVERAGE))
-                ,cursor.getString(cursor.getColumnIndex(MovieContract.MovieData.COLUMN_GENRE_IDS))
+                , cursor.getString(cursor.getColumnIndex(MovieContract.MovieData.COLUMN_GENRE_IDS))
         );
     }
 }

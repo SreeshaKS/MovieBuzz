@@ -86,11 +86,9 @@ public class MovieDetailDisplayFragment extends Fragment
             try {
                 genreArray = new JSONObject(PreferenceKeys.GENRE_JSON_OBJECT).getJSONArray("genres");
                 movieGenreArray = new JSONArray(mMovieData.getGENRE_ID_JSON_ARRAY_STRING());
-                Log.e("GenreDebug", "Genre Length : " + movieGenreArray.length());
                 for (int i = 0; i < movieGenreArray.length(); i++) {
                     for (int j = 0; j < genreArray.length(); j++) {
                         if (movieGenreArray.getInt(i) == genreArray.getJSONObject(j).getInt("id")) {
-                            Log.e("GenreDebug", "Found : " + genreArray.getJSONObject(j).getString("name"));
                             genreDataSet.add(genreArray.getJSONObject(j).getString("name"));
                         }
                     }
@@ -179,12 +177,9 @@ public class MovieDetailDisplayFragment extends Fragment
     public void onResume() {
         super.onResume();
         if (mMovieData != null) {
-            Log.e("onCreateView", "UpdatingUI and Fetching Data");
             if (mIsStateRestored) {
-                Log.e("MovieDetailDisplayFrag", "Restoring and updating");
                 updateUIWithMovieData();
             } else {
-                Log.e("MovieDetailDisplayFrag", "Calling UpDataUIReady");
                 (
                         (MovieTabsDetailFragment)
                                 (getActivity()
@@ -196,7 +191,6 @@ public class MovieDetailDisplayFragment extends Fragment
     }
 
     private void updateUIWithMovieData() {
-        Log.e("OnMovieDataChanged", "UpdatingUI - Inside updateUIWithMovieData");
         if (genreRecyclerView != null) {
             mGenreRecyclerViewAdapter = new GenreRecyclerViewAdapter(mMovieData);
             LinearLayoutManager mLinearLayoutManager
@@ -210,7 +204,6 @@ public class MovieDetailDisplayFragment extends Fragment
         moviePopularityTextView.setText(String.format(getString(R.string.string_format_popularity)
                 , mMovieData.getPopularity()));
 
-        Log.e("TitleDebug-INFragment", mMovieData.getTitle() + "\t" + mMovieData.getOriginalTitle());
         if (!mMovieData.getTitle().trim().equalsIgnoreCase(mMovieData.getOriginalTitle().trim())) {
             movieOriginalTitleTextView.setVisibility(View.VISIBLE);
             movieOriginalTitleTextView.setText(mMovieData.getOriginalTitle());
@@ -243,7 +236,7 @@ public class MovieDetailDisplayFragment extends Fragment
     }
 
     private void initializeViewElements(View view) {
-        Log.e("MovieDetailDisplayFrag", "Initializing View Elements");
+
         genreRecyclerView = (RecyclerView) view.findViewById(R.id.genreRecyclerView);
 
         movieRatingBar = (RatingBar) view.findViewById(R.id.ratingBar);
@@ -279,7 +272,6 @@ public class MovieDetailDisplayFragment extends Fragment
     @Override
     public void OnMovieDataChanged(MovieDataInstance movieInstance) {
         try {
-            Log.e("OnMovieDataChanged", "UpdatingUI");
             mMovieData = movieInstance;
             updateUIWithMovieData();
         } catch (IllegalStateException e) {

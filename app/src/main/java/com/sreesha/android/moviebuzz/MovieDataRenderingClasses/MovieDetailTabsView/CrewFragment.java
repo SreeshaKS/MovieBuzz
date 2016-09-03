@@ -76,7 +76,6 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e("FragLifeCycDebug", "onCreate");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -91,7 +90,6 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.e("FragLifeCycDebug", "onSavednStanceState");
         outState.putParcelable(MOVIE_DATA_PARCELABLE_SAVED_KEY, mMovieData);
         //outState.putParcelable(MOVIE_DATA_PARCELABLE_SAVED_KEY,mMovieData);
     }
@@ -101,14 +99,11 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_crew, container, false);
         initializeViewElements(view);
-        Log.e("FragLifeCycDebug", "onCreateView");
         if (mMovieData != null) {
 
             if (mIsStateRestored) {
-                Log.e("CastCrewDebug", "StateRestored");
 
             } else {
-                Log.e("CastCrewDebug", "Calling UIUpdatable Callback");
                 initializeRecyclerView();
                 (
                         (MovieTabsDetailFragment)
@@ -124,7 +119,6 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.e("FragLifeCycDebug", "onActivityCreated");
         getLoaderManager().initLoader(CREW_LOADER_ID, null, mLoaderCallBacks);
 
     }
@@ -132,9 +126,7 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
     @Override
     public void onResume() {
         super.onResume();
-        Log.e("FragLifeCycDebug", "onResume");
         if (mIsStateRestored) {
-            Log.e("CastCrewDebug", "onResume - Restarting Loader");
             updateUIWithMovieData();
             getLoaderManager().destroyLoader(CREW_LOADER_ID);
             getLoaderManager().initLoader(CREW_LOADER_ID, null, mLoaderCallBacks);
@@ -176,7 +168,6 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
     }
 
     private void initializeRecyclerView() {
-        Log.e("CastCrewDebug", "initializeRecyclerView()");
         mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mCrewRecyclerViewCursorAdapter = new CrewDataCursorAdapter(getActivity(), null);
         mCrewRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
@@ -185,34 +176,29 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
     }
 
     private void computerAndRegisterSpanCount() {
-        Log.e("FragLifeCycDebug", "Screen Width : " + convertPixelsToDP(
-                mCrewFragmentFrameLayout.getWidth()) + "Computer Value" + (convertPixelsToDP(
-                mCrewFragmentFrameLayout.getWidth())
-                + convertPixelsToDP(
-                (int) getResources()
-                        .getDimension(R.dimen.movie_poster_margin)
-        )
-        ));
-        if (MoviePosterGridActivity.isInTwoPaneMode()) {
-            SPAN_COUNT = Math.round((convertPixelsToDP(
-                    mCrewFragmentFrameLayout.getWidth())
-                    + convertPixelsToDP(
-                    (int) getResources()
-                            .getDimension(R.dimen.movie_poster_margin)
-            )
-            ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
-        } else {
-            SPAN_COUNT = (int) Math.round((convertPixelsToDP(
-                    mCrewFragmentFrameLayout.getWidth())
-                    + convertPixelsToDP(
-                    (int) getResources()
-                            .getDimension(R.dimen.movie_poster_margin)
-            )
-            ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
+        try {
+            if (MoviePosterGridActivity.isInTwoPaneMode()) {
+                SPAN_COUNT = (int)Math.ceil((convertPixelsToDP(
+                        mCrewFragmentFrameLayout.getWidth())
+                        + convertPixelsToDP(
+                        (int) getResources()
+                                .getDimension(R.dimen.movie_poster_margin)
+                )
+                ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
+            } else {
+                SPAN_COUNT = (int) Math.ceil((convertPixelsToDP(
+                        mCrewFragmentFrameLayout.getWidth())
+                        + convertPixelsToDP(
+                        (int) getResources()
+                                .getDimension(R.dimen.movie_poster_margin)
+                )
+                ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
+            }
+            if (SPAN_COUNT > 0 && mStaggeredGridLayoutManager != null)
+                mStaggeredGridLayoutManager.setSpanCount(SPAN_COUNT);
+        }catch(ArithmeticException e){
+            e.printStackTrace();
         }
-        if (SPAN_COUNT != 0 && mStaggeredGridLayoutManager != null)
-            mStaggeredGridLayoutManager.setSpanCount(SPAN_COUNT);
-
     }
 
     /*Density-independent pixels is equal to one physical pixel on a 160dpi screen->Considered As the Baseline
@@ -235,7 +221,6 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
             switch (id) {
                 case CREW_LOADER_ID:
                     if (mMovieData != null) {
-                        Log.e("CastCrewDebug", "LoaderCreated");
                         return new CursorLoader(
                                 getActivity()
                                 , MovieContract.CrewData.MOVIE_CREW_CONTENT_URI
@@ -256,11 +241,9 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
 
         @Override
         public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-            Log.e("CastCrewDebug", "onLoadFinished");
             switch (loader.getId()) {
                 case CREW_LOADER_ID:
                     if (!(data.getCount() == 0)) {
-                        Log.e("CastCrewDebug", "Swapping Cursor");
                         if (mCrewRecyclerViewCursorAdapter != null) {
                             mCrewRecyclerViewCursorAdapter.swapCursor(data);
                         } else {
@@ -268,12 +251,10 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
                             mCrewRecyclerViewCursorAdapter.swapCursor(data);
                         }
                     } else {
-                        Log.e("CastCrewDebug", "No Data Found Downloading");
                         downloadMovieSpecificData();
                     }
                     break;
                 default:
-                    Log.e("CastCrewDebug", "Default Case in Loader Finished");
             }
         }
 
@@ -290,7 +271,6 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
                         new AsyncMovieSpecificsResults() {
                             @Override
                             protected void onResultJSON(JSONObject object) throws JSONException {
-                                Log.e("CastCrewDebug", object.toString());
                             }
 
                             @Override
@@ -307,7 +287,6 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
                                 if (getActivity() != null) {
                                     if (crewList.size() != 0) {
                                         getLoaderManager().restartLoader(CREW_LOADER_ID, null, mLoaderCallBacks);
-                                        Log.e("CastCrewDebug", "Crew List : " + crewList.size());
                                     } else if (crewList.size() == 0) {
                                         Toast.makeText(getActivity(), "No Crew Found", Toast.LENGTH_SHORT).show();
                                     }
@@ -318,8 +297,6 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
 
                             @Override
                             protected void onResultString(String stringObject, String errorString, String parseStatus) {
-                                Log.e("CastCrewDebug", "Error String : " + errorString
-                                        + "\nParse Status : " + parseStatus);
                                 if (getActivity() != null) {
 
                                 }
@@ -351,7 +328,6 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Log.e("FragLifeCycDebug", "onAttach");
     }
 
     @Override
@@ -363,14 +339,11 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
     public void OnMovieDataChanged(MovieDataInstance movieInstance) {
         if (mCrewRecyclerViewCursorAdapter != null && mMovieData != null) {
             try {
-                Log.e("CastCrewDebug", "OnMovieDataCHangedCalled");
                 mMovieData = movieInstance;
 
                 //getLoaderManager().destroyLoader(CAST_LOADER_ID);
                 //getLoaderManager().initLoader(CAST_LOADER_ID, null, mLoaderCallBacks);
-                Log.e("CastCrewDebug", "Calling Loader Manager");
             } catch (IllegalStateException e) {
-                Log.e("CastCrewDebug", "Exception Inside OnMovieDataChanged : " + e.getMessage());
                 e.printStackTrace();
             }
         }

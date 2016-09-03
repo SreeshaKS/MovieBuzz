@@ -42,7 +42,7 @@ public class CastDataCursorAdapter
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.single_cast_item, parent, false);
+                .inflate(R.layout.recycler_single_cast_item, parent, false);
         return new ViewHolder(view);
 
     }
@@ -66,7 +66,6 @@ public class CastDataCursorAdapter
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, Cursor cursor) {
-        Log.e("CastCrewDebug", "onBindViewHolder : " + cursor.getCount());
 
         final CastDataInstance instance = CastDataInstance.getCastDataInstanceFromCursor(cursor);
 
@@ -139,8 +138,6 @@ public class CastDataCursorAdapter
         Picasso.with(mContext)
                 .load(URL)
                 .into(imageViewTarget);
-        Log.e("CastCrewDebug : ",URL);
-
     }
 
     @Override

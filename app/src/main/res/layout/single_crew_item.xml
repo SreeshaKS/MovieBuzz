@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/backGroundSheetCard"
     android:layout_width="160dp"
@@ -23,7 +22,6 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_margin="5dp"
-            android:background="@drawable/ripple"
             app:cardBackgroundColor="@color/colorPrimary"
             app:cardCornerRadius="1dp">
 
@@ -51,7 +49,6 @@
                     android:layout_below="@+id/crewNameTextView"
                     android:layout_centerHorizontal="true"
                     android:layout_margin="10dp"
-                    android:background="@drawable/ripple"
                     app:cardBackgroundColor="@color/colorPrimaryDark"
                     app:cardCornerRadius="60dp">
 
@@ -88,7 +85,5 @@
                     android:textStyle="italic" />
             </RelativeLayout>
         </android.support.v7.widget.CardView>
-
-
     </RelativeLayout>
 </android.support.v7.widget.CardView>

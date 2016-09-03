@@ -87,17 +87,14 @@ public class DownloadData extends AsyncTask<String, Void, String> {
             try {
                 if (urls[0] != null) {
                     stringData = downloadUrl(urls[0]);
-                    Log.e("DownloadData", "Parsing reviews");
                     convertToJSONAndParseJSON(stringData, urls[0]);
                 }
                 if (urls[1] != null) {
-                    Log.e("DownloadData", "Parsing trailers");
                     stringData = downloadUrl(urls[1]);
                     convertToJSONAndParseJSON(stringData, urls[1]);
                 }
                 return stringData;
             } catch (IOException e) {
-                Log.e("IOEXCEP", e.getMessage());
                 return "Unable to download the requested page.";
             } catch (ArrayIndexOutOfBoundsException e) {
                 return stringData;
@@ -164,6 +161,7 @@ public class DownloadData extends AsyncTask<String, Void, String> {
         if (total_pages != 0) {
             JSONArray reviewsJSONArray = result.getJSONArray("results");
 
+
             reviewsArrayList = new ArrayList<>();
             contentValueMovieArrayList = new ArrayList<>();
             for (int i = 0; i < reviewsJSONArray.length(); i++) {
@@ -179,6 +177,7 @@ public class DownloadData extends AsyncTask<String, Void, String> {
                                 , total_pages
                         )
                 );
+
                 contentValueMovieArrayList.add(
                         getContentValuesFromReviewsInstance(new MovieReviewInstance(
                                         movie_id
@@ -238,7 +237,6 @@ public class DownloadData extends AsyncTask<String, Void, String> {
                     )
             );
         }
-        Log.e("DownloadData-Trailers", result.toString());
         try {
             insertDataIntoSQLiteDatabase(contentValueMovieArrayList, MovieContract.MovieTrailers.TRAILER_CONTENT_URI);
         } catch (SQLException e) {
@@ -256,7 +254,6 @@ public class DownloadData extends AsyncTask<String, Void, String> {
         callback.onResultJSON(result);
         JSONArray movieResultArray = result.getJSONArray("results");
         contentValueMovieArrayList = new ArrayList<>();
-        Log.e("MovieTypesDebug", "Result = " + result.toString());
         for (int i = 0; i < movieResultArray.length(); i++) {
             JSONObject obj = movieResultArray.getJSONObject(i);
             String genreJSONArrayString = obj.getJSONArray("genre_ids").toString();
@@ -281,7 +278,6 @@ public class DownloadData extends AsyncTask<String, Void, String> {
                     , genreJSONArrayString
             );
             movieList.add(movieInstance);
-            Log.e("MovieTypesDebug", "Loops : " + i);
             contentValueMovieArrayList.add(
                     getContentValuesFromMovieInstance(movieInstance)
             );
@@ -301,7 +297,6 @@ public class DownloadData extends AsyncTask<String, Void, String> {
                     , int total_pages
             ) throws JSONException {
         String genreJSONArrayString = obj.getJSONArray("genre_ids").toString();
-        Log.d("PopDebug", obj.toString());
         boolean adult = false;
         try {
             adult = obj.getBoolean("adult");
@@ -356,7 +351,6 @@ public class DownloadData extends AsyncTask<String, Void, String> {
                             contentURI
                             , valueArray
                     );
-            Log.e("Inserted : \t", String.valueOf(inserted));
         }
     }
 

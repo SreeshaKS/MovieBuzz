@@ -1,11 +1,19 @@
 package com.sreesha.android.moviebuzz.Networking;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.sreesha.android.moviebuzz.Settings.MovieBuzzApplication;
+import com.sreesha.android.moviebuzz.R;
 
 /**
  * Created by Sreesha on 28-01-2016.
  */
 public class APIUrls {
+
     private static final String SCHEME = "http";
     private static final String AUTHORITY = "api.themoviedb.org";
     private static final String PATH_1 = "3";
@@ -13,6 +21,9 @@ public class APIUrls {
     private static final String PATH_3 = "500";
     private static final String PATH_4 = "discover";
     private static final String PATH_5 = "movie";
+
+
+    public  static final String FACEBOOK_URL = "https://www.facebook.com/NDmoviebuzz";
 
     public static String getPathVideo() {
         return PATH_VIDEO;
@@ -26,12 +37,13 @@ public class APIUrls {
 
     private static final String PATH_REVIEW = "reviews";
 
-    private static final String API_KEY = "INSERT_YOUR_API_KEY";
+    private static final String API_KEY = "0dfb702eeef59bdc7d20cbf3a4191b5a";
     public static final String API_PAGE_PARAM = "page";
     private static final String API_KEY_PARAM = "api_key";
     public static final String API_SORT_PARAM = "sort_by";
     public static final String API_SORT_POPULARITY_DESC = "popularity.desc";
     public static final String API_HIGHEST_RATING_DESC = "vote_average.desc";
+    public static final String API_LANG_PARAM = "language";
 
     public static final String API_IMG_W_92 = "w92";
     public static final String API_IMG_W_154 = "w154";
@@ -63,6 +75,9 @@ public class APIUrls {
     public final static String API_URL_CAST_AND_CREW_BASE_URL = "http://api.themoviedb.org/3/movie/id/credits";
 
     public static Uri.Builder buildCastCrewCreditsURL(String movieID) {
+        Context context = MovieBuzzApplication.getAppContext();
+        String langConst = ((SharedPreferences) PreferenceManager.getDefaultSharedPreferences(context))
+                .getString(context.getString(R.string.preferences_user_language_key), "en");
         return (new Uri.Builder()
                 .scheme(SCHEME)
                 .authority(AUTHORITY)
@@ -70,6 +85,7 @@ public class APIUrls {
                 .appendPath("movie")
                 .appendPath(movieID)
                 .appendPath("credits")
+                .appendQueryParameter(API_LANG_PARAM, langConst)
                 .appendQueryParameter(API_KEY_PARAM, API_KEY));
     }
 
@@ -94,32 +110,46 @@ public class APIUrls {
     }
 
     public static Uri.Builder buildPopularMoviesURL() {
+        Context context = MovieBuzzApplication.getAppContext();
+        String langConst = ((SharedPreferences) PreferenceManager.getDefaultSharedPreferences(context))
+                .getString(context.getString(R.string.preferences_user_language_key), "en");
+        Log.d("MyApplication", langConst);
         return (new Uri.Builder()
                 .scheme(SCHEME)
                 .authority(AUTHORITY)
                 .appendPath(PATH_1)
                 .appendPath(PATH_4)
                 .appendPath(PATH_5)
+                .appendQueryParameter(API_LANG_PARAM, langConst)
                 .appendQueryParameter(API_KEY_PARAM, API_KEY));
     }
 
     public static Uri.Builder buildUpcomingMoviesURL() {
+        Context context = MovieBuzzApplication.getAppContext();
+        String langConst = ((SharedPreferences) PreferenceManager.getDefaultSharedPreferences(context))
+                .getString(context.getString(R.string.preferences_user_language_key), "en");
+        Log.d("MyApplication", langConst);
         return (new Uri.Builder()
                 .scheme(SCHEME)
                 .authority(AUTHORITY)
                 .appendPath(PATH_1)
                 .appendPath(PATH_2)
                 .appendPath("upcoming")
+                .appendQueryParameter(API_LANG_PARAM, langConst)
                 .appendQueryParameter(API_KEY_PARAM, API_KEY));
     }
 
     public static Uri.Builder buildPlayingNowMoviesURL() {
+        Context context = MovieBuzzApplication.getAppContext();
+        String langConst = ((SharedPreferences) PreferenceManager.getDefaultSharedPreferences(context))
+                .getString(context.getString(R.string.preferences_user_language_key), "en");
         return (new Uri.Builder()
                 .scheme(SCHEME)
                 .authority(AUTHORITY)
                 .appendPath(PATH_1)
                 .appendPath(PATH_2)
                 .appendPath("now_playing")
+                .appendQueryParameter(API_LANG_PARAM, langConst)
                 .appendQueryParameter(API_KEY_PARAM, API_KEY));
     }
 
@@ -133,6 +163,9 @@ public class APIUrls {
     }
 
     public static Uri.Builder buildMovieTrailerURL(String movieID) {
+        Context context = MovieBuzzApplication.getAppContext();
+        String langConst = ((SharedPreferences) PreferenceManager.getDefaultSharedPreferences(context))
+                .getString(context.getString(R.string.preferences_user_language_key), "en");
         return (new Uri.Builder()
                 .scheme(SCHEME)
                 .authority(AUTHORITY)
@@ -140,10 +173,14 @@ public class APIUrls {
                 .appendPath(PATH_2))
                 .appendPath(movieID)
                 .appendPath(PATH_VIDEO)
+                .appendQueryParameter(API_LANG_PARAM, langConst)
                 .appendQueryParameter(API_KEY_PARAM, API_KEY);
     }
 
     public static Uri.Builder buildSimilarMoviesURL(String movieID) {
+        Context context = MovieBuzzApplication.getAppContext();
+        String langConst = ((SharedPreferences) PreferenceManager.getDefaultSharedPreferences(context))
+                .getString(context.getString(R.string.preferences_user_language_key), "en");
         return (new Uri.Builder()
                 .scheme(SCHEME)
                 .authority(AUTHORITY)
@@ -151,6 +188,7 @@ public class APIUrls {
                 .appendPath("movie"))
                 .appendPath(movieID)
                 .appendPath("similar")
+                .appendQueryParameter(API_LANG_PARAM, langConst)
                 .appendQueryParameter(API_KEY_PARAM, API_KEY);
     }
 
@@ -177,6 +215,9 @@ public class APIUrls {
     }
 
     public static Uri.Builder buildMovieReviewsURL(String movieID) {
+        Context context = MovieBuzzApplication.getAppContext();
+        String langConst = ((SharedPreferences) PreferenceManager.getDefaultSharedPreferences(context))
+                .getString(context.getString(R.string.preferences_user_language_key), "en");
         return (new Uri.Builder()
                 .scheme(SCHEME)
                 .authority(AUTHORITY)
@@ -184,6 +225,7 @@ public class APIUrls {
                 .appendPath(PATH_2))
                 .appendPath(movieID)
                 .appendPath(PATH_REVIEW)
+                .appendQueryParameter(API_LANG_PARAM, langConst)
                 .appendQueryParameter(API_KEY_PARAM, API_KEY);
     }
 
@@ -217,26 +259,37 @@ public class APIUrls {
     }
 
     public static Uri.Builder buildPopularCastCrewURL() {
+        Context context = MovieBuzzApplication.getAppContext();
+        String langConst = ((SharedPreferences) PreferenceManager.getDefaultSharedPreferences(context))
+                .getString(context.getString(R.string.preferences_user_language_key), "en");
         return (new Uri.Builder()
                 .scheme(SCHEME)
                 .authority(AUTHORITY)
                 .appendPath("3")
                 .appendPath("person"))
                 .appendPath("popular")
+                .appendQueryParameter(API_LANG_PARAM, langConst)
                 .appendQueryParameter(API_KEY_PARAM, API_KEY);
     }
 
     public static Uri.Builder buildPersonDetailsURL(long id) {
+        Context context = MovieBuzzApplication.getAppContext();
+        String langConst = ((SharedPreferences) PreferenceManager.getDefaultSharedPreferences(context))
+                .getString(context.getString(R.string.preferences_user_language_key), "en");
         return (new Uri.Builder()
                 .scheme(SCHEME)
                 .authority(AUTHORITY)
                 .appendPath("3")
                 .appendPath("person"))
                 .appendPath(String.valueOf(id))
+                .appendQueryParameter(API_LANG_PARAM, langConst)
                 .appendQueryParameter(API_KEY_PARAM, API_KEY);
     }
 
     public static Uri.Builder buildSearchURL(String queryString) {
+        Context context = MovieBuzzApplication.getAppContext();
+        String langConst = ((SharedPreferences) PreferenceManager.getDefaultSharedPreferences(context))
+                .getString(context.getString(R.string.preferences_user_language_key), "en");
         return (new Uri.Builder()
                 .scheme(SCHEME)
                 .authority(AUTHORITY)
@@ -244,6 +297,7 @@ public class APIUrls {
                 .appendPath("search"))
                 .appendPath("movie")
                 .appendQueryParameter(API_KEY_PARAM, API_KEY)
+                .appendQueryParameter(API_LANG_PARAM, langConst)
                 .appendQueryParameter("query", queryString);
     }
 }

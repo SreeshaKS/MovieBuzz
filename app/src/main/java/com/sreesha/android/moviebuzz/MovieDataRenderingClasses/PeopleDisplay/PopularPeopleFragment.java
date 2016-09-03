@@ -119,7 +119,6 @@ public class PopularPeopleFragment extends Fragment {
     }
 
     public void loadRecyclerViewWithData() {
-        Log.d("PopDebug", "Length : " + mPopularPeopleArrayList.size());
         mPopPeopleRecyclerAdapter = new PopularPeopleRecyclerAdapter(mPopularPeopleArrayList, getActivity());
         mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(SPAN_COUNT, StaggeredGridLayoutManager.VERTICAL);
         mPopularPeopleRecyclerView.setLayoutManager(mStaggeredGridLayoutManager);
@@ -134,7 +133,6 @@ public class PopularPeopleFragment extends Fragment {
                     , new AsyncMovieSpecificsResults() {
                 @Override
                 protected void onResultJSON(JSONObject object) throws JSONException {
-                    Log.d("ResultJSON", object.toString());
                 }
 
                 @Override
@@ -176,7 +174,6 @@ public class PopularPeopleFragment extends Fragment {
             );
             mMovieSpecificsDownloadTask
                     .execute(APIUrls.buildPopularCastCrewURL().build().toString());
-            Log.d("URL", APIUrls.buildPopularCastCrewURL().build().toString());
         }
 
     }

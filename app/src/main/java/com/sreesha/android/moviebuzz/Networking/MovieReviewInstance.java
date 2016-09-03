@@ -4,25 +4,27 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.firebase.database.DataSnapshot;
 import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieContract;
 
 /**
  * Created by Sreesha on 21-02-2016.
  */
 public class MovieReviewInstance implements Parcelable {
-    private long MOVIE_ID = 0;
-    private int PAGE = 0;
-    private String REVIEW_ID = "defaultReview";
-    private String AUTHOR = "defaultAuthor";
-    private String REVIEW_CONTENT = "defaultContent";
-    private String REVIEW_URL = "defaultURL";
+    protected long MOVIE_ID = 0;
+    protected int PAGE = 0;
+    protected String REVIEW_ID = "defaultReview";
+    protected String AUTHOR = "defaultAuthor";
+    protected String REVIEW_CONTENT = "defaultContent";
+    protected String REVIEW_URL = "defaultURL";
 
     public int getTOTAL_PAGES() {
         return TOTAL_PAGES;
     }
 
-    private int TOTAL_PAGES = 0;
-
+    protected int TOTAL_PAGES = 0;
+    public MovieReviewInstance() {
+    }
     public MovieReviewInstance(
             long MOVIE_ID
             , int PAGE
@@ -74,15 +76,15 @@ public class MovieReviewInstance implements Parcelable {
         return MOVIE_ID;
     }
 
-    public static final Creator<MovieDataInstance> CREATOR = new Creator<MovieDataInstance>() {
+    public static final Creator<MovieReviewInstance> CREATOR = new Creator<MovieReviewInstance>() {
         @Override
-        public MovieDataInstance createFromParcel(Parcel in) {
-            return new MovieDataInstance(in);
+        public MovieReviewInstance createFromParcel(Parcel in) {
+            return new MovieReviewInstance(in);
         }
 
         @Override
-        public MovieDataInstance[] newArray(int size) {
-            return new MovieDataInstance[size];
+        public MovieReviewInstance[] newArray(int size) {
+            return new MovieReviewInstance[size];
         }
     };
 
@@ -110,8 +112,20 @@ public class MovieReviewInstance implements Parcelable {
                 , movieReviewCursor.getString(movieReviewCursor.getColumnIndex(MovieContract.MovieReviews.COLUMN_REVIEW_ID))
                 , movieReviewCursor.getString(movieReviewCursor.getColumnIndex(MovieContract.MovieReviews.COLUMN_AUTHOR))
                 , movieReviewCursor.getString(movieReviewCursor.getColumnIndex(MovieContract.MovieReviews.COLUMN_REVIEW_CONTENT))
-                , movieReviewCursor.getString(movieReviewCursor.getColumnIndex(MovieContract.MovieReviews.COLUMN_REVIEW_CONTENT))
+                , movieReviewCursor.getString(movieReviewCursor.getColumnIndex(MovieContract.MovieReviews.COLUMN_REVIEW_URL))
                 , movieReviewCursor.getInt(movieReviewCursor.getColumnIndex(MovieContract.MovieReviews.COLUMN_MOVIE_ID))
+        );
+    }
+    public static MovieReviewInstance getMovieReviewInstanceFromDataSnapShot(DataSnapshot snap) {
+
+        return new MovieReviewInstance(
+                Long.parseLong(snap.child("MOVIE_ID").getValue().toString())
+                , -1
+                , snap.child("REVIEW_ID").getValue().toString()
+                , snap.child("AUTHOR").getValue().toString()
+                , snap.child("REVIEW_CONTENT").getValue().toString()
+                , snap.child("REVIEW_URL").getValue().toString()
+                ,0
         );
     }
 }

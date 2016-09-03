@@ -31,7 +31,6 @@ public class MovieImageDisplayFragment extends Fragment {
     public static MovieImageDisplayFragment newInstance(MovieImage mMovieImage) {
         MovieImageDisplayFragment fragment = new MovieImageDisplayFragment();
         Bundle args = new Bundle();
-        Log.e("MovieBackDropPager","Creating a new INastance with image backdrop object");
         args.putParcelable(MOVIE_IMAGE_PARCELABLE_KEY, mMovieImage);
         fragment.setArguments(args);
         return fragment;
@@ -39,7 +38,7 @@ public class MovieImageDisplayFragment extends Fragment {
     public static MovieImageDisplayFragment newInstance(String imageURL) {
         MovieImageDisplayFragment fragment = new MovieImageDisplayFragment();
         Bundle args = new Bundle();
-        Log.e("MovieBackDropPager","Creating a new INstance with URL");
+
         args.putString(MOVIE_IMAGE_URL_KEY,imageURL);
         fragment.setArguments(args);
         return fragment;
@@ -48,24 +47,21 @@ public class MovieImageDisplayFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e("MovieBackDropPager","onCreateCalled");
+
         if (savedInstanceState != null) {
             if( savedInstanceState.getParcelable(MOVIE_IMAGE_PARCELABLE_KEY)!=null){
                 mMovieImage=savedInstanceState.getParcelable(MOVIE_IMAGE_PARCELABLE_KEY);
-                Log.e("MovieBackDropPager","Restoring Parcelable");
+
             }else{
                 imageURL = savedInstanceState.getString(MOVIE_IMAGE_URL_KEY);
-                 Log.e("MovieBackDropPager","Restoring Image URL");
             }
 
         } else {
             if (getArguments() != null) {
                 if(getArguments().getParcelable(MOVIE_IMAGE_PARCELABLE_KEY)!=null) {
                     mMovieImage = getArguments().getParcelable(MOVIE_IMAGE_PARCELABLE_KEY);
-                    Log.e("MovieBackDropPager","Getting Image Object From Arguments");
                 }else{
                     imageURL = getArguments().getString(MOVIE_IMAGE_URL_KEY);
-                    Log.e("MovieBackDropPager","Getting Image URL Arguments");
                 }
             }
         }
@@ -81,7 +77,7 @@ public class MovieImageDisplayFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_movie_image_display, container, false);
-        Log.e("MovieBackDropPager","onCreateViewCalled");
+
         mBackDropPagerImageView = (ImageView) view.findViewById(R.id.backDropPagerImageView);
         return view;
     }
@@ -99,17 +95,15 @@ public class MovieImageDisplayFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.e("MovieBackDropPager","onResume");
+
         Target mImageViewTarget = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 mBackDropPagerImageView.setImageBitmap(bitmap);
-                Log.e("MovieBackDropPager","Bitmap rendered");
             }
 
             @Override
             public void onBitmapFailed(Drawable errorDrawable) {
-                Log.e("MovieBackDropPager","Bitmap Error");
             }
 
             @Override
@@ -122,10 +116,8 @@ public class MovieImageDisplayFragment extends Fragment {
             URL = APIUrls.BASE_IMAGE_URL
                     + "/" + APIUrls.API_IMG_W_342
                     + mMovieImage.getImagePath();
-            Log.e("MovieBackDropPager","BackDropIamge Object URL : "+URL);
         }else{
             URL=imageURL;
-            Log.e("MovieBackDropPager","Image URL Loaded"+URL);
         }
         Picasso
                 .with(getActivity())

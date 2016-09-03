@@ -84,7 +84,6 @@ public class MoviePhotosFragment extends Fragment implements MovieTabsDetailFrag
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.e("CastCrewDebug", "onSavednStanceState");
         outState.putParcelableArrayList(MOVIE_BACKDROP_PARCELABLE_KEY, backDropsList);
         outState.putParcelableArrayList(MOVIE_POSTER_PARCELABLE_KEY, posterList);
         outState.putParcelable(MOVIE_PARCELABLE_KEY, mMovieDataInstance);
@@ -98,7 +97,6 @@ public class MoviePhotosFragment extends Fragment implements MovieTabsDetailFrag
         if (mMovieDataInstance != null) {
 
             if (mIsStateRestored) {
-                Log.e("CastCrewDebug", "StateRestored");
 
             } else {
 
@@ -117,11 +115,9 @@ public class MoviePhotosFragment extends Fragment implements MovieTabsDetailFrag
     public void onResume() {
         super.onResume();
         if (mMovieDataInstance != null) {
-            Log.e("onCreateView", "UpdatingUI and Fetching Data");
             if (mIsStateRestored) {
-                Log.e("MovieDetailDisplayFrag", "Restoring and updating");
+
             } else {
-                Log.e("MovieDetailDisplayFrag", "Calling UpDataUIReady");
                 (
                         (MovieTabsDetailFragment)
                                 (getActivity()
@@ -167,8 +163,6 @@ public class MoviePhotosFragment extends Fragment implements MovieTabsDetailFrag
     }
 
     private void initializeRecyclerView() {
-
-        Log.e("CastCrewDebug", "initializeRecyclerView()");
         mStaggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mPhotosRecyclerViewAdapter = new PhotosRecyclerViewAdapter(backDropsList, posterList);
 
@@ -178,33 +172,29 @@ public class MoviePhotosFragment extends Fragment implements MovieTabsDetailFrag
     }
 
     private void computerAndRegisterSpanCount() {
-        Log.e("Span Debug", "Screen Width : " + convertPixelsToDP(
-                mPhotosFragmentFrameLayout.getWidth()) + "Computer Value" + (convertPixelsToDP(
-                mPhotosFragmentFrameLayout.getWidth())
-                + convertPixelsToDP(
-                (int) getResources()
-                        .getDimension(R.dimen.movie_poster_margin)
-        )
-        ));
-        if (MoviePosterGridActivity.isInTwoPaneMode()) {
-            SPAN_COUNT = Math.round((convertPixelsToDP(
-                    mPhotosFragmentFrameLayout.getWidth())
-                    + convertPixelsToDP(
-                    (int) getResources()
-                            .getDimension(R.dimen.movie_poster_margin)
-            )
-            ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
-        } else {
-            SPAN_COUNT = (int) Math.ceil((convertPixelsToDP(
-                    mPhotosFragmentFrameLayout.getWidth())
-                    + convertPixelsToDP(
-                    (int) getResources()
-                            .getDimension(R.dimen.movie_poster_margin)
-            )
-            ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
+        try {
+            if (MoviePosterGridActivity.isInTwoPaneMode()) {
+                SPAN_COUNT = Math.round((convertPixelsToDP(
+                        mPhotosFragmentFrameLayout.getWidth())
+                        + convertPixelsToDP(
+                        (int) getResources()
+                                .getDimension(R.dimen.movie_poster_margin)
+                )
+                ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
+            } else {
+                SPAN_COUNT = (int) Math.round((convertPixelsToDP(
+                        mPhotosFragmentFrameLayout.getWidth())
+                        + convertPixelsToDP(
+                        (int) getResources()
+                                .getDimension(R.dimen.movie_poster_margin)
+                )
+                ) / POSTER_WIDTH);/*width of each image poster image for a phone*/
+            }
+            if (SPAN_COUNT > 0 && mStaggeredGridLayoutManager != null)
+                mStaggeredGridLayoutManager.setSpanCount(SPAN_COUNT);
+        }catch (ArithmeticException e){
+            e.printStackTrace();
         }
-        if (SPAN_COUNT != 0 && mStaggeredGridLayoutManager != null)
-            mStaggeredGridLayoutManager.setSpanCount(SPAN_COUNT);
     }
 
     /*Density-independent pixels is equal to one physical pixel on a 160dpi screen->Considered As the Baseline
@@ -219,12 +209,9 @@ public class MoviePhotosFragment extends Fragment implements MovieTabsDetailFrag
     public void OnMovieDataChanged(MovieDataInstance movieInstance) {
         if (mPhotosRecyclerViewAdapter != null && mMovieDataInstance != null) {
             try {
-                Log.e("CastCrewDebug", "OnMovieDataCHangedCalled");
                 mMovieDataInstance = movieInstance;
                 downloadMovieSpecificData();
-                Log.e("CastCrewDebug", "Calling Loader Manager");
             } catch (IllegalStateException e) {
-                Log.e("CastCrewDebug", "Exception Inside OnMovieDataChanged : " + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -238,7 +225,6 @@ public class MoviePhotosFragment extends Fragment implements MovieTabsDetailFrag
                             new AsyncMovieSpecificsResults() {
                                 @Override
                                 protected void onResultJSON(JSONObject object) throws JSONException {
-                                    Log.e("MoviePhotoDebug", object.toString());
                                 }
 
                                 @Override
@@ -251,8 +237,7 @@ public class MoviePhotosFragment extends Fragment implements MovieTabsDetailFrag
 
                                 @Override
                                 protected void onResultString(String stringObject, String errorString, String parseStatus) {
-                                    Log.e("MoviePhotoDebug", "Error String : " + errorString
-                                            + "\nParse Status : " + parseStatus);
+
                                 }
 
                                 @Override
@@ -260,7 +245,6 @@ public class MoviePhotosFragment extends Fragment implements MovieTabsDetailFrag
                                     if (getActivity() != null) {
                                         MoviePhotosFragment.this.backDropsList = backDropsList;
                                         MoviePhotosFragment.this.posterList = posterList;
-                                        Log.e("MoviePhotoDebug", "");
 
                                         initializeRecyclerView();
                                         (

@@ -47,7 +47,6 @@ public class ReviewRecyclerViewCursorAdapter extends CursorRecyclerViewAdapter<R
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final Cursor cursor) {
-        Log.e("TabsDebug", "onBindViewHolder called CursorCount : " + cursor.getCount());
         final MovieReviewInstance reviewsInstance = MovieReviewInstance.getMovieReviewInstanceFromCursor(cursor);
         holder.contentOverViewTextView.setText(reviewsInstance.getREVIEW_CONTENT());
         holder.authorTextView.setText(reviewsInstance.getAUTHOR());

@@ -91,7 +91,6 @@ public class FavouriteMoviesFragment extends Fragment implements OnMoreDataReque
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.e("FavouritesFragment", "onActivityCreatedCalled");
         getLoaderManager().initLoader(LOADER_ID, null, loaderCallBacks);
     }
 
@@ -133,8 +132,6 @@ public class FavouriteMoviesFragment extends Fragment implements OnMoreDataReque
             initializeViewElements(view);
             mIsStateRestored = true;
             restoreSavedInstances(savedInstanceState);
-            Log.e("Saved Instance", "Restoring Instances");
-
         } else {
             /*if the activity is starting for the first
             time and no saved instances are present
@@ -150,9 +147,7 @@ public class FavouriteMoviesFragment extends Fragment implements OnMoreDataReque
     @Override
     public void onResume() {
         super.onResume();
-        Log.e("FavouritesFragment", "onResumeCalled");
         if (mIsStateRestored) {
-            Log.e("FavouritesFragment", "onResumeCalled - restoring states");
             getLoaderManager().destroyLoader(LOADER_ID);
             getLoaderManager().restartLoader(LOADER_ID, null, loaderCallBacks);
         } else {
@@ -179,12 +174,10 @@ public class FavouriteMoviesFragment extends Fragment implements OnMoreDataReque
         loadFreshDataTask = new DownloadData(new AsyncResult() {
             @Override
             public void onResultJSON(JSONObject object) throws JSONException {
-                Log.e("MovieTypes", object.toString());
             }
 
             @Override
             public void onResultString(String stringObject) {
-                Log.e("MovieTypes", stringObject);
                 ((MoviePosterGridActivity) getActivity())
                         .showNetworkConnectivityDialogue("Please connect to a working network connection");
                 PreferenceManager
@@ -196,8 +189,6 @@ public class FavouriteMoviesFragment extends Fragment implements OnMoreDataReque
 
             @Override
             public void onResultParsedIntoMovieList(ArrayList<MovieDataInstance> movieList) {
-                Log.e("Parsed", "ParseDone");
-                Log.e("MovieTypes", "ParseDone");
                 mSwipeToRefreshLayout.setRefreshing(false);
                     /*Should not get Activated on normal swipe down at the beginning of the RecyclerView
                      * Therefore disable SwipeToRefreshLayout And enable it when required*/
@@ -218,7 +209,6 @@ public class FavouriteMoviesFragment extends Fragment implements OnMoreDataReque
                 , getActivity()
         ).execute(URL.build().toString());
         initializeRecyclerView();
-        Log.e("URL", URL.build().toString());
     }
 
     private void restoreSavedInstances(Bundle savedInstanceState) {
@@ -229,7 +219,6 @@ public class FavouriteMoviesFragment extends Fragment implements OnMoreDataReque
     }
 
     private void initializeViewElements(View view) {
-        Log.e("OrientationDebug", "OrientationMightHaveChanged");
 
         mFavouritesRefreshCard = (CardView) view.findViewById(R.id.favouritesRefreshCard);
 
@@ -281,7 +270,6 @@ public class FavouriteMoviesFragment extends Fragment implements OnMoreDataReque
         mMovieDisplayRecyclerView.setAdapter(mRecyclerViewCursorAdapter);
 
         if (isStateRestored && mCurrentCompletelyVisibleItemPosition != null) {
-            Log.e("Debug", "RecyclerViewInitialized,State Being Restored");
             restoreRecyclerViewPosition();
         }
     }
@@ -302,14 +290,6 @@ public class FavouriteMoviesFragment extends Fragment implements OnMoreDataReque
     }
 
     private void computerAndRegisterSpanCount() {
-        Log.e("Span Debug", "Screen Width : " + convertPixelsToDP(
-                mPosterGridFragmentFrameLayout.getWidth()) + "Computer Value" + (convertPixelsToDP(
-                mPosterGridFragmentFrameLayout.getWidth())
-                + convertPixelsToDP(
-                (int) getResources()
-                        .getDimension(R.dimen.movie_poster_margin)
-        )
-        ));
         if (MoviePosterGridActivity.isInTwoPaneMode()) {
             SPAN_COUNT = Math.round((convertPixelsToDP(
                     mPosterGridFragmentFrameLayout.getWidth())
@@ -364,8 +344,8 @@ public class FavouriteMoviesFragment extends Fragment implements OnMoreDataReque
                             , MovieContract.UserFavourite.FAVOURITES_CONTENT_URI
                             .buildUpon().appendPath(MovieContract.PATH_FAVOURITES_MOVIE_DATA).build()
                             , null
-                            , null
-                            , null
+                            , MovieContract.UserFavourite.COLUMN_MOVIE_TYPE +" =?"
+                            , new String[] {String.valueOf(MovieContract.UserFavourite.FAVOURITE_MOVIE_TYPE)}
                             , sortOrder
                     );
                 default:

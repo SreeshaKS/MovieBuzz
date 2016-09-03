@@ -547,7 +547,6 @@ public class MoviePosterGridFragment extends Fragment
                     SORT_PREFERENCE = "vote_average.desc";
                     URL = APIUrls.buildPopularMoviesURL()
                             .appendQueryParameter(APIUrls.API_SORT_PARAM, SORT_PREFERENCE);
-                    Toast.makeText(getActivity(), "HighestRated", Toast.LENGTH_SHORT).show();
                     initializeViewElementsAndDownloadFreshData();
                     //TODO:UPDATE UI AND DISPLAY SORT PREFERENCE
 
@@ -562,7 +561,6 @@ public class MoviePosterGridFragment extends Fragment
                     SORT_PREFERENCE = "popularity.desc";
                     URL = APIUrls.buildPopularMoviesURL()
                             .appendQueryParameter(APIUrls.API_SORT_PARAM, SORT_PREFERENCE);
-                    Toast.makeText(getActivity(), "mostPopularMovies", Toast.LENGTH_SHORT).show();
                     initializeViewElementsAndDownloadFreshData();
                     //TODO:UPDATE UI AND DISPLAY SORT PREFERENCE
                 }
@@ -580,7 +578,6 @@ public class MoviePosterGridFragment extends Fragment
                 setActivityTitle("Upcoming Movies");
                 mMovieListDisplayAdapter = null;
                 if (searchTask != null) {
-                    Log.e("SearchDebug", "Cancelling for change in movie types");
                     searchTask.cancelSearchProcess();
                     searchTask = null;
                 }
@@ -596,13 +593,11 @@ public class MoviePosterGridFragment extends Fragment
                 setActivityTitle("Movies Playing Now");
                 mMovieListDisplayAdapter = null;
                 if (searchTask != null) {
-                    Log.e("SearchDebug", "Cancelling for change in movie types");
                     searchTask.cancelSearchProcess();
                     searchTask = null;
                 }
                 break;
         }
-        Log.e("URL", URL.build().toString());
     }
 
     private void setActivityTitle(CharSequence title) {
@@ -642,10 +637,8 @@ public class MoviePosterGridFragment extends Fragment
 
     @Override
     public void onSearchResultAcquired(MovieDataInstance instance) {
-        Log.e("SearchDebug", "Updating Search Result");
         if (searchResultMovieList != null) {
             if (searchResultMovieList.size() != 0) {
-                Log.e("SearchDebug", "Adding Result");
                 searchResultMovieList.add(instance);
                 mMovieListDisplayAdapter.notifyDataSetChanged();
             } else {
@@ -653,7 +646,6 @@ public class MoviePosterGridFragment extends Fragment
                 mMovieListDisplayAdapter.notifyDataSetChanged();
             }
         } else {
-            Log.e("SearchDebug", "Newly Creating Search");
             searchResultMovieList = new ArrayList<>();
             searchResultMovieList.add(instance);
             mMovieListDisplayAdapter.setMovieList(searchResultMovieList);
@@ -665,14 +657,12 @@ public class MoviePosterGridFragment extends Fragment
             = new android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
         public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
-            Log.e("LoaderOnBindViewCB", "Loader Created");
             String sortOrder;
             if (SORT_PREFERENCE.equals("vote_average.desc")) {
                 sortOrder = MovieContract.MovieData.COLUMN_VOTE_AVERAGE + " DESC";
             } else {
                 sortOrder = MovieContract.MovieData.COLUMN_POPULARITY + " DESC";
             }
-            Log.e("Debug", "onCreateLoaderCalled");
             switch (id) {
                 case LOADER_ID:
                     return new CursorLoader(
@@ -700,22 +690,18 @@ public class MoviePosterGridFragment extends Fragment
 
         @Override
         public void onLoadFinished(android.support.v4.content.Loader<Cursor> loader, Cursor data) {
-            Log.e("Debug", "onLoadFinishedCalled Cursor has : " + data.getCount() + " items");
             if (mRecyclerViewCursorAdapter != null) {
                 switch (loader.getId()) {
                     case LOADER_ID:
                         switch (mMovieType) {
                             case UPCOMING_MOVIES:
                             case NOW_PLAYING_MOVIES:
-                                Log.e("MovieTypesDebug", "Now and Upcoming Movies");
                                 mMovieListDisplayAdapter.notifyDataSetChanged();
                                 mSwipeToRefreshLayout.setRefreshing(false);
 
                                 break;
                             default:
-                                Log.e("MovieTypesDebug", "NOT Now and Upcoming Movies");
                                 mRecyclerViewCursorAdapter.swapCursor(data);
-                                Log.e("LoaderOnBindViewCB", "Loading Finished Setting isMoreDataLoadingToFalse");
                                 mSwipeToRefreshLayout.setRefreshing(false);
 
                         }
@@ -728,7 +714,6 @@ public class MoviePosterGridFragment extends Fragment
                     case FAVOURITES_MOVIES_LOADER_ID:
                         if (loader.getId() == FAVOURITES_MOVIES_LOADER_ID) {
                             if (data.getCount() == 0) {
-                                Log.e("FavouritesDebug", "Error no Tuples Retrieved");
                             /*TODO:UPDATE UI FOR NO FAVOURITES SELECTED*/
                             }
                         }
@@ -740,7 +725,6 @@ public class MoviePosterGridFragment extends Fragment
 
         @Override
         public void onLoaderReset(android.support.v4.content.Loader<Cursor> loader) {
-            Log.e("Debug", "onLoaderResetCalled");
             mRecyclerViewCursorAdapter.swapCursor(null);
         }
     };

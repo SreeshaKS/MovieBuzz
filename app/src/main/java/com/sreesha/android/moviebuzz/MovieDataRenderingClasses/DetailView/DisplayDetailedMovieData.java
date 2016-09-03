@@ -53,7 +53,6 @@ public class DisplayDetailedMovieData extends AppCompatActivity
 
     public MovieDataInstance getDataFromCallingIntent() {
         try {
-            Log.e("TabsDebug","MovieData retrieved from Intent");
             return ((MovieDataInstance) (
                     (ArrayList<Parcelable>) (
                             getIntent().getParcelableArrayListExtra(
@@ -64,7 +63,6 @@ public class DisplayDetailedMovieData extends AppCompatActivity
             ).get(0));
 
         } catch (NullPointerException e) {
-            Log.e("TabsDebug",e.getMessage());
             e.printStackTrace();
         }
         return null;

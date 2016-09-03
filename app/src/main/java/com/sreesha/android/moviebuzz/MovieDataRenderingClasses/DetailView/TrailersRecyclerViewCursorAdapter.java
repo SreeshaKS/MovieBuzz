@@ -28,7 +28,6 @@ public class TrailersRecyclerViewCursorAdapter extends CursorRecyclerViewAdapter
     public TrailersRecyclerViewCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor);
         mContext = context;
-        Log.e("DetailCursorDebug", "InitTrailersAdapter");
     }
 
     @Override
@@ -40,7 +39,6 @@ public class TrailersRecyclerViewCursorAdapter extends CursorRecyclerViewAdapter
 
     @Override
     public void onBindViewHolder(ViewHolder holder, Cursor cursor) {
-        Log.e("DetailCursorDebug", "Trailer Item Position" + cursor.getPosition());
         final MovieTrailerInstance instance = MovieTrailerInstance.getMovieTrailerInstanceFromCursor(cursor);
         if (cursor.getPosition() == 1) {
             DisplayExpandedMovieDataFragment.setSharableYoutubeTrailerLink(
@@ -48,9 +46,6 @@ public class TrailersRecyclerViewCursorAdapter extends CursorRecyclerViewAdapter
                             .buildYoutubeTrailerURI(instance.getTRAILER_KEY())
                             .build().toString()
             );
-            Log.e("TrailerDebug", APIUrls
-                    .buildYoutubeTrailerURI(instance.getTRAILER_KEY())
-                    .build().toString());
         }
         Picasso
                 .with(mContext)

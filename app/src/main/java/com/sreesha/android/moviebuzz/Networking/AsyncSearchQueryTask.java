@@ -144,7 +144,6 @@ public class AsyncSearchQueryTask extends AsyncTask<String, Void, String> {
                             contentURI
                             , valueArray
                     );
-            Log.e("Inserted : \t", String.valueOf(inserted));
         }
     }
     private ContentValues getContentValuesFromMovieInstance(MovieDataInstance m) {

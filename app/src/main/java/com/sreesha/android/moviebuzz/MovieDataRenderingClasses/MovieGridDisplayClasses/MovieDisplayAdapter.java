@@ -56,7 +56,6 @@ public class MovieDisplayAdapter extends RecyclerView.Adapter<MovieDisplayAdapte
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        Log.e("MovieTypes", "onBindViewHolder");
         holder.posterCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -71,7 +70,7 @@ public class MovieDisplayAdapter extends RecyclerView.Adapter<MovieDisplayAdapte
             }
         });
 
-        holder.movieOriginalTitleTextView.setText(movieList.get(position).getOriginalTitle());
+        holder.movieOriginalTitleTextView.setText(movieList.get(position).getTitle());
         /*Disable User Interaction with the rating bar*/
         holder.movieRatingBar.setIsIndicator(true);
         /*Convert the Average voting from a scale of 0 to 10 to a scale of 0 to 5*/

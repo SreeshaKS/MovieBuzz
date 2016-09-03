@@ -99,8 +99,6 @@ public class PhotosRecyclerViewAdapter extends RecyclerView.Adapter<PhotosRecycl
                     + "/" + APIUrls.API_IMG_W_500
                     + posterList.get(position).getImagePath();
         }
-
-        Log.e("MoviePhotoURL", URL);
         Picasso.with(mContext)
                 .load(URL)
                 //.resize(150,200)

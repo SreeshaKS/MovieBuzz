@@ -37,7 +37,7 @@
                         android:layout_marginBottom="10dp"
                         android:layout_marginTop="10dp"
                         android:gravity="center"
-                        android:text="Movie Original Title"
+                        android:text="@string/movie_original_title_string"
                         android:textSize="26sp"
                         android:textStyle="bold" />
 
@@ -51,7 +51,7 @@
                         android:layout_marginBottom="5dp"
                         android:layout_marginTop="5dp"
                         android:gravity="center"
-                        android:text="Movie Title"
+                        android:text="@string/movie_title_string_resource"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -132,7 +132,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@+id/popularityTextView"
-                                android:text="Release Date: "
+                                android:text="@string/release_date_string"
                                 android:textStyle="bold" />
 
                             <TextView

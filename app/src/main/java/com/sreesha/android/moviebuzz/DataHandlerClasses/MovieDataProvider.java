@@ -8,10 +8,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.ParseException;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
+import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses.MoviePosterGridActivity;
 
 /**
  * Created by Sreesha on 09-02-2016.
@@ -57,12 +60,14 @@ public class MovieDataProvider extends ContentProvider {
         );
     }
 
-    private Cursor getFavouredMovies(Uri uri, String[] projection, String sortOrder) {
+    private Cursor getFavouredMovies(Uri uri, String[] projection
+            , String selection, String[] selectionArgs
+            , String sortOrder) {
         return sFavouritesFromMovieIDQueryBuilder.query(
                 mMovieDataDBHelper.getReadableDatabase()
                 , null
-                , null
-                , null
+                , selection
+                , selectionArgs
                 , null
                 , null
                 , sortOrder
@@ -82,7 +87,7 @@ public class MovieDataProvider extends ContentProvider {
         matcher.addURI(authority, MovieContract.PATH_MOVIE_REVIEWS, MOVIE_REVIEWS_DATA);
         matcher.addURI(authority, MovieContract.PATH_MOVIE_REVIEWS + "/#", MOVIE_REVIEWS_DATA_ID);
 
-        matcher.addURI(authority, MovieContract.PATH_MOVIE_CAST_DATA,MOVIE_CAST_DATA);
+        matcher.addURI(authority, MovieContract.PATH_MOVIE_CAST_DATA, MOVIE_CAST_DATA);
         matcher.addURI(authority, MovieContract.PATH_MOVIE_CAST_DATA + "/#", MOVIE_CAST_DATA_ID);
 
         matcher.addURI(authority, MovieContract.PATH_MOVIE_CREW_DATA, MOVIE_CREW_DATA);
@@ -109,6 +114,7 @@ public class MovieDataProvider extends ContentProvider {
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Log.e("CastCrewDebug", "Query Function Called");
+        Log.d("Watched", "Calling Query Function For Watched");
         switch (sUriMatcher.match(uri)) {
             case MOVIE_DATA: {
                 Log.e("SimilarMDDebug", "Query Function Called");
@@ -174,6 +180,8 @@ public class MovieDataProvider extends ContentProvider {
                         , sortOrder);
             }
             case MOVIE_FAVOURITES_DATA_ID: {
+                Log.d("Watched", "Calling Query Function For Watched");
+
                 return mMovieDataDBHelper.getReadableDatabase().query(
                         MovieContract.UserFavourite.TABLE_FAVOURITE_DATA
                         , projection
@@ -184,7 +192,7 @@ public class MovieDataProvider extends ContentProvider {
                         , null);
             }
             case MOVIE_FAVOURITES_MOVIE_DATA_JOINED: {
-                return getFavouredMovies(uri, projection, sortOrder);
+                return getFavouredMovies(uri, projection, selection, selectionArgs, sortOrder);
             }
             case MOVIE_CAST_DATA:
 
@@ -235,7 +243,7 @@ public class MovieDataProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         final SQLiteDatabase db = mMovieDataDBHelper.getWritableDatabase();
-        Uri returnUri=null;
+        Uri returnUri = null;
         long _id = -1;
         switch (sUriMatcher.match(uri)) {
             case MOVIE_DATA: {
@@ -326,6 +334,8 @@ public class MovieDataProvider extends ContentProvider {
             }
         }
         getContext().getContentResolver().notifyChange(uri, null);
+        Object m = new Object();
+        m.getClass().getName();
         return returnUri;
     }
 
@@ -353,8 +363,11 @@ public class MovieDataProvider extends ContentProvider {
                 break;
             case MOVIE_FAVOURITES_DATA_ID:
                 numDeleted = db.delete(MovieContract.UserFavourite.TABLE_FAVOURITE_DATA,
-                        MovieContract.UserFavourite.COLUMN_MOVIE_ID + " = ?",
-                        new String[]{String.valueOf(ContentUris.parseId(uri))});
+                        MovieContract.UserFavourite.COLUMN_MOVIE_ID + " = ?"
+                                + " AND " + MovieContract.UserFavourite.COLUMN_MOVIE_TYPE + " =?",
+                        new String[]{String.valueOf(ContentUris.parseId(uri))
+                                , String.valueOf(selectionArgs[0])}
+                );
                 Log.e("DatabaseDebug", "Deleted number =\t" + numDeleted);
                 break;
             default:
@@ -400,7 +413,7 @@ public class MovieDataProvider extends ContentProvider {
     public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
         final SQLiteDatabase db = mMovieDataDBHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
-        int numInserted=-1;
+        int numInserted = -1;
         switch (match) {
             case MOVIE_DATA:
                 // allows for multiple transactions
@@ -415,23 +428,23 @@ public class MovieDataProvider extends ContentProvider {
                         try {
                             _id = db.insertOrThrow(MovieContract.MovieData.TABLE_MOVIE_DATA,
                                     null, value);
-                            Log.e("SimilarMDDebug", "Insert Function Called : "+_id);
+                            Log.e("SimilarMDDebug", "Insert Function Called : " + _id);
                         } catch (SQLiteConstraintException e) {
                             e.printStackTrace();
                         }
                         if (_id != -1) {
                             numInserted++;
                             Log.e("InsertDebug", "Inserting : " + numInserted);
-                        }else if(value.getAsInteger(MovieContract.MovieData.COLUMN_MOVIE_TYPE)==MovieContract.MovieData.SIMILAR_MOVIE_TYPE){
+                        } else if (value.getAsInteger(MovieContract.MovieData.COLUMN_MOVIE_TYPE) == MovieContract.MovieData.SIMILAR_MOVIE_TYPE) {
 
                             ContentValues newValue = new ContentValues();
-                            newValue.put(MovieContract.MovieData.COLUMN_MOVIE_ID,value.getAsString(MovieContract.MovieData.COLUMN_MOVIE_ID) );
+                            newValue.put(MovieContract.MovieData.COLUMN_MOVIE_ID, value.getAsString(MovieContract.MovieData.COLUMN_MOVIE_ID));
                             newValue.put(MovieContract.MovieData.COLUMN_PAGE, value.getAsInteger(MovieContract.MovieData.COLUMN_PAGE));
                             newValue.put(MovieContract.MovieData.COLUMN_POSTER_PATH, value.getAsString(MovieContract.MovieData.COLUMN_POSTER_PATH));
                             newValue.put(MovieContract.MovieData.COLUMN_ADULT, value.getAsInteger(MovieContract.MovieData.COLUMN_ADULT));
                             newValue.put(MovieContract.MovieData.COLUMN_OVERVIEW, value.getAsString(MovieContract.MovieData.COLUMN_OVERVIEW));
                             newValue.put(MovieContract.MovieData.COLUMN_RELEASE_DATE, value.getAsString(MovieContract.MovieData.COLUMN_RELEASE_DATE));
-                            newValue.put(MovieContract.MovieData.COLUMN_ORIGINAL_TITLE,value.getAsString(MovieContract.MovieData.COLUMN_ORIGINAL_TITLE));
+                            newValue.put(MovieContract.MovieData.COLUMN_ORIGINAL_TITLE, value.getAsString(MovieContract.MovieData.COLUMN_ORIGINAL_TITLE));
                             newValue.put(MovieContract.MovieData.COLUMN_LANGUAGE, value.getAsString(MovieContract.MovieData.COLUMN_LANGUAGE));
                             newValue.put(MovieContract.MovieData.COLUMN_MOVIE_TITLE, value.getAsString(MovieContract.MovieData.COLUMN_MOVIE_TITLE));
                             newValue.put(MovieContract.MovieData.COLUMN_BACKDROP_PATH, value.getAsString(MovieContract.MovieData.COLUMN_BACKDROP_PATH));
@@ -441,24 +454,24 @@ public class MovieDataProvider extends ContentProvider {
                             //values.put(MovieContract.MovieData.COLUMN_MOVIE_ID,value.getAsString(MovieContract.MovieData.COLUMN_MOVIE_ID));
                             newValue.put(MovieContract.MovieData.COLUMN_VOTE_AVERAGE, value.getAsDouble(MovieContract.MovieData.COLUMN_VOTE_AVERAGE));
                             newValue.put(MovieContract.MovieData.COLUMN_SIMILAR_TO_ID
-                                        ,
+                                    ,
                                     value.getAsLong(MovieContract.MovieData.COLUMN_SIMILAR_TO_ID)
-                                );
+                            );
                             newValue.put(MovieContract.MovieData.COLUMN_GENRE_IDS, value.getAsString(MovieContract.MovieData.COLUMN_GENRE_IDS));
                             _id = db.update(MovieContract.MovieData.TABLE_MOVIE_DATA
-                                    ,newValue
-                                    ,MovieContract.MovieData.COLUMN_MOVIE_ID+"=?"
-                                    ,new String[]{value.getAsString(MovieContract.MovieData.COLUMN_MOVIE_ID)});
+                                    , newValue
+                                    , MovieContract.MovieData.COLUMN_MOVIE_ID + "=?"
+                                    , new String[]{value.getAsString(MovieContract.MovieData.COLUMN_MOVIE_ID)});
                             numInserted++;
-                            Log.e("SimilarMDDebug", "Insert Function Called : Updated : "+_id);
-                        }else{
+                            Log.e("SimilarMDDebug", "Insert Function Called : Updated : " + _id);
+                        } else {
                             _id = db.update(MovieContract.MovieData.TABLE_MOVIE_DATA
-                                    ,value
-                                    ,MovieContract.MovieData.COLUMN_MOVIE_ID+" =? "
-                                    ,new String[]{value.getAsString(MovieContract.MovieData.COLUMN_MOVIE_ID)}
+                                    , value
+                                    , MovieContract.MovieData.COLUMN_MOVIE_ID + " =? "
+                                    , new String[]{value.getAsString(MovieContract.MovieData.COLUMN_MOVIE_ID)}
                             );
                             numInserted++;
-                            Log.e("SimilarMDDebug", "Insert Function Called : Updated :Movie Data Overwritten : "+_id);
+                            Log.e("SimilarMDDebug", "Insert Function Called : Updated :Movie Data Overwritten : " + _id);
                         }
                     }
                     if (numInserted > 0) {
@@ -476,16 +489,16 @@ public class MovieDataProvider extends ContentProvider {
                     getContext().getContentResolver().notifyChange(uri, null);
                 }
             case MOVIE_CAST_DATA:
-                numInserted=bulkInsertForTable(db,MovieContract.CastData.TABLE_CAST_DATA,values,uri);
+                numInserted = bulkInsertForTable(db, MovieContract.CastData.TABLE_CAST_DATA, values, uri);
                 break;
             case MOVIE_CREW_DATA:
-                numInserted=bulkInsertForTable(db,MovieContract.CrewData.TABLE_CREW_DATA,values,uri);
+                numInserted = bulkInsertForTable(db, MovieContract.CrewData.TABLE_CREW_DATA, values, uri);
                 break;
             case MOVIE_CAST_DATA_ID:
-                numInserted=bulkInsertForTable(db,MovieContract.CastData.TABLE_CAST_DATA,values,uri);
+                numInserted = bulkInsertForTable(db, MovieContract.CastData.TABLE_CAST_DATA, values, uri);
                 break;
             case MOVIE_CREW_DATA_ID:
-                numInserted=bulkInsertForTable(db,MovieContract.CrewData.TABLE_CREW_DATA,values,uri);
+                numInserted = bulkInsertForTable(db, MovieContract.CrewData.TABLE_CREW_DATA, values, uri);
                 break;
             default:
                 return super.bulkInsert(uri, values);
@@ -493,7 +506,8 @@ public class MovieDataProvider extends ContentProvider {
 
         return numInserted;
     }
-    int bulkInsertForTable(SQLiteDatabase db,String table,ContentValues[] values,Uri uri){
+
+    int bulkInsertForTable(SQLiteDatabase db, String table, ContentValues[] values, Uri uri) {
         // allows for multiple transactions
         db.beginTransaction();
 

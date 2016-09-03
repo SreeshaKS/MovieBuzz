@@ -2,6 +2,10 @@ package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplay
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -9,11 +13,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.sreesha.android.moviebuzz.Networking.MovieDataInstance;
 import com.sreesha.android.moviebuzz.R;
 
@@ -42,6 +55,9 @@ public class MovieTabsDashBoard extends Fragment implements DispatchNavigationIn
     PlayingNowMoviesFragment mPlayingNowMoviesFragment;
     HighestRatedMoviesFragment mHighestRatedMvoiesFragment;
     FavouriteMoviesFragment mFavouriteMoviesFragment;
+
+
+
     private int[] tabIcons = {
             R.drawable.ic_favorite_black_48dp
             , R.drawable.ic_av_timer_black_48dp
@@ -62,9 +78,12 @@ public class MovieTabsDashBoard extends Fragment implements DispatchNavigationIn
         return fragment;
     }
 
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -107,8 +126,8 @@ public class MovieTabsDashBoard extends Fragment implements DispatchNavigationIn
         return view;
     }
 
-    private void initializeViewElements(View view) {
 
+    private void initializeViewElements(View view) {
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -122,14 +141,14 @@ public class MovieTabsDashBoard extends Fragment implements DispatchNavigationIn
             public void onPageSelected(int position) {
                 switch (position) {
                     case 0:
-                        getActivity().setTitle("Popular Movies");
+                        getActivity().setTitle(getActivity().getString(R.string.title_popular_movies_string));
                         if (!mPageVisitedArrayList.get(0)) {
                             mPageVisitedArrayList.set(0, true);
                             //TODO:Perform FragmentUI Update
                         }
                         break;
                     case 1:
-                        getActivity().setTitle("Upcoming Movies");
+                        getActivity().setTitle(getActivity().getString(R.string.title_upcoming_movies_string));
                         if (!mPageVisitedArrayList.get(1)) {
                             mPageVisitedArrayList.set(1, true);
                             //TODO:Perform FragmentUI Update
@@ -137,21 +156,21 @@ public class MovieTabsDashBoard extends Fragment implements DispatchNavigationIn
                         }
                         break;
                     case 2:
-                        getActivity().setTitle("Now Playing");
+                        getActivity().setTitle(getActivity().getString(R.string.title_now_playing_string));
                         if (!mPageVisitedArrayList.get(2)) {
                             mPageVisitedArrayList.set(1, true);
                             //TODO:Perform FragmentUI Update
                         }
                         break;
                     case 3:
-                        getActivity().setTitle("Highest Rated");
+                        getActivity().setTitle(getActivity().getString(R.string.title_highest_rated_movies_string));
                         if (!mPageVisitedArrayList.get(3)) {
                             mPageVisitedArrayList.set(1, true);
                             //TODO:Perform FragmentUI Update
                         }
                         break;
                     case 4:
-                        getActivity().setTitle("Favourites");
+                        getActivity().setTitle(getActivity().getString(R.string.title_favourites_string));
                         if (mAdapter.getItem(4) != null) {
                             //Call OnResume to reload the Favourites Data
                             mAdapter.getItem(position).onResume();
@@ -234,7 +253,6 @@ public class MovieTabsDashBoard extends Fragment implements DispatchNavigationIn
 
         @Override
         public Fragment getItem(int position) {
-            Log.e("TabsDebug", "Fragment Page - " + pageTitleArrayList.get(position));
             return fragmentsArrayList.get(position);
         }
 
