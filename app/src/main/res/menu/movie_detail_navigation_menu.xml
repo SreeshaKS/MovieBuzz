@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/movieDetailNavGroup">
+        <item
+            android:id="@+id/movieData"
+            android:title="Movie" />
+        <item
+            android:id="@+id/movieReviews"
+            android:title="Reviews" />
+        <item
+            android:id="@+id/movieTrailers"
+            android:title="Trailers" />
+        <item
+            android:id="@+id/movieCast"
+            android:title="Cast" />
+        <item
+            android:id="@+id/movieCrew"
+            android:title="Crew" />
+        <item
+            android:id="@+id/similarMovies"
+            android:title="Similar" />
+        <item
+            android:id="@+id/movieImages"
+            android:title="Photos" />
+        <item
+            android:id="@+id/customMovieReviews"
+            android:title="Write A Review" />
+    </group>
+</menu>

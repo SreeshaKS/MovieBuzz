@@ -1,9 +1,16 @@
 package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieDetailTabsView;
 
 import android.os.Parcelable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.sreesha.android.moviebuzz.Networking.MovieDataInstance;
 import com.sreesha.android.moviebuzz.Networking.NetworkConnectivityInfoDialogueFragment;
@@ -11,23 +18,35 @@ import com.sreesha.android.moviebuzz.R;
 
 import java.util.ArrayList;
 
-public class MovieTabsDetailActivity extends AppCompatActivity
-        implements NetworkConnectivityInfoDialogueFragment.ConfirmationDialogListener{
+import static com.sreesha.android.moviebuzz.R.id.toolbar;
 
+public class MovieTabsDetailActivity extends AppCompatActivity
+        implements NetworkConnectivityInfoDialogueFragment.ConfirmationDialogListener {
+    MovieTabsDetailFragment mMovieTabsDetailFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_tabs_detail);
+        Toolbar mToolbar = (Toolbar) findViewById(toolbar);
+        setSupportActionBar(mToolbar);
+
+        ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
+
         if (savedInstanceState == null) {
+            mMovieTabsDetailFragment = MovieTabsDetailFragment.newInstance(getDataFromCallingIntent());
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.detailTabsViewContainer
-                            ,MovieTabsDetailFragment.newInstance(getDataFromCallingIntent())
-                            ,UIUpdatableInterface.MOVIE_DETAIL_TABS_FRAGMENT)
+                            , mMovieTabsDetailFragment
+                            , UIUpdatableInterface.MOVIE_DETAIL_TABS_FRAGMENT)
                     .commit();
         }
     }
+
     public MovieDataInstance getDataFromCallingIntent() {
         try {
             return ((MovieDataInstance) (
@@ -43,6 +62,7 @@ public class MovieTabsDetailActivity extends AppCompatActivity
         }
         return null;
     }
+
     public void showNetworkConnectivityDialogue(String message) {
         //Create a Bundle to store the message
         Bundle messageBundle = new Bundle();
@@ -54,8 +74,13 @@ public class MovieTabsDetailActivity extends AppCompatActivity
                 , "ConfirmationDialogFragment"
         );
     }
+
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
 
+    }
+
+    interface NavItemClickDispatcher {
+        void OnNavItemClicked(MenuItem item);
     }
 }

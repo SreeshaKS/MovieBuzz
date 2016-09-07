@@ -1,7 +1,5 @@
 package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieDetailTabsView;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -14,40 +12,57 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
-import android.support.v4.widget.SearchViewCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.sreesha.android.moviebuzz.Animation.CustomAnimator;
 import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieContract;
+import com.sreesha.android.moviebuzz.FireBaseUI.MovieBuzzReviewsActivity;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.DetailView.AsyncMediaStorageClass;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.DetailView.OnMoreReviewDataRequestedListener;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses.MoviePosterGridActivity;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses.MoviePosterGridFragment;
+import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses.WatchToWatchActivity;
+import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.PeopleDisplay.PeopleDisplayActivity;
 import com.sreesha.android.moviebuzz.Networking.APIUrls;
 import com.sreesha.android.moviebuzz.Networking.MovieDataInstance;
 import com.sreesha.android.moviebuzz.Networking.MovieImage;
 import com.sreesha.android.moviebuzz.R;
+import com.sreesha.android.moviebuzz.Settings.LoginActivity;
+import com.sreesha.android.moviebuzz.Settings.SettingsActivity;
 
 import java.util.ArrayList;
 
 import android.support.v4.content.CursorLoader;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MovieTabsDetailFragment extends Fragment
@@ -115,6 +130,11 @@ public class MovieTabsDetailFragment extends Fragment
 
     CoordinatorLayout tabsCoordinatorLayout;
 
+    NavigationView mMovieDetailNavigationView;
+    DrawerLayout mMovieDetailDrawerLayout;
+    ActionBarDrawerToggle mActionBarDrawerToggle;
+    View headerView;
+
     public MovieTabsDetailFragment() {
 
     }
@@ -161,8 +181,22 @@ public class MovieTabsDetailFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_movie_tabs_detail, container, false);
-        setHasOptionsMenu(true);
-        initializeViewElements(view);
+
+        Toolbar mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        AppCompatActivity mActivity = (MovieTabsDetailActivity) getActivity();
+        ActionBar ab = mActivity.getSupportActionBar();
+
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+            mActivity.setSupportActionBar(mToolbar);
+
+            setHasOptionsMenu(true);
+            initializeViewElements(view);
+
+            initNavigationView(mToolbar, view);
+        }
+
+
         pageVisitedArrayList.add(0, false);
         pageVisitedArrayList.add(1, false);
         pageVisitedArrayList.add(2, false);
@@ -206,6 +240,7 @@ public class MovieTabsDetailFragment extends Fragment
         super.onResume();
     }
 
+
     private void initializeViewElements(View view) {
         //backdropImageView.setImageDrawable(getActivity().getDrawable(R.drawable.dark_night_sample_backdrop));
         viewPager = (ViewPager) view.findViewById(R.id.viewpager);
@@ -224,6 +259,7 @@ public class MovieTabsDetailFragment extends Fragment
         shareFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.shareFab);
         toWatchFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.toWatchFab);
         watchedFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.watchedFab);
+
 
         floatingActionMenu = (FloatingActionMenu) view.findViewById(R.id.movieDetailFloatingActionMenu);
         favouriteFloatingActionButton.setOnClickListener(new FloatingActionMenu.OnClickListener() {
@@ -443,7 +479,7 @@ public class MovieTabsDetailFragment extends Fragment
                         break;
                     case 7:
                         Log.d("PageDebug", "page Selected");
-                       floatingActionMenu.setVisibility(View.GONE);
+                        floatingActionMenu.setVisibility(View.GONE);
                         break;
                 }
             }
@@ -571,6 +607,8 @@ public class MovieTabsDetailFragment extends Fragment
                             mCollapsingToolBar
                                     .setStatusBarScrimColor(TabsFragmentColor.colorVibrantLight);
 
+                            mHeaderCardView.setCardBackgroundColor(TabsFragmentColor.colorMuted);
+                            mProfileImageBackgroundCV.setCardBackgroundColor(TabsFragmentColor.colorMutedDark);
                        /* movieDetailTabLayout
                                 .setTabTextColors(
                                         palette.getMutedColor(primary)
@@ -735,6 +773,113 @@ public class MovieTabsDetailFragment extends Fragment
 
         }
     };
+    CardView mHeaderCardView;
+    CardView mProfileImageCardView;
+    TextView mUserNameTextView;
+    TextView mEmailTextView;
+    boolean mIsLoginRequired = false;
+    ImageView mProfileImageView;
+    CardView mProfileImageBackgroundCV;
+
+    private void initNavigationView(Toolbar toolbar, View view) {
+        mMovieDetailNavigationView = (NavigationView) view.findViewById(R.id.movieDetailNavigationView);
+        mMovieDetailDrawerLayout = (DrawerLayout) view.findViewById(R.id.movieDetailDrawerLayout);
+        headerView = mMovieDetailNavigationView.getHeaderView(0);
+
+
+        mHeaderCardView = (CardView) headerView.findViewById(R.id.headerCardView);
+        mProfileImageCardView = (CardView) headerView.findViewById(R.id.profileImageCardView);
+        mUserNameTextView = (TextView) headerView.findViewById(R.id.userNameTextView);
+        mEmailTextView = (TextView) headerView.findViewById(R.id.emailTextView);
+        mProfileImageView = (ImageView) headerView.findViewById(R.id.profileImageView);
+        mProfileImageBackgroundCV = (CardView) headerView.findViewById(R.id.profileImageBackgroundCV);
+
+        if (!mIsLoginRequired) {
+            mUserNameTextView.setText(user.getDisplayName());
+            mEmailTextView.setText(user.getEmail());
+            Picasso.with(getActivity())
+                    .load(user.getPhotoUrl())
+                    .into(mProfileImageView);
+        }
+        mMovieDetailNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+
+                switch (item.getItemId()) {
+                    case R.id.movieData:
+                        movieDetailTabLayout.getTabAt(0).select();
+                        break;
+                    case R.id.movieReviews:
+                        movieDetailTabLayout.getTabAt(1).select();
+                        break;
+                    case R.id.movieTrailers:
+                        movieDetailTabLayout.getTabAt(2).select();
+                        break;
+                    case R.id.movieCast:
+                        movieDetailTabLayout.getTabAt(3).select();
+                        break;
+                    case R.id.movieCrew:
+                        movieDetailTabLayout.getTabAt(4).select();
+                        break;
+                    case R.id.similarMovies:
+                        movieDetailTabLayout.getTabAt(5).select();
+                        break;
+                    case R.id.movieImages:
+                        movieDetailTabLayout.getTabAt(6).select();
+                        break;
+                    case R.id.customMovieReviews:
+                        movieDetailTabLayout.getTabAt(7).select();
+                        break;
+
+                }
+                mMovieDetailDrawerLayout.closeDrawers();
+                return false;
+            }
+        });
+        mActionBarDrawerToggle = new ActionBarDrawerToggle(getActivity()
+                , mMovieDetailDrawerLayout
+                , toolbar
+                , R.string.posterGridDrawer_close
+                , R.string.posterGridDrawer_open) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+        };
+
+        mMovieDetailDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
+        mActionBarDrawerToggle.syncState();
+        mMovieDetailDrawerLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mActionBarDrawerToggle.syncState();
+            }
+        });
+        if (user == null) {
+
+            mIsLoginRequired = true;
+
+            MenuItem mLoginMenuItem = mMovieDetailNavigationView.getMenu().add("Login");
+            mLoginMenuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem menuItem) {
+                    getActivity()
+                            .startActivity(new Intent(getActivity()
+                                    , LoginActivity.class));
+                    getActivity().finish();
+
+                    return false;
+                }
+            });
+        }
+    }
+
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     public void onClick(View v) {
@@ -955,4 +1100,13 @@ public class MovieTabsDetailFragment extends Fragment
         public static int colorMutedLight;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return super.onOptionsItemSelected(item);
+    }
 }
