@@ -134,7 +134,7 @@ public class MovieTabsDetailFragment extends Fragment
     DrawerLayout mMovieDetailDrawerLayout;
     ActionBarDrawerToggle mActionBarDrawerToggle;
     View headerView;
-
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     public MovieTabsDetailFragment() {
 
     }
@@ -794,11 +794,17 @@ public class MovieTabsDetailFragment extends Fragment
         mProfileImageView = (ImageView) headerView.findViewById(R.id.profileImageView);
         mProfileImageBackgroundCV = (CardView) headerView.findViewById(R.id.profileImageBackgroundCV);
 
-        if (!mIsLoginRequired) {
+        if (!mIsLoginRequired && user!=null) {
             mUserNameTextView.setText(user.getDisplayName());
             mEmailTextView.setText(user.getEmail());
             Picasso.with(getActivity())
                     .load(user.getPhotoUrl())
+                    .into(mProfileImageView);
+        }else{
+            mUserNameTextView.setVisibility(View.GONE);
+            mEmailTextView.setVisibility(View.GONE);
+            Picasso.with(getActivity())
+                    .load(R.drawable.movie_app_icon_green)
                     .into(mProfileImageView);
         }
         mMovieDetailNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -876,10 +882,12 @@ public class MovieTabsDetailFragment extends Fragment
                     return false;
                 }
             });
+        }else{
+            mIsLoginRequired = false;
         }
     }
 
-    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
 
     @Override
     public void onClick(View v) {
