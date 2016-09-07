@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.sreesha.android.moviebuzz.BuildConfig;
 import com.sreesha.android.moviebuzz.Settings.MovieBuzzApplication;
 import com.sreesha.android.moviebuzz.R;
 
@@ -23,7 +24,7 @@ public class APIUrls {
     private static final String PATH_5 = "movie";
 
 
-    public  static final String FACEBOOK_URL = "https://www.facebook.com/NDmoviebuzz";
+    public static final String FACEBOOK_URL = "https://www.facebook.com/NDmoviebuzz";
 
     public static String getPathVideo() {
         return PATH_VIDEO;
@@ -37,7 +38,10 @@ public class APIUrls {
 
     private static final String PATH_REVIEW = "reviews";
 
-    private static final String API_KEY = "0dfb702eeef59bdc7d20cbf3a4191b5a";
+    private static final String API_KEY = BuildConfig.API_KEY;
+
+    public static final String WEB_CLIENT_ID = BuildConfig.WEB_CLIENT_ID;
+
     public static final String API_PAGE_PARAM = "page";
     private static final String API_KEY_PARAM = "api_key";
     public static final String API_SORT_PARAM = "sort_by";

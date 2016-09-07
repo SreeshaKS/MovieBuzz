@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
 
-    <string name="web_client_id" translatable="false">533229884084-oiourqp61h7qj1cjgi44617krrvcqhts.apps.googleusercontent.com</string>
+    <string name="web_client_id" translatable="false">BuildConfig.WEB_CLIENT_ID</string>
+
     <string name="app_name" translatable="false">Movie Buzz</string>
     <string name="action_settings">Settings</string>
 
