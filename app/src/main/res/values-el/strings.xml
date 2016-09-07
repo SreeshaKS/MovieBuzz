@@ -99,4 +99,5 @@
     <string name="add_to_watch_list">Add to watch list</string>
     <string name="remove_from_watch_list">Remove From Watch List</string>
     <string name="moviebuzz_reviews_string">MovieBuzz Reviews</string>
+    <string name="write_a_review_title_string">Write A Review</string>
 </resources>

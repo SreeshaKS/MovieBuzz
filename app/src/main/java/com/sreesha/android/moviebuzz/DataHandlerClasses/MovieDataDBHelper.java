@@ -11,7 +11,7 @@ public class MovieDataDBHelper extends SQLiteOpenHelper {
 
     public static final String TAG = MovieDataDBHelper.class.getSimpleName();
     private static final String DATABASE_NAME = "movieData.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 25;
 
     public MovieDataDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

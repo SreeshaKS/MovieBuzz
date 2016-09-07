@@ -3,27 +3,27 @@
     <group android:id="@+id/movieDetailNavGroup">
         <item
             android:id="@+id/movieData"
-            android:title="Movie" />
+            android:title="@string/movie_title_string" />
         <item
             android:id="@+id/movieReviews"
-            android:title="Reviews" />
+            android:title="@string/reviews_title_string" />
         <item
             android:id="@+id/movieTrailers"
-            android:title="Trailers" />
+            android:title="@string/trailers_title_string" />
         <item
             android:id="@+id/movieCast"
-            android:title="Cast" />
+            android:title="@string/cast_title_string" />
         <item
             android:id="@+id/movieCrew"
-            android:title="Crew" />
+            android:title="@string/crew_title_string" />
         <item
             android:id="@+id/similarMovies"
-            android:title="Similar" />
+            android:title="@string/similar_movies_title_string" />
         <item
             android:id="@+id/movieImages"
-            android:title="Photos" />
+            android:title="@string/images_title_string" />
         <item
             android:id="@+id/customMovieReviews"
-            android:title="Write A Review" />
+            android:title="@string/write_a_review_title_string" />
     </group>
 </menu>
