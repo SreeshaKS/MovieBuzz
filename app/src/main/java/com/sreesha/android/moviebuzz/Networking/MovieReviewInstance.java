@@ -11,69 +11,95 @@ import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieContract;
  * Created by Sreesha on 21-02-2016.
  */
 public class MovieReviewInstance implements Parcelable {
-    protected long MOVIE_ID = 0;
-    protected int PAGE = 0;
-    protected String REVIEW_ID = "defaultReview";
-    protected String AUTHOR = "defaultAuthor";
-    protected String REVIEW_CONTENT = "defaultContent";
-    protected String REVIEW_URL = "defaultURL";
+    protected long movie_id = 0;
+    protected int page = 0;
+    protected String review_id = "defaultReview";
+    protected String author = "defaultAuthor";
+    protected String review_content = "defaultContent";
+    protected String review_url = "defaultURL";
+    protected String movie_name = "defaultName";
 
-    public int getTOTAL_PAGES() {
-        return TOTAL_PAGES;
+    public int getTotal_pages() {
+        return total_pages;
     }
 
-    protected int TOTAL_PAGES = 0;
+    protected int total_pages = 0;
+
     public MovieReviewInstance() {
     }
+
     public MovieReviewInstance(
             long MOVIE_ID
-            , int PAGE
-            , String REVIEW_ID
-            , String AUTHOR
-            , String REVIEW_CONTENT
-            , String REVIEW_URL
-            , int TOTAL_PAGES) {
-        this.MOVIE_ID = MOVIE_ID;
-        this.PAGE = PAGE;
-        this.REVIEW_ID = REVIEW_ID;
-        this.AUTHOR = AUTHOR;
-        this.REVIEW_CONTENT = REVIEW_CONTENT;
-        this.REVIEW_URL = REVIEW_URL;
-        this.TOTAL_PAGES = TOTAL_PAGES;
+            , int page
+            , String review_id
+            , String author
+            , String review_content
+            , String review_url
+            , int total_pages) {
+        this.movie_id = MOVIE_ID;
+        this.page = page;
+        this.review_id = review_id;
+        this.author = author;
+        this.review_content = review_content;
+        this.review_url = review_url;
+        this.total_pages = total_pages;
+    }
+
+    public MovieReviewInstance(
+            long MOVIE_ID
+            , int page
+            , String review_id
+            , String author
+            , String review_content
+            , String review_url
+            , int total_pages
+            , String movie_name) {
+        this.movie_id = MOVIE_ID;
+        this.page = page;
+        this.review_id = review_id;
+        this.author = author;
+        this.review_content = review_content;
+        this.review_url = review_url;
+        this.total_pages = total_pages;
+        this.movie_name = movie_name;
     }
 
     public MovieReviewInstance(Parcel in) {
-        MOVIE_ID = in.readLong();
-        PAGE = in.readInt();
-        REVIEW_ID = in.readString();
-        AUTHOR = in.readString();
-        REVIEW_CONTENT = in.readString();
-        REVIEW_URL = in.readString();
-        TOTAL_PAGES = in.readInt();
+        movie_id = in.readLong();
+        page = in.readInt();
+        review_id = in.readString();
+        author = in.readString();
+        review_content = in.readString();
+        review_url = in.readString();
+        total_pages = in.readInt();
+        movie_name=in.readString();
     }
 
-    public String getREVIEW_URL() {
-        return REVIEW_URL;
+    public String getReview_url() {
+        return review_url;
     }
 
-    public String getREVIEW_CONTENT() {
-        return REVIEW_CONTENT;
+    public String getReview_content() {
+        return review_content;
     }
 
-    public String getAUTHOR() {
-        return AUTHOR;
+    public String getAuthor() {
+        return author;
     }
 
-    public String getREVIEW_ID() {
-        return REVIEW_ID;
+    public String getReview_id() {
+        return review_id;
     }
 
-    public int getPAGE() {
-        return PAGE;
+    public int getPage() {
+        return page;
     }
 
-    public long getMOVIE_ID() {
-        return MOVIE_ID;
+    public long getMovie_id() {
+        return movie_id;
+    }
+    public String getMovie_name() {
+        return movie_name;
     }
 
     public static final Creator<MovieReviewInstance> CREATOR = new Creator<MovieReviewInstance>() {
@@ -95,13 +121,14 @@ public class MovieReviewInstance implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(MOVIE_ID);
-        dest.writeInt(PAGE);
-        dest.writeString(REVIEW_ID);
-        dest.writeString(AUTHOR);
-        dest.writeString(REVIEW_CONTENT);
-        dest.writeString(REVIEW_URL);
-        dest.writeInt(TOTAL_PAGES);
+        dest.writeLong(movie_id);
+        dest.writeInt(page);
+        dest.writeString(review_id);
+        dest.writeString(author);
+        dest.writeString(review_content);
+        dest.writeString(review_url);
+        dest.writeInt(total_pages);
+        dest.writeString(movie_name);
     }
 
     public static MovieReviewInstance getMovieReviewInstanceFromCursor(Cursor movieReviewCursor) {
@@ -116,16 +143,18 @@ public class MovieReviewInstance implements Parcelable {
                 , movieReviewCursor.getInt(movieReviewCursor.getColumnIndex(MovieContract.MovieReviews.COLUMN_MOVIE_ID))
         );
     }
+
     public static MovieReviewInstance getMovieReviewInstanceFromDataSnapShot(DataSnapshot snap) {
 
         return new MovieReviewInstance(
-                Long.parseLong(snap.child("MOVIE_ID").getValue().toString())
+                Long.parseLong(snap.child("movie_id").getValue().toString())
                 , -1
-                , snap.child("REVIEW_ID").getValue().toString()
-                , snap.child("AUTHOR").getValue().toString()
-                , snap.child("REVIEW_CONTENT").getValue().toString()
-                , snap.child("REVIEW_URL").getValue().toString()
-                ,0
+                , snap.child("review_id").getValue().toString()
+                , snap.child("author").getValue().toString()
+                , snap.child("review_content").getValue().toString()
+                , snap.child("review_url").getValue().toString()
+                , 0
+                ,snap.child("movie_name").getValue().toString()
         );
     }
 }

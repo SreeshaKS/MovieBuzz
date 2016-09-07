@@ -53,7 +53,7 @@ public class MovieContract {
            1 - HighestRatedMovies
            2 - Upcoming Movies
            3 - Movies Playing Now
-           4 - MOVIE_ID (4Digit Integer) - Similar Movies
+           4 - movie_id (4Digit Integer) - Similar Movies
          */
         public static final String COLUMN_MOVIE_TYPE = "movieType";
 

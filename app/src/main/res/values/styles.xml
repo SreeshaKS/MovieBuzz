@@ -12,7 +12,7 @@
         <item name="colorPrimary">#FFC107</item>
         <item name="colorPrimaryDark">#FFA000</item>
         <!--<item name="colorPrimaryLight">#FFECB3</item>-->
-        <item name="colorAccent">#795548</item>
+        <item name="colorAccent">@color/md_amber_600</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

@@ -46,9 +46,14 @@ public class MovieDataProvider extends ContentProvider {
 
     MovieDataDBHelper mMovieDataDBHelper;
     private static final SQLiteQueryBuilder sFavouritesFromMovieIDQueryBuilder;
+    private static final SQLiteQueryBuilder sWatchedQueryBuilder;
+    private static final SQLiteQueryBuilder sToWatchQueryBuilder;
 
     static {
         sFavouritesFromMovieIDQueryBuilder = new SQLiteQueryBuilder();
+        sWatchedQueryBuilder = new SQLiteQueryBuilder();
+        sToWatchQueryBuilder= new SQLiteQueryBuilder();
+
         sFavouritesFromMovieIDQueryBuilder.setTables(
                 MovieContract.MovieData.TABLE_MOVIE_DATA
                         + " INNER JOIN "
@@ -58,14 +63,63 @@ public class MovieDataProvider extends ContentProvider {
                         + " = " + MovieContract.MovieData.TABLE_MOVIE_DATA
                         + "." + MovieContract.MovieData.COLUMN_MOVIE_ID
         );
+        sWatchedQueryBuilder.setTables(
+                MovieContract.MovieData.TABLE_MOVIE_DATA
+                        + " INNER JOIN "
+                        + MovieContract.WatchedMovieData.TABLE_WATCHED_MOVIE_DATA
+                        + " ON " + MovieContract.WatchedMovieData.TABLE_WATCHED_MOVIE_DATA
+                        + "." + MovieContract.UserFavourite.COLUMN_MOVIE_ID
+                        + " = " + MovieContract.MovieData.TABLE_MOVIE_DATA
+                        + "." + MovieContract.MovieData.COLUMN_MOVIE_ID
+        );
+        sToWatchQueryBuilder.setTables(
+                MovieContract.MovieData.TABLE_MOVIE_DATA
+                        + " INNER JOIN "
+                        + MovieContract.ToWatchMovieData.TABLE_TO_WATCH_MOVIE_DATA
+                        + " ON " + MovieContract.ToWatchMovieData.TABLE_TO_WATCH_MOVIE_DATA
+                        + "." + MovieContract.UserFavourite.COLUMN_MOVIE_ID
+                        + " = " + MovieContract.MovieData.TABLE_MOVIE_DATA
+                        + "." + MovieContract.MovieData.COLUMN_MOVIE_ID
+        );
     }
 
     private Cursor getFavouredMovies(Uri uri, String[] projection
             , String selection, String[] selectionArgs
             , String sortOrder) {
-        return sFavouritesFromMovieIDQueryBuilder.query(
+
+        Cursor cur= sFavouritesFromMovieIDQueryBuilder.query(
                 mMovieDataDBHelper.getReadableDatabase()
+                , projection
+                , selection
+                , selectionArgs
                 , null
+                , null
+                , sortOrder
+        );
+        Log.d("Watched",cur.getCount()+"\n"+selection);
+        return cur;
+    }
+    private Cursor getWatchedMovies(Uri uri, String[] projection
+            , String selection, String[] selectionArgs
+            , String sortOrder) {
+
+        return sWatchedQueryBuilder.query(
+                mMovieDataDBHelper.getReadableDatabase()
+                , projection
+                , selection
+                , selectionArgs
+                , null
+                , null
+                , sortOrder
+        );
+    }
+    private Cursor getToWatchMovies(Uri uri, String[] projection
+            , String selection, String[] selectionArgs
+            , String sortOrder) {
+
+        return sToWatchQueryBuilder.query(
+                mMovieDataDBHelper.getReadableDatabase()
+                , projection
                 , selection
                 , selectionArgs
                 , null
@@ -99,7 +153,6 @@ public class MovieDataProvider extends ContentProvider {
         matcher.addURI(authority, MovieContract.PATH_MOVIE_FAVOURITES
                 + "/"
                 + MovieContract.PATH_FAVOURITES_MOVIE_DATA, MOVIE_FAVOURITES_MOVIE_DATA_JOINED);
-
         return matcher;
     }
 
@@ -117,7 +170,7 @@ public class MovieDataProvider extends ContentProvider {
         Log.d("Watched", "Calling Query Function For Watched");
         switch (sUriMatcher.match(uri)) {
             case MOVIE_DATA: {
-                Log.e("SimilarMDDebug", "Query Function Called");
+                Log.e("SimilarMDDebug", "Query Function Called\n"+selection);
                 return mMovieDataDBHelper.getReadableDatabase().query(
                         MovieContract.MovieData.TABLE_MOVIE_DATA
                         , projection
@@ -186,7 +239,9 @@ public class MovieDataProvider extends ContentProvider {
                         MovieContract.UserFavourite.TABLE_FAVOURITE_DATA
                         , projection
                         , MovieContract.MovieData.COLUMN_MOVIE_ID + " = ?"
-                        , new String[]{String.valueOf(ContentUris.parseId(uri))}
+                        + " AND "+selection
+                        , new String[]{String.valueOf(ContentUris.parseId(uri))
+                        ,selectionArgs[0]}
                         , null
                         , null
                         , null);

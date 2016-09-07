@@ -403,13 +403,13 @@ public class DownloadData extends AsyncTask<String, Void, String> {
 
     private ContentValues getContentValuesFromReviewsInstance(MovieReviewInstance movieReviewsInstance) {
         ContentValues values = new ContentValues();
-        values.put(MovieContract.MovieReviews.COLUMN_MOVIE_ID, movieReviewsInstance.getMOVIE_ID());
-        values.put(MovieContract.MovieReviews.COLUMN_PAGE, movieReviewsInstance.getPAGE());
-        values.put(MovieContract.MovieReviews.COLUMN_REVIEW_ID, movieReviewsInstance.getREVIEW_ID());
-        values.put(MovieContract.MovieReviews.COLUMN_AUTHOR, movieReviewsInstance.getAUTHOR());
-        values.put(MovieContract.MovieReviews.COLUMN_REVIEW_CONTENT, movieReviewsInstance.getREVIEW_CONTENT());
-        values.put(MovieContract.MovieReviews.COLUMN_REVIEW_URL, movieReviewsInstance.getREVIEW_URL());
-        values.put(MovieContract.MovieReviews.COLUMN_TOTAL_PAGES, movieReviewsInstance.getTOTAL_PAGES());
+        values.put(MovieContract.MovieReviews.COLUMN_MOVIE_ID, movieReviewsInstance.getMovie_id());
+        values.put(MovieContract.MovieReviews.COLUMN_PAGE, movieReviewsInstance.getPage());
+        values.put(MovieContract.MovieReviews.COLUMN_REVIEW_ID, movieReviewsInstance.getReview_id());
+        values.put(MovieContract.MovieReviews.COLUMN_AUTHOR, movieReviewsInstance.getAuthor());
+        values.put(MovieContract.MovieReviews.COLUMN_REVIEW_CONTENT, movieReviewsInstance.getReview_content());
+        values.put(MovieContract.MovieReviews.COLUMN_REVIEW_URL, movieReviewsInstance.getReview_url());
+        values.put(MovieContract.MovieReviews.COLUMN_TOTAL_PAGES, movieReviewsInstance.getTotal_pages());
         return values;
     }
 

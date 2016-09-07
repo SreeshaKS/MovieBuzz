@@ -309,7 +309,8 @@ public class MovieTabsDetailFragment extends Fragment
                         , new String[]{String.valueOf(MovieContract.UserFavourite.WATCHED_MOVIE_TYPE)});
         isMovieWatched = false;
                     /*TODO:Update UI To show Un-Favoured Movie*/
-        watchedFloatingActionButton.setLabelText(getActivity().getString(R.string.not_watched_string));
+        watchedFloatingActionButton.setLabelText(getActivity().getString(R.string.mark_as_watched_string));
+        toWatchFloatingActionButton.setVisibility(View.VISIBLE);
         Log.d("Debug", "Deleted from Watched List");
     }
 
@@ -327,7 +328,8 @@ public class MovieTabsDetailFragment extends Fragment
         }
 
         isMovieWatched = true;
-        watchedFloatingActionButton.setLabelText(getActivity().getString(R.string.watched_string));
+        watchedFloatingActionButton.setLabelText(getActivity().getString(R.string.remove_from_watched_string));
+        toWatchFloatingActionButton.setVisibility(View.GONE);
                     /*TODO:Update UI To show Favoured Movie*/
         Log.d("Debug", "Added To Watched List");
     }
@@ -352,7 +354,7 @@ public class MovieTabsDetailFragment extends Fragment
                         , new String[]{String.valueOf(MovieContract.UserFavourite.TO_WATCH_MOVIE_TYPE)});
         isMovieToBeWatched = false;
                     /*TODO:Update UI To show Un-Favoured Movie*/
-        toWatchFloatingActionButton.setLabelText(getActivity().getString(R.string.not_in_to_watch_list));
+        toWatchFloatingActionButton.setLabelText(getActivity().getString(R.string.add_to_watch_list));
         Log.d("Debug", "Deleted From To Watch List");
     }
 
@@ -371,7 +373,7 @@ public class MovieTabsDetailFragment extends Fragment
         }
 
         isMovieToBeWatched = true;
-        toWatchFloatingActionButton.setLabelText(getActivity().getString(R.string.to_watch_list_string));
+        toWatchFloatingActionButton.setLabelText(getActivity().getString(R.string.remove_from_watch_list));
                     /*TODO:Update UI To show Favoured Movie*/
         Log.d("Debug", "Added To To Be Watched List");
     }
@@ -461,7 +463,7 @@ public class MovieTabsDetailFragment extends Fragment
         adapter.addFragment(mMovieCrewFragment, getActivity().getString(R.string.crew_title_string));
         adapter.addFragment(mSimilarMoviesFragment, getActivity().getString(R.string.similar_movies_title_string));
         adapter.addFragment(mMoviePhotosFragment, getActivity().getString(R.string.images_title_string));
-        adapter.addFragment(mCustomReviewsFragment, "Your Review");
+        adapter.addFragment(mCustomReviewsFragment, getActivity().getString(R.string.your_review_string));
         viewPager.setAdapter(adapter);
     }
 
@@ -610,6 +612,7 @@ public class MovieTabsDetailFragment extends Fragment
             = new android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
         public android.support.v4.content.Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
             if (mMovieData != null) {
                 switch (id) {
                     case IS_FAVOURED_LOADER_ID:
@@ -689,13 +692,17 @@ public class MovieTabsDetailFragment extends Fragment
                         isMovieWatched = false;
                     /*TODO:Update UI To Show That Movie is NOT Favoured*/
                         watchedFloatingActionButton.setLabelText(
-                                getActivity().getString(R.string.not_watched_string)
+                                getActivity().getString(R.string.mark_as_watched_string)
                         );
+                        toWatchFloatingActionButton.setVisibility(View.VISIBLE);
 
                     } else {
                         isMovieWatched = true;
                     /*TODO:Update UI To Show That Movie is Favoured*/
-                        watchedFloatingActionButton.setLabelText(getActivity().getString(R.string.watched_string));
+                        watchedFloatingActionButton.setLabelText(
+                                getActivity().getString(R.string.remove_from_watched_string)
+                        );
+                        toWatchFloatingActionButton.setVisibility(View.GONE);
                         //runAsyncMediaRetrieval(mPosterImageView, mBackDropImageView);
                     }
                     break;
@@ -705,13 +712,13 @@ public class MovieTabsDetailFragment extends Fragment
                         isMovieToBeWatched = false;
                     /*TODO:Update UI To Show That Movie is NOT Favoured*/
                         toWatchFloatingActionButton
-                                .setLabelText(getActivity().getString(R.string.not_in_to_watch_list));
+                                .setLabelText(getActivity().getString(R.string.add_to_watch_list));
 
                     } else {
-                        isMovieWatched = true;
+                        isMovieToBeWatched = true;
                     /*TODO:Update UI To Show That Movie is Favoured*/
                         toWatchFloatingActionButton
-                                .setLabelText(getActivity().getString(R.string.to_be_watched_string));
+                                .setLabelText(getActivity().getString(R.string.remove_from_watch_list));
                         //runAsyncMediaRetrieval(mPosterImageView, mBackDropImageView);
                     }
                     break;

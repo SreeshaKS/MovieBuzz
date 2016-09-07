@@ -94,4 +94,9 @@
     <string name="you_haven_t_added_any_movies_to_this_list">You Haven\'t Added Any Movies To This List</string>
     <string name="to_watch_list_activity_title">Watch List</string>
     <string name="watched_list_activity_title">Watched List</string>
+    <string name="remove_from_watched_string">Remove From Watched</string>
+    <string name="mark_as_watched_string">Mark As Watched</string>
+    <string name="add_to_watch_list">Add to watch list</string>
+    <string name="remove_from_watch_list">Remove From Watch List</string>
+    <string name="moviebuzz_reviews_string">MovieBuzz Reviews</string>
 </resources>

@@ -39,6 +39,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.sreesha.android.moviebuzz.Animation.CustomAnimator;
 import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieContract;
+import com.sreesha.android.moviebuzz.FireBaseUI.MovieBuzzReviewsActivity;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieDetailTabsView.MovieTabsDetailActivity;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieDetailTabsView.MovieTabsDetailFragment;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieDetailTabsView.UIUpdatableInterface;
@@ -247,6 +248,10 @@ public class MoviePosterGridActivity extends AppCompatActivity
                                 , MovieContract.UserFavourite.WATCHED_MOVIE_TYPE);
                         startActivity(mIntent2);
                         break;
+                    case R.id.movieBuzzReviewsNavMenu:
+                        startActivity(new Intent(MoviePosterGridActivity.this,
+                                MovieBuzzReviewsActivity.class));
+                        return true;
                 }
                 mPosterGridDrawerLayout.closeDrawers();
                 return false;
@@ -328,6 +333,7 @@ public class MoviePosterGridActivity extends AppCompatActivity
             case R.id.likeFaceBookPage:
                 startActivity(newFacebookIntent(getPackageManager(), APIUrls.FACEBOOK_URL));
                 return true;
+
         }
         return super.onOptionsItemSelected(item);
     }

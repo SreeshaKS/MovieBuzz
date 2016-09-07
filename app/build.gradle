@@ -3,12 +3,14 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 24
     buildToolsVersion "23.0.3"
-
+    aaptOptions {
+        cruncherEnabled = false
+    }
     defaultConfig {
         applicationId "com.sreesha.android.moviebuzz"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 16
+        versionCode 20
         versionName "4.2"
         multiDexEnabled true
     }
@@ -18,6 +20,7 @@ android {
         }
         release {
             minifyEnabled false
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

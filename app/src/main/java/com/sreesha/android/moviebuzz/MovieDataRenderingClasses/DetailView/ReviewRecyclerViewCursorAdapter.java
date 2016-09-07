@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,9 +47,9 @@ public class ReviewRecyclerViewCursorAdapter extends CursorRecyclerViewAdapter<R
     @Override
     public void onBindViewHolder(final ViewHolder holder, final Cursor cursor) {
         final MovieReviewInstance reviewsInstance = MovieReviewInstance.getMovieReviewInstanceFromCursor(cursor);
-        holder.contentOverViewTextView.setText(reviewsInstance.getREVIEW_CONTENT());
-        holder.authorTextView.setText(reviewsInstance.getAUTHOR());
-        holder.reviewLinkTextView.setText(reviewsInstance.getREVIEW_URL());
+        holder.contentOverViewTextView.setText(reviewsInstance.getReview_content());
+        holder.authorTextView.setText(reviewsInstance.getAuthor());
+        holder.reviewLinkTextView.setText(reviewsInstance.getReview_url());
 
         if (mMovieDataInstance != null)
             holder.reviewMovieNameTextView.setText(mMovieDataInstance.getTitle());
@@ -73,11 +72,11 @@ public class ReviewRecyclerViewCursorAdapter extends CursorRecyclerViewAdapter<R
             title = mMovieDataInstance.getTitle();
 
         return ("Author : " +
-                reviewsInstance.getAUTHOR() + "\n"
+                reviewsInstance.getAuthor() + "\n"
                 + "Movie : " + title
-                + "\n\n" + reviewsInstance.getREVIEW_CONTENT()
+                + "\n\n" + reviewsInstance.getReview_content()
                 + "\n"
-                + "Web : " + reviewsInstance.getREVIEW_URL());
+                + "Web : " + reviewsInstance.getReview_url());
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -95,6 +94,7 @@ public class ReviewRecyclerViewCursorAdapter extends CursorRecyclerViewAdapter<R
             contentOverViewTextView = (TextView) itemView.findViewById(R.id.reviewExpandedContentTextView);
             reviewMovieNameTextView = (TextView) itemView.findViewById(R.id.reviewMovieNameView);
             reviewShareImageView = (ImageView) itemView.findViewById(R.id.reviewShareImageView);
+
             reviewLinkTextView = (TextView) itemView.findViewById(R.id.reviewLinkTextView);
         }
     }

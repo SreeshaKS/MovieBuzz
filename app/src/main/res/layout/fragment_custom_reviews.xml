@@ -1,76 +1,125 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/reviewsFrameLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/transparent"
-    tools:context="com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieDetailTabsView.ReviewsFragment">
+    android:layout_height="match_parent">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/errorMessageDisplayCard"
+    <RelativeLayout
+        android:id="@+id/reviewsRelativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        app:cardCornerRadius="10dp">
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent">
 
-        <RelativeLayout
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:id="@+id/reviewsFrameLayout"
+            android:layout_width="match_parent"
+            android:layout_margin="10dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center">
+            android:background="@android:color/transparent"
+            tools:context="com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieDetailTabsView.ReviewsFragment">
 
             <android.support.v7.widget.CardView
-                android:id="@+id/refreshCard"
-                android:layout_width="66dp"
-                android:layout_height="66dp"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="5dp"
-                android:layout_marginTop="5dp"
-                app:cardBackgroundColor="@color/md_grey_500"
-                app:cardCornerRadius="33dp">
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center">
-
-                    <ImageView
-                        android:id="@+id/internetErrorImageView"
-                        android:layout_width="66dp"
-                        android:layout_height="66dp"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="10dp"
-                        android:layout_marginTop="10dp"
-                        android:src="@drawable/ic_perm_scan_wifi_black_48dp"
-                        android:tint="@color/white" />
-                    <ImageView
-                        android:id="@+id/refreshImageView"
-                        android:layout_width="66dp"
-                        android:layout_height="66dp"
-                        android:layout_gravity="center"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_refresh" />
-
-                </FrameLayout>
-            </android.support.v7.widget.CardView>
-
-            <TextView
-                android:id="@+id/networkErrorMessageTextView"
+                android:id="@+id/errorMessageDisplayCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/refreshCard"
-                android:layout_margin="20dp"
-                android:gravity="center"
-                android:text="@string/please_connect_to_a_working_internet_connection_string"
-                android:textSize="26sp"
-                android:textStyle="bold" />
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="15dp"
+                app:cardCornerRadius="4dp">
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center">
+
+                    <android.support.v7.widget.CardView
+                        android:id="@+id/refreshCard"
+                        android:layout_width="66dp"
+                        android:layout_height="66dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp"
+                        app:cardBackgroundColor="@color/md_grey_500"
+                        app:cardCornerRadius="33dp">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center">
+
+                            <ImageView
+                                android:id="@+id/internetErrorImageView"
+                                android:layout_width="66dp"
+                                android:layout_height="66dp"
+                                android:layout_gravity="center"
+                                android:layout_marginBottom="10dp"
+                                android:layout_marginTop="10dp"
+                                android:scaleType="fitXY"
+                                android:src="@drawable/ic_perm_scan_wifi_black_48dp"
+                                android:tint="@color/white" />
+
+                            <ImageView
+                                android:id="@+id/refreshImageView"
+                                android:layout_width="66dp"
+                                android:layout_height="66dp"
+                                android:layout_gravity="center"
+                                android:scaleType="fitXY"
+                                android:src="@drawable/ic_refresh" />
+
+                        </FrameLayout>
+                    </android.support.v7.widget.CardView>
+
+                    <TextView
+                        android:id="@+id/networkErrorMessageTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/refreshCard"
+                        android:layout_margin="20dp"
+                        android:gravity="center"
+                        android:text="@string/please_connect_to_a_working_internet_connection_string"
+                        android:textSize="26sp"
+                        android:textStyle="bold" />
 
 
-        </RelativeLayout>
-    </android.support.v7.widget.CardView>
+                </RelativeLayout>
+            </android.support.v7.widget.CardView>
 
-    <include layout="@layout/single_custom_review_item" />
-</FrameLayout>
+            <include layout="@layout/single_custom_review_item" />
+
+        </FrameLayout>
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/reviewsFrameLayout"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="30dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_margin="8dp"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/otherReviewsTitleTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:text="Other Reviews"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/otherReviewsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/otherReviewsTitleTextView" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+    </RelativeLayout>
+</android.support.v4.widget.NestedScrollView>

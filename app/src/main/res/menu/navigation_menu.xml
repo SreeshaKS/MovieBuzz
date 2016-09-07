@@ -43,5 +43,9 @@
             android:id="@+id/watchedNavMenu"
             android:icon="@drawable/ic_playlist_add_check_black_36dp"
             android:title="@string/watched_list_string" />
+        <item
+            android:id="@+id/movieBuzzReviewsNavMenu"
+            android:icon="@drawable/ic_mode_edit_black_48dp"
+            android:title="@string/moviebuzz_reviews_string" />
     </group>
 </menu>

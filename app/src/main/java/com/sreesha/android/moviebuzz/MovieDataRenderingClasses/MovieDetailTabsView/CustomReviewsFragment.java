@@ -4,12 +4,11 @@ package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieDetailTabsV
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
-import android.text.InputType;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +16,11 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.firebase.client.ChildEventListener;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,8 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieContract;
-import com.sreesha.android.moviebuzz.Networking.CustomReviewInstance;
+import com.sreesha.android.moviebuzz.FireBaseUI.FireBaseRVAdapter;
 import com.sreesha.android.moviebuzz.Networking.FBC;
 import com.sreesha.android.moviebuzz.Networking.MovieDataInstance;
 import com.sreesha.android.moviebuzz.Networking.MovieReviewInstance;
@@ -41,7 +37,6 @@ import com.sreesha.android.moviebuzz.R;
 import com.sreesha.android.moviebuzz.Settings.LoginActivity;
 
 import java.util.Iterator;
-import java.util.Map;
 
 
 public class CustomReviewsFragment extends Fragment {
@@ -67,6 +62,10 @@ public class CustomReviewsFragment extends Fragment {
     private DatabaseReference mDatabase;
     boolean mIsReviewAvailable = false;
     boolean mIsSignUpNeeded = false;
+    String reviewKey = null;
+
+    FireBaseRVAdapter<CRViewHolder, MovieReviewInstance>
+            mRVFireBaseAdapter;
 
     public CustomReviewsFragment() {
         // Required empty public constructor
@@ -105,6 +104,8 @@ public class CustomReviewsFragment extends Fragment {
                 // ...
             }
         };
+
+
     }
 
     @Override
@@ -112,6 +113,28 @@ public class CustomReviewsFragment extends Fragment {
         super.onStart();
         Log.d("ReviewsData", "OnStart");
         mAuth.addAuthStateListener(mAuthListener);
+        if (user != null) {
+
+        } else {
+
+        }
+    }
+
+    public class CRViewHolder extends RecyclerView.ViewHolder {
+        public CardView expandedReviewContentCardView;
+        public TextView authorTextView;
+        public TextView contentOverViewTextView;
+        public TextView reviewMovieNameTextView;
+        public ImageView reviewShareImageView;
+
+        public CRViewHolder(View itemView) {
+            super(itemView);
+            expandedReviewContentCardView = (CardView) itemView.findViewById(R.id.reviewExpandedContentCard);
+            authorTextView = (TextView) itemView.findViewById(R.id.authorTextView);
+            contentOverViewTextView = (TextView) itemView.findViewById(R.id.reviewExpandedContentTextView);
+            reviewMovieNameTextView = (TextView) itemView.findViewById(R.id.reviewMovieNameView);
+            reviewShareImageView = (ImageView) itemView.findViewById(R.id.reviewShareImageView);
+        }
     }
 
     @Override
@@ -158,23 +181,26 @@ public class CustomReviewsFragment extends Fragment {
                                 = dataSnapshot.getChildren().iterator();
                         for (; iterator.hasNext(); ) {
                             DataSnapshot snap = iterator.next();
+
                             MovieReviewInstance instance =
                                     MovieReviewInstance.getMovieReviewInstanceFromDataSnapShot(snap);
-                            if (instance.getAUTHOR().equals(user.getDisplayName())
-                                    && instance.getMOVIE_ID() == mMovieDataInstance.getMovieID()) {
+                            if (instance.getAuthor().equals(user.getDisplayName())
+                                    && instance.getMovie_id() == mMovieDataInstance.getMovieID()) {
+                                reviewKey = snap.getKey();
+                                Log.d("ReviewsData", reviewKey);
                                 reviewsFound = true;
-                                authorTextView.setText(instance.getAUTHOR());
-                                contentOverViewTextView.setText(instance.getREVIEW_CONTENT());
+                                authorTextView.setText(instance.getAuthor());
+                                contentOverViewTextView.setText(instance.getReview_content());
                                 mMovieNameTextView.setText(mMovieDataInstance.getTitle());
                                 break;
                             }
                         }
                         if (reviewsFound) {
-                            mIsReviewAvailable=true;
+                            mIsReviewAvailable = true;
                             mConnectionErrorCard.setVisibility(View.GONE);
                             expandedReviewContentCardView.setVisibility(View.VISIBLE);
                         } else if (getActivity() != null) {
-                            mIsReviewAvailable=false;
+                            mIsReviewAvailable = false;
                             mInternetErrorImageView.setVisibility(View.GONE);
                             mRefreshImageView.setImageDrawable(
                                     getActivity()
@@ -187,7 +213,7 @@ public class CustomReviewsFragment extends Fragment {
                         }
 
                     } else {
-                        mIsReviewAvailable=false;
+                        mIsReviewAvailable = false;
                         Log.d("ReviewsData", "NOReviewAvailbale");
                         mInternetErrorImageView.setVisibility(View.GONE);
                         mRefreshImageView.setImageDrawable(
@@ -207,6 +233,7 @@ public class CustomReviewsFragment extends Fragment {
                     mIsReviewAvailable = false;
                 }
             });
+            setupFireBaseRecyclerAdapter();
         } else {
             mIsSignUpNeeded = true;
             mConnectionErrorCard.setVisibility(View.VISIBLE);
@@ -225,6 +252,33 @@ public class CustomReviewsFragment extends Fragment {
         return view;
     }
 
+    void setupFireBaseRecyclerAdapter() {
+        FirebaseRecyclerAdapter<MovieReviewInstance, CRViewHolder>
+                adapter = new FirebaseRecyclerAdapter<MovieReviewInstance, CRViewHolder>(
+                MovieReviewInstance.class
+                , R.layout.single_custom_review_item
+                , CRViewHolder.class
+                , mCustomReviewsRef.orderByChild("review_id").equalTo(user.getUid())
+        ) {
+            @Override
+            public CRViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.single_custom_review_item, parent, false);
+                return new CRViewHolder(view);
+            }
+
+            @Override
+            protected void populateViewHolder(CRViewHolder viewHolder, MovieReviewInstance model, int position) {
+                Log.d("ReviewData", "\t" + position);
+                viewHolder.contentOverViewTextView.setText(model.getReview_content());
+                viewHolder.authorTextView.setText(model.getAuthor());
+                viewHolder.reviewMovieNameTextView.setText(model.getMovie_name());
+            }
+        };
+        mOtherReviewsRV.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mOtherReviewsRV.setAdapter(adapter);
+    }
+
     CardView expandedReviewContentCardView;
     TextView authorTextView;
     TextView contentOverViewTextView;
@@ -237,7 +291,10 @@ public class CustomReviewsFragment extends Fragment {
     ImageView mInternetErrorImageView;
     TextView mMovieNameTextView;
     EditText mReviewEditEditText;
-TextInputLayout mReviewTextInputLayout;
+    TextInputLayout mReviewTextInputLayout;
+    MovieReviewInstance userReviewInstance;
+    RecyclerView mOtherReviewsRV;
+
     void initializeViewElements(View view) {
 
         expandedReviewContentCardView = (CardView) view.findViewById(R.id.reviewExpandedContentCard);
@@ -252,7 +309,7 @@ TextInputLayout mReviewTextInputLayout;
         mInternetErrorImageView = (ImageView) view.findViewById(R.id.internetErrorImageView);
         mRefreshCard = (CardView) view.findViewById(R.id.refreshCard);
         mMovieNameTextView = (TextView) view.findViewById(R.id.reviewMovieNameView);
-
+        mOtherReviewsRV = (RecyclerView) view.findViewById(R.id.otherReviewsRecyclerView);
     }
 
     void showReviewEditDialog() {
@@ -262,7 +319,7 @@ TextInputLayout mReviewTextInputLayout;
                 .positiveText("Save")
                 .negativeText("Delete/Discard")
                 .neutralText("Back").build();
-       dialog.getActionButton(DialogAction.NEUTRAL).setOnClickListener(new View.OnClickListener() {
+        dialog.getActionButton(DialogAction.NEUTRAL).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dialog.dismiss();
@@ -271,16 +328,28 @@ TextInputLayout mReviewTextInputLayout;
         dialog.getActionButton(DialogAction.POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mIsReviewAvailable){
-                    //TODO:Edit User Review
+                if (mIsReviewAvailable) {
+                    Log.d("ReviewData", mFireBaseRef.child(reviewKey).toString());
+                    String data = mReviewEditEditText
+                            .getText().toString();
+                    userReviewInstance = new MovieReviewInstance(
+                            mMovieDataInstance.getMovieID()
+                            , -1
+                            , user.getUid()
+                            , user.getDisplayName()
+                            , data
+                            , user.getPhotoUrl().toString()
+                            , -1
+                    );
+                    mFireBaseRef.child(reviewKey).setValue(userReviewInstance);
                     dialog.dismiss();
-                }else{
+                } else {
                     Log.d("DialogErr", "Input Callback Called");
                     String input = mReviewEditEditText.getText().toString();
                     if (input != null && !input.isEmpty()) {
                         if (user != null) {
                             mConnectionErrorCard.setVisibility(View.GONE);
-                            MovieReviewInstance reviewInstance =
+                            userReviewInstance =
                                     new MovieReviewInstance(
                                             mMovieDataInstance.getMovieID()
                                             , -1
@@ -289,10 +358,11 @@ TextInputLayout mReviewTextInputLayout;
                                             , input.toString()
                                             , user.getPhotoUrl().toString()
                                             , -1
+                                            , mMovieDataInstance.getTitle()
                                     );
                                       /*mFireBaseRef.child(String.valueOf(mMovieDataInstance.getMovieID()))
                                         .push().setValue(instance);*/
-                            mFireBaseRef.push().setValue(reviewInstance);
+                            mFireBaseRef.push().setValue(userReviewInstance);
                             //TODO:Use FireBase to add Data
                         } else {
                             mNetworkErrorMessageTextView.setText(
@@ -313,18 +383,24 @@ TextInputLayout mReviewTextInputLayout;
             @Override
             public void onClick(View view) {
                 //TODO:Delete User Review
+                if (mIsReviewAvailable) {
+                    Log.d("ReviewData", mFireBaseRef.child(reviewKey).toString());
+                    mIsReviewAvailable = false;
+                    mFireBaseRef.child(reviewKey).removeValue();
+                    reviewKey = null;
+                }
                 dialog.dismiss();
             }
         });
         mReviewTextInputLayout = (TextInputLayout) dialog.getCustomView().findViewById(R.id.reviewTextInputLayout);
         mReviewEditEditText = (EditText) dialog.getCustomView().findViewById(R.id.reviewEditEditText);
-        if(mIsReviewAvailable){
+        if (mIsReviewAvailable) {
             mReviewTextInputLayout.setHint("Write Your Review Here");
-            if(contentOverViewTextView.getText().toString()!=null
-                    ||!contentOverViewTextView.getText().toString().isEmpty()){
+            if (contentOverViewTextView.getText().toString() != null
+                    || !contentOverViewTextView.getText().toString().isEmpty()) {
                 mReviewEditEditText.setText(contentOverViewTextView.getText().toString());
             }
-        }else{
+        } else {
             mReviewTextInputLayout.setHint("Edit Your Review");
         }
         dialog.show();
@@ -342,7 +418,13 @@ TextInputLayout mReviewTextInputLayout;
         mRefreshCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showReviewEditDialog();
+                if (mIsSignUpNeeded) {
+                    getActivity().startActivity(new Intent(getActivity()
+                            , LoginActivity.class));
+                    getActivity().finish();
+                } else {
+                    showReviewEditDialog();
+                }
             }
         });
     }
