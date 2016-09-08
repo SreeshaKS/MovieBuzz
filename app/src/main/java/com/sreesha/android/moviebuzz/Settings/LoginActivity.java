@@ -33,6 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -107,6 +108,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private DatabaseReference mDatabase;
 
     AnimatorSet mIconLoaderAnimatorSet;
+    ImageView mNextStepsImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +132,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     void proceedWithLoginActivity() {
-
+        mNextStepsImageView = (ImageView) findViewById(R.id.nextStepsImageView);
         mIconLoaderCardView = (CardView) findViewById(R.id.iconLoaderCardView);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         mSkipLoginTextView = (TextView) findViewById(R.id.skipLoginTextView);
@@ -146,8 +148,45 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mForwardProceedCardView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LoginActivity.this, MoviePosterGridActivity.class));
-                finish();
+                mNextStepsImageView.setVisibility(View.GONE);
+                ObjectAnimator mScaleXAnim
+                        = ObjectAnimator.ofFloat(mForwardProceedCardView
+                        , "scaleX", 1, 30);
+
+                ObjectAnimator mScaleYAnim
+                        = ObjectAnimator.ofFloat(mForwardProceedCardView
+                        , "scaleY", 1, 30);
+
+                AnimatorSet set = new AnimatorSet();
+                set.setDuration(400);
+                set.playTogether(mScaleXAnim, mScaleYAnim);
+
+                Animator.AnimatorListener
+                        mListener
+                        = new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        startActivity(new Intent(LoginActivity.this, MoviePosterGridActivity.class));
+                        finish();
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+
+                    }
+                };
+                set.addListener(mListener);
+                set.start();
             }
         });
         mForwardProceedCardView.setEnabled(false);
