@@ -1,5 +1,7 @@
 package com.sreesha.android.moviebuzz.Networking;
 
+import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.PeopleDisplay.PersonImage;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,8 +22,8 @@ public abstract class AsyncMovieSpecificsResults {
     protected abstract void onResultParsedIntoPopularPersonInfo(ArrayList<PopularPeopleInstance> popularPeopleInstanceArrayList);
 
     protected abstract void onResultParsedIntoMovieImages(ArrayList<MovieImage> backDropsList
-            , ArrayList<MovieImage> posterList
-    );
+            , ArrayList<MovieImage> posterList,
+                                                          ArrayList<PersonImage> personImageList);
 
     protected abstract void onResultParsedIntoPersonData(PersonInstance instance);
 }

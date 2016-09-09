@@ -277,4 +277,6 @@
     <string name="title_activity_movie_buzz_reviews">MovieBuzzReviewsActivity</string>
     <string name="moviebuzz_reviews_string">MovieBuzz Reviews</string>
     <string name="write_a_review_title_string">Write A Review</string>
+    <string name="fragment_person_bio_title_string">Bio</string>
+    <string name="fragment_person_images_string">Images</string>
 </resources>

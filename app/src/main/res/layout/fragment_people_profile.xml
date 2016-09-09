@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
+            android:id="@+id/pPCollapsingToolBarLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
@@ -42,8 +42,10 @@
 
                 <android.support.design.widget.TabLayout
                     android:id="@+id/tabs"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
+                    app:tabMode="scrollable"
                     android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/person_profile_viewpager_overlap_dimen"
                     android:layout_gravity="bottom|center_horizontal"
                     app:tabGravity="center" />
             </FrameLayout>
@@ -52,14 +54,15 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_people_profile_fragment" />
+    <!--<include layout="@layout/content_people_profile_fragment" />-->
+
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/transparent"
-        android:visibility="gone"
+        app:behavior_overlapTop="@dimen/person_profile_viewpager_overlap_dimen"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <android.support.design.widget.FloatingActionButton

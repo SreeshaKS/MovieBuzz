@@ -206,7 +206,27 @@ public class APIUrls {
                 .appendPath("images")
                 .appendQueryParameter(API_KEY_PARAM, API_KEY);
     }
+    public static Uri.Builder buildPersonPhotosURL(String personID) {
+        return (new Uri.Builder()
+                .scheme(SCHEME)
+                .authority(AUTHORITY)
+                .appendPath("3")
+                .appendPath("person"))
+                .appendPath(personID)
+                .appendPath("images")
+                .appendQueryParameter(API_KEY_PARAM, API_KEY);
+    }
 
+    public static Uri.Builder buildTaggedImagesURL(String personID) {
+        return (new Uri.Builder()
+                .scheme(SCHEME)
+                .authority(AUTHORITY)
+                .appendPath("3")
+                .appendPath("person"))
+                .appendPath(personID)
+                .appendPath("tagged_images")
+                .appendQueryParameter(API_KEY_PARAM, API_KEY);
+    }
     public static Uri.Builder buildMovieImageURL(String resolution, String filePath) {
         return (new Uri.Builder()
                 .scheme(SCHEME)

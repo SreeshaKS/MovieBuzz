@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieContract;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplayClasses.MoviePosterGridActivity;
+import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.PeopleDisplay.PersonImage;
 import com.sreesha.android.moviebuzz.Networking.APIUrls;
 import com.sreesha.android.moviebuzz.Networking.AsyncMovieSpecificsResults;
 import com.sreesha.android.moviebuzz.Networking.CastDataInstance;
@@ -274,7 +275,7 @@ public class CrewFragment extends Fragment implements MovieTabsDetailFragment.Mo
                             }
 
                             @Override
-                            protected void onResultParsedIntoMovieImages(ArrayList<MovieImage> backDropsList, ArrayList<MovieImage> posterList) {
+                            protected void onResultParsedIntoMovieImages(ArrayList<MovieImage> backDropsList, ArrayList<MovieImage> posterList, ArrayList<PersonImage> personImageList) {
 
                             }
 

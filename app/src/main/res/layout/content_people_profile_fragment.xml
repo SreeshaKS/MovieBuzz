@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:behavior_overlapTop="100dp"
+    app:behavior_overlapTop="@dimen/person_profile_viewpager_overlap_dimen"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.sreesha.android.moviebuzz.MovieDataRenderingClasses.PeopleDisplay.PeopleProfileFragment"
     tools:showIn="@layout/fragment_people_profile">
@@ -89,6 +89,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:padding="5dp"
                     android:text="@string/title_biography"

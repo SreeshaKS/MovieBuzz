@@ -100,4 +100,6 @@
     <string name="remove_from_watch_list">Remove From Watch List</string>
     <string name="moviebuzz_reviews_string">MovieBuzz Reviews</string>
     <string name="write_a_review_title_string">Write A Review</string>
+    <string name="fragment_person_bio_title_string">Bio</string>
+    <string name="fragment_person_images_string">Images</string>
 </resources>

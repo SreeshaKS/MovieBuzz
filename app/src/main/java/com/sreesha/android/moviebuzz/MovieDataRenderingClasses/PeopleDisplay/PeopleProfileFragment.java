@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.graphics.Palette;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +30,7 @@ import com.sreesha.android.moviebuzz.Networking.MovieImage;
 import com.sreesha.android.moviebuzz.Networking.PersonInstance;
 import com.sreesha.android.moviebuzz.Networking.PopularPeopleInstance;
 import com.sreesha.android.moviebuzz.R;
+import com.sreesha.android.moviebuzz.Settings.MovieBuzzApplication;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -60,6 +61,7 @@ public class PeopleProfileFragment extends Fragment {
     TextView mPlaceOfBirthTextView;
 
     CoordinatorLayout mPersonProfileCoOrdLayout;
+    CollapsingToolbarLayout mCollapsingToolBarLayout;
 
     public static PeopleProfileFragment getNewInstance(PopularPeopleInstance mPopularPeopleInstance) {
         PeopleProfileFragment mFragment = new PeopleProfileFragment();
@@ -118,6 +120,9 @@ public class PeopleProfileFragment extends Fragment {
         return view;
     }
 
+    PersonBioFragment mPersonBioFragment;
+    PersonImagesFragment mPersonImageFragment;
+
     private void createFragmentInstances() {
 
     }
@@ -133,15 +138,35 @@ public class PeopleProfileFragment extends Fragment {
                             Palette.PaletteAsyncListener asyncListener = new Palette.PaletteAsyncListener() {
                                 @Override
                                 public void onGenerated(Palette palette) {
+                                    Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
+                                    Palette.Swatch darkVibrantSwatch = palette.getDarkVibrantSwatch();
+                                    if (vibrantSwatch != null
+                                            && darkVibrantSwatch != null) {
+                                        /*//Static class for marshalling Palette Generated colors and swatches
+                                        ProfilePaletteColors
+                                                .parsePalette(palette);
+
+                                        mPersonTabLayout
+                                                .setTabTextColors(
+                                                        ProfilePaletteColors.mLightVibrantSwatch
+                                                                .getTitleTextColor()
+                                                        , ProfilePaletteColors.mDarkVibrantSwatch
+                                                                .getTitleTextColor()
+                                                );*/
+                                    }
+                                    mPersonTabLayout
+                                            .setSelectedTabIndicatorColor(
+                                                    ProfilePaletteColors.mutedDark
+                                            );
                                     mPersonProfileCoOrdLayout
                                             .setBackgroundColor(
-                                                    palette
-                                                            .getDarkMutedColor(
-                                                                    getActivity()
-                                                                            .getResources()
-                                                                            .getColor(R.color.colorPrimary)
-                                                            )
+                                                    ProfilePaletteColors.mutedDark
                                             );
+                                    mCollapsingToolBarLayout
+                                            .setContentScrimColor(
+                                                    ProfilePaletteColors.mutedDark
+                                            );
+
                                     /*holder.backGroundSheetCard
                                             .setCardBackgroundColor(
                                                     palette
@@ -173,39 +198,17 @@ public class PeopleProfileFragment extends Fragment {
         Picasso.with(getActivity())
                 .load(URL)
                 .into(mTarget);
-
-        biographyViewTextView.setText(mPersonDataInstance.getBIOGRAPHY());
-        mPersonNameTextView.setText(mPersonDataInstance.getNAME());
-        if ((mPersonDataInstance.getPLACE_OF_BIRTH()) == null
-                ||
-                (mPersonDataInstance.getPLACE_OF_BIRTH()).equals("null")) {
-            mPlaceOfBirthTextView.setText(
-                    "Not Available"
-            );
-        } else {
-            mPlaceOfBirthTextView.setText(
-                    getActivity().getString(R.string.place_birth_pholder_text)
-                            + mPersonDataInstance.getPLACE_OF_BIRTH()
-            );
-        }
-
-        mBirthdayTextView.setText(getActivity()
-                .getString(R.string.birthday_placeholder_text)
-                + mPersonDataInstance.getBIRTHDAY()
-        );
-        //TODO:Convert Given date fo birth to age
-        mAgeTextView.setVisibility(View.GONE);
+        addFragmentInstancesToViewPager();
     }
 
     private void initializeViewElements(View view) {
+        mCollapsingToolBarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.pPCollapsingToolBarLayout);
         viewPager = (ViewPager) view.findViewById(R.id.viewpager);
         mProfilePictureImageView = (ImageView) view.findViewById(R.id.profilePictureImageView);
         mPersonTabLayout = (TabLayout) view.findViewById(R.id.tabs);
+        mPersonTabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
         biographyViewTextView = (TextView) view.findViewById(R.id.biographyTextView);
         mPersonProfileCoOrdLayout = (CoordinatorLayout) view.findViewById(R.id.personProfileCoOrdLayout);
-        /*TextView mAgeTextView;
-        TextView mPersonNameTextView;
-        TextView mBirthdayTextView;*/
         mAgeTextView = (TextView) view.findViewById(R.id.ageTextView);
         mPersonNameTextView = (TextView) view.findViewById(R.id.personNameTextView);
         mBirthdayTextView = (TextView) view.findViewById(R.id.birthdayTextView);
@@ -292,13 +295,13 @@ public class PeopleProfileFragment extends Fragment {
             }
 
             @Override
-            protected void onResultParsedIntoMovieImages(ArrayList<MovieImage> backDropsList, ArrayList<MovieImage> posterList) {
+            protected void onResultParsedIntoMovieImages(ArrayList<MovieImage> backDropsList, ArrayList<MovieImage> posterList, ArrayList<PersonImage> personImageList) {
 
             }
 
             @Override
             protected void onResultParsedIntoPersonData(PersonInstance instance) {
-                if (getActivity() != null) {
+                if (getActivity() != null && getActivity() instanceof PeopleProfileActivity) {
                     mPersonDataInstance = instance;
                     updateUIWithPersonData();
                 }
@@ -307,6 +310,25 @@ public class PeopleProfileFragment extends Fragment {
         mMovieSpecificsDownloadAsyncTask.execute(
                 APIUrls.buildPersonDetailsURL(mPopPeopleDataInstance.getID()).build().toString()
         );
+    }
+
+    void addFragmentInstancesToViewPager() {
+        if (viewPager != null && adapter != null && adapter.getCount() == 0) {
+
+            mPersonBioFragment = PersonBioFragment.newInstance(mPopPeopleDataInstance
+                    , mPersonDataInstance);
+            mPersonImageFragment =
+                    PersonImagesFragment.newInstance(
+                            mPersonDataInstance
+                    );
+            adapter.addFragment(mPersonBioFragment
+                    , getActivity()
+                            .getString(R.string.fragment_person_bio_title_string)
+            );
+            adapter.addFragment(mPersonImageFragment
+                    , getActivity().getString(R.string.fragment_person_images_string));
+            adapter.notifyDataSetChanged();
+        }
     }
 
     static class Adapter extends FragmentStatePagerAdapter {
@@ -347,5 +369,55 @@ public class PeopleProfileFragment extends Fragment {
             } else {
                 mMovieSpecificsDownloadAsyncTask = null;
             }
+    }
+
+    static class ProfilePaletteColors {
+        static boolean isPaletteSet = false;
+        static Palette palette;
+        static Palette.Swatch mVibrantSwatch;
+        static Palette.Swatch mDarkVibrantSwatch;
+        static Palette.Swatch mLightVibrantSwatch;
+        static Palette.Swatch mMutedSwatch;
+        static Palette.Swatch mDarkMutedSwatch;
+        static Palette.Swatch mLightMutedSwatch;
+        static int vibrant;
+        static int vibrantLight;
+        static int vibrantDark;
+        static int muted;
+        static int mutedLight;
+        static int mutedDark;
+        static int primaryColor =
+                MovieBuzzApplication
+                        .getAppContext()
+                        .getResources()
+                        .getColor(R.color.colorPrimary);
+
+        public static void setDefaults() {
+            isPaletteSet = false;
+            vibrant
+                    = vibrantLight
+                    = vibrantDark
+                    = muted
+                    = mutedDark
+                    = mutedLight
+                    = primaryColor;
+        }
+
+        public static void parsePalette(Palette palette) {
+            isPaletteSet = true;
+            ProfilePaletteColors.palette = palette;
+            mVibrantSwatch = palette.getVibrantSwatch();
+            mDarkVibrantSwatch = palette.getDarkVibrantSwatch();
+            mLightVibrantSwatch = palette.getLightVibrantSwatch();
+            mMutedSwatch = palette.getMutedSwatch();
+            mDarkMutedSwatch = palette.getDarkMutedSwatch();
+            mLightMutedSwatch = palette.getLightMutedSwatch();
+            vibrant = palette.getVibrantColor(primaryColor);
+            vibrantLight = palette.getLightVibrantColor(primaryColor);
+            vibrantDark = palette.getDarkVibrantColor(primaryColor);
+            muted = palette.getMutedColor(primaryColor);
+            mutedLight = palette.getLightMutedColor(primaryColor);
+            mutedDark = palette.getDarkMutedColor(primaryColor);
+        }
     }
 }

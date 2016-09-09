@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieContract;
+import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.PeopleDisplay.PersonImage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,7 +17,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -47,6 +47,8 @@ public class DownloadMovieSpecifics extends AsyncTask<String, Void, String> {
     private ArrayList<MovieImage> mBackDropList;
     private ArrayList<MovieImage> mPosterList;
 
+    private ArrayList<PersonImage> mPersonImageList;
+
     ArrayList<ContentValues> contentValueCastCrewArrayList = new ArrayList<>();
     private Context mContext;
     private AsyncMovieSpecificsResults mMovieSpecificResultNotifier;
@@ -76,8 +78,10 @@ public class DownloadMovieSpecifics extends AsyncTask<String, Void, String> {
             }
 
             try {
+                Log.d("RVDebug", "Param URL"+param);
                 //Parse Movie Image Information
-                if (param.contains("images")) {
+                //If URL does not contain person path
+                if (param.contains("images") &&!param.contains("person")) {
                     resultString = downloadUrl(param);
                     parseMovieImages(resultString);
                 }
@@ -94,6 +98,10 @@ public class DownloadMovieSpecifics extends AsyncTask<String, Void, String> {
                         //Parse Popular PersonInstance Information
                         resultString = downloadUrl(param);
                         parsePopularPersonInformation(resultString);
+                    } else if (param.contains("images")) {
+                        //Parse Person Images
+                        resultString = downloadUrl(param);
+                        parsePersonImages(resultString);
                     } else {
                         //Parse PersonInstance Information
                         resultString = downloadUrl(param);
@@ -172,6 +180,33 @@ public class DownloadMovieSpecifics extends AsyncTask<String, Void, String> {
         }
     }
 
+    private void parsePersonImages(String resultString) {
+        try {
+
+            mPersonImageList = new ArrayList<>();
+            JSONObject resultObject = new JSONObject(resultString);
+            mMovieSpecificResultNotifier.onResultJSON(resultObject);
+            JSONArray profilesArray =
+                    resultObject.getJSONArray("profiles");
+            for (int i = 0; i < profilesArray.length(); i++) {
+                JSONObject o = profilesArray.getJSONObject(i);
+                mPersonImageList.add(
+                        new PersonImage(
+                                o.getString("iso_639_1")
+                                , o.getString("file_path")
+                                , o.getInt("height")
+                                , o.getInt("width")
+                                , o.getDouble("vote_average")
+                                , o.getInt("vote_count")
+                                , o.getInt("aspect_ratio")
+                        )
+                );
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void parseMovieImages(String resultString) {
         try {
             mPosterList = new ArrayList<>();
@@ -225,10 +260,11 @@ public class DownloadMovieSpecifics extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         if (s.equals(SUCCESS_STATUS) && ERROR_STRING == null) {
-
+            Log.d("RVDebug", "onPostExecute");
             mMovieSpecificResultNotifier.onResultParsedIntoCastList(castDataArrayList);
             mMovieSpecificResultNotifier.onResultParsedIntoCrewList(crewDataArrayList);
-            mMovieSpecificResultNotifier.onResultParsedIntoMovieImages(mBackDropList, mPosterList);
+            mMovieSpecificResultNotifier.onResultParsedIntoMovieImages(mBackDropList, mPosterList, mPersonImageList);
+            Log.d("RVDebug", "Executing After calling method");
             mMovieSpecificResultNotifier.onResultParsedIntoPopularPersonInfo(mPopularPeopleArrayList);
             mMovieSpecificResultNotifier.onResultParsedIntoPersonData(mRequestedPersonData);
         } else if (ERROR_STRING.equals(SQLITE_CAST_INSERT_ERROR)) {
