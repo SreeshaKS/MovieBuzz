@@ -262,7 +262,11 @@ public class PeopleProfileFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (mIsRestored) {
-            updateUIWithPersonData();
+            if (mPersonDataInstance != null)
+                updateUIWithPersonData();
+            else {
+                downloadPersonData();
+            }
         } else {
             downloadPersonData();
         }
@@ -321,8 +325,10 @@ public class PeopleProfileFragment extends Fragment {
         }
     }
 
+    MaterialDialog dialog;
+
     void showNetworkConnectionErrorDialog() {
-        final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+        dialog = new MaterialDialog.Builder(getActivity())
                 .content(R.string.please_connect_to_a_working_internet_connection_string)
                 .positiveText(R.string.R_string_tryagain)
                 .negativeText(R.string.cancel_go_back)
@@ -330,7 +336,8 @@ public class PeopleProfileFragment extends Fragment {
         dialog.getActionButton(DialogAction.NEGATIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getActivity().finish();
+                if (getActivity() != null)
+                    getActivity().finish();
             }
         });
         dialog.getActionButton(DialogAction.POSITIVE).setOnClickListener(new View.OnClickListener() {
@@ -342,7 +349,8 @@ public class PeopleProfileFragment extends Fragment {
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
-                getActivity().finish();
+                if (getActivity() != null)
+                    getActivity().finish();
             }
         });
         dialog.show();
@@ -405,6 +413,10 @@ public class PeopleProfileFragment extends Fragment {
             } else {
                 mMovieSpecificsDownloadAsyncTask = null;
             }
+        if (dialog != null && !dialog.isCancelled()) {
+            dialog.cancel();
+            dialog = null;
+        }
     }
 
     static class ProfilePaletteColors {
