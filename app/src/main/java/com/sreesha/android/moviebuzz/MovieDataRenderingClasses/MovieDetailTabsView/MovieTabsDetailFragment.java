@@ -17,6 +17,7 @@ import android.support.v4.app.Fragment;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.NestedScrollView;
@@ -135,6 +136,7 @@ public class MovieTabsDetailFragment extends Fragment
     ActionBarDrawerToggle mActionBarDrawerToggle;
     View headerView;
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
     public MovieTabsDetailFragment() {
 
     }
@@ -794,13 +796,13 @@ public class MovieTabsDetailFragment extends Fragment
         mProfileImageView = (ImageView) headerView.findViewById(R.id.profileImageView);
         mProfileImageBackgroundCV = (CardView) headerView.findViewById(R.id.profileImageBackgroundCV);
 
-        if (!mIsLoginRequired && user!=null) {
+        if (!mIsLoginRequired && user != null) {
             mUserNameTextView.setText(user.getDisplayName());
             mEmailTextView.setText(user.getEmail());
             Picasso.with(getActivity())
                     .load(user.getPhotoUrl())
                     .into(mProfileImageView);
-        }else{
+        } else {
             mUserNameTextView.setVisibility(View.GONE);
             mEmailTextView.setVisibility(View.GONE);
             Picasso.with(getActivity())
@@ -850,16 +852,20 @@ public class MovieTabsDetailFragment extends Fragment
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
+                Log.d("Drawer Debug", "Drawer Closed");
+                mActionBarDrawerToggle.syncState();
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
+                Log.d("Drawer Debug", "Drawer Opened");
+                mActionBarDrawerToggle.syncState();
             }
         };
 
         mMovieDetailDrawerLayout.addDrawerListener(mActionBarDrawerToggle);
-        mActionBarDrawerToggle.syncState();
+        //mActionBarDrawerToggle.syncState();
         mMovieDetailDrawerLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -882,11 +888,11 @@ public class MovieTabsDetailFragment extends Fragment
                     return false;
                 }
             });
-        }else{
+        } else {
             mIsLoginRequired = false;
         }
-    }
 
+    }
 
 
     @Override
@@ -1115,6 +1121,11 @@ public class MovieTabsDetailFragment extends Fragment
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.home:
+                mMovieDetailDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 }

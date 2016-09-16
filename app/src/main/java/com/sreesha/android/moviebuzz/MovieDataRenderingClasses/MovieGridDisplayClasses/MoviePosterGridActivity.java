@@ -265,11 +265,13 @@ public class MoviePosterGridActivity extends AppCompatActivity
                 , R.string.posterGridDrawer_open) {
             @Override
             public void onDrawerClosed(View drawerView) {
+                Log.d("Drawer Debug", "Drawer Closed");
                 super.onDrawerClosed(drawerView);
             }
 
             @Override
             public void onDrawerOpened(View drawerView) {
+                Log.d("Drawer Debug", "Drawer Closed");
                 super.onDrawerOpened(drawerView);
             }
         };

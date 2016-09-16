@@ -1,6 +1,8 @@
 package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.PeopleDisplay;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -19,6 +21,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.sreesha.android.moviebuzz.Networking.APIUrls;
@@ -29,6 +33,7 @@ import com.sreesha.android.moviebuzz.Networking.DownloadMovieSpecifics;
 import com.sreesha.android.moviebuzz.Networking.MovieImage;
 import com.sreesha.android.moviebuzz.Networking.PersonInstance;
 import com.sreesha.android.moviebuzz.Networking.PopularPeopleInstance;
+import com.sreesha.android.moviebuzz.Networking.Utility;
 import com.sreesha.android.moviebuzz.R;
 import com.sreesha.android.moviebuzz.Settings.MovieBuzzApplication;
 
@@ -264,52 +269,83 @@ public class PeopleProfileFragment extends Fragment {
     }
 
     private void downloadPersonData() {
-        mMovieSpecificsDownloadAsyncTask = new DownloadMovieSpecifics(
-                getActivity()
-                , new AsyncMovieSpecificsResults() {
-            @Override
-            protected void onResultJSON(JSONObject object) throws JSONException {
+        if (Utility.isConnectedToNetwork(getActivity())) {
+            mMovieSpecificsDownloadAsyncTask = new DownloadMovieSpecifics(
+                    getActivity()
+                    , new AsyncMovieSpecificsResults() {
+                @Override
+                protected void onResultJSON(JSONObject object) throws JSONException {
 
-            }
-
-            @Override
-            protected void onResultString(String stringObject, String errorString, String parseStatus) {
-
-            }
-
-            @Override
-            protected void onResultParsedIntoCastList(ArrayList<CastDataInstance> castList) {
-
-            }
-
-            @Override
-            protected void onResultParsedIntoCrewList(ArrayList<CrewDataInstance> crewList) {
-
-            }
-
-            @Override
-            protected void onResultParsedIntoPopularPersonInfo(
-                    ArrayList<PopularPeopleInstance> popularPeopleInstanceArrayList
-            ) {
-
-            }
-
-            @Override
-            protected void onResultParsedIntoMovieImages(ArrayList<MovieImage> backDropsList, ArrayList<MovieImage> posterList, ArrayList<PersonImage> personImageList) {
-
-            }
-
-            @Override
-            protected void onResultParsedIntoPersonData(PersonInstance instance) {
-                if (getActivity() != null && getActivity() instanceof PeopleProfileActivity) {
-                    mPersonDataInstance = instance;
-                    updateUIWithPersonData();
                 }
+
+                @Override
+                protected void onResultString(String stringObject, String errorString, String parseStatus) {
+                    showNetworkConnectionErrorDialog();
+                }
+
+                @Override
+                protected void onResultParsedIntoCastList(ArrayList<CastDataInstance> castList) {
+
+                }
+
+                @Override
+                protected void onResultParsedIntoCrewList(ArrayList<CrewDataInstance> crewList) {
+
+                }
+
+                @Override
+                protected void onResultParsedIntoPopularPersonInfo(
+                        ArrayList<PopularPeopleInstance> popularPeopleInstanceArrayList
+                ) {
+
+                }
+
+                @Override
+                protected void onResultParsedIntoMovieImages(ArrayList<MovieImage> backDropsList, ArrayList<MovieImage> posterList, ArrayList<PersonImage> personImageList) {
+
+                }
+
+                @Override
+                protected void onResultParsedIntoPersonData(PersonInstance instance) {
+                    if (getActivity() != null && getActivity() instanceof PeopleProfileActivity) {
+                        mPersonDataInstance = instance;
+                        updateUIWithPersonData();
+                    }
+                }
+            });
+            mMovieSpecificsDownloadAsyncTask.execute(
+                    APIUrls.buildPersonDetailsURL(mPopPeopleDataInstance.getID()).build().toString()
+            );
+        } else {
+            showNetworkConnectionErrorDialog();
+        }
+    }
+
+    void showNetworkConnectionErrorDialog() {
+        final MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                .content(R.string.please_connect_to_a_working_internet_connection_string)
+                .positiveText(R.string.R_string_tryagain)
+                .negativeText(R.string.cancel_go_back)
+                .build();
+        dialog.getActionButton(DialogAction.NEGATIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getActivity().finish();
             }
         });
-        mMovieSpecificsDownloadAsyncTask.execute(
-                APIUrls.buildPersonDetailsURL(mPopPeopleDataInstance.getID()).build().toString()
-        );
+        dialog.getActionButton(DialogAction.POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                downloadPersonData();
+            }
+        });
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                getActivity().finish();
+            }
+        });
+        dialog.show();
     }
 
     void addFragmentInstancesToViewPager() {

@@ -102,4 +102,6 @@
     <string name="write_a_review_title_string">Write A Review</string>
     <string name="fragment_person_bio_title_string">Bio</string>
     <string name="fragment_person_images_string">Images</string>
+    <string name="R.string.tryagain">Try Again</string>
+    <string name="cancel_go_back">Cancel And Go Back</string>
 </resources>

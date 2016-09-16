@@ -42,6 +42,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.firebase.client.Firebase;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -115,6 +116,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         super.onCreate(savedInstanceState);
         Log.d("MyApplication", "onCreate-LoginActivity");
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        mFireBaseRef = new Firebase(FBC.FIREBASE_URL).child(FBC.USER);
         if (user != null) {
             startActivity(new Intent(LoginActivity.this, MoviePosterGridActivity.class));
             finish();
@@ -124,11 +126,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
+    private Firebase mFireBaseRef;
+
     private void writeNewUser(String userId, String name, String email
             , String photoURL) {
         User user = new User(name, email, userId, photoURL);
-
-
+        mFireBaseRef.push().setValue(user);
     }
 
     void proceedWithLoginActivity() {
