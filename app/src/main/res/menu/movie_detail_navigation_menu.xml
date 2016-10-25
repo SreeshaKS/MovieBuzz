@@ -25,5 +25,11 @@
         <item
             android:id="@+id/customMovieReviews"
             android:title="@string/write_a_review_title_string" />
+        <item
+            android:id="@+id/openInPlayStore"
+            android:title="@string/view_in_play_store" />
+        <item
+            android:id="@+id/openInWikipedia"
+            android:title="@string/view_in_wikipedia" />
     </group>
 </menu>

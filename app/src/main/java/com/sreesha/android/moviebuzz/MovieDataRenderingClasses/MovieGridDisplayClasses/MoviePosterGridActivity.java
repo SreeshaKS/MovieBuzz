@@ -47,6 +47,7 @@ import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.PeopleDisplay.Peo
 import com.sreesha.android.moviebuzz.Networking.APIUrls;
 import com.sreesha.android.moviebuzz.Networking.MovieDataInstance;
 import com.sreesha.android.moviebuzz.Networking.NetworkConnectivityInfoDialogueFragment;
+import com.sreesha.android.moviebuzz.RSSFeed.RSSFeed;
 import com.sreesha.android.moviebuzz.Settings.AppInfoActivity;
 import com.sreesha.android.moviebuzz.Settings.LoginActivity;
 import com.sreesha.android.moviebuzz.Settings.SettingsActivity;
@@ -252,6 +253,10 @@ public class MoviePosterGridActivity extends AppCompatActivity
                         startActivity(new Intent(MoviePosterGridActivity.this,
                                 MovieBuzzReviewsActivity.class));
                         return true;
+                    case R.id.ytsTorrentsNavMenu:
+                        startActivity(new Intent(MoviePosterGridActivity.this,
+                                RSSFeed.class));
+                        return true;
                 }
                 mPosterGridDrawerLayout.closeDrawers();
                 return false;
@@ -306,9 +311,7 @@ public class MoviePosterGridActivity extends AppCompatActivity
             case R.id.settings:
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
-            case R.id.home:
-                mPosterGridDrawerLayout.openDrawer(GravityCompat.START);
-                return true;
+
             case R.id.aboutApp:
                 startActivity(new Intent(MoviePosterGridActivity.this, AppInfoActivity.class));
                 return true;

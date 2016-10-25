@@ -88,6 +88,7 @@ public class CustomReviewsFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         mFireBaseRef = new Firebase(FBC.FIREBASE_URL).child(FBC.REVIEWS);
+        Firebase mFireBaseUserRef=new Firebase(FBC.FIREBASE_URL).child(FBC.USER);
 
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {

@@ -103,13 +103,13 @@ public class APIUrls {
                 .appendQueryParameter(API_KEY_PARAM, API_KEY));
     }
 
-    public static Uri.Builder buildBaseMovieDBURL() {
+    public static Uri.Builder buildBaseMovieDBURL(String id) {
         return (new Uri.Builder()
                 .scheme(SCHEME)
                 .authority(AUTHORITY)
                 .appendPath(PATH_1)
                 .appendPath(PATH_2)
-                .appendPath(PATH_3)
+                .appendPath(id)
                 .appendQueryParameter(API_KEY_PARAM, API_KEY));
     }
 

@@ -10,7 +10,7 @@ android {
         applicationId "com.sreesha.android.moviebuzz"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 24
+        versionCode 26
         versionName "4.2"
         multiDexEnabled true
     }
@@ -24,9 +24,19 @@ android {
         }
         release {
             minifyEnabled false
-            shrinkResources true
+            //shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
     }
 
 }
@@ -45,24 +55,24 @@ def getWebClientID() {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
 
     compile 'com.android.support:multidex:1.0.1'
-    compile 'com.android.support:appcompat-v7:24.1.1'
-    compile 'com.android.support:design:24.1.1'
-    compile 'com.android.support:recyclerview-v7:24.1.1'
-    compile 'com.android.support:cardview-v7:24.1.1'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile 'com.android.support:cardview-v7:24.2.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.android.support:support-v4:24.1.1'
-    compile 'com.android.support:palette-v7:24.1.1'
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.android.support:palette-v7:24.2.1'
     compile 'com.facebook.stetho:stetho:1.1.1'
-    compile 'com.android.support:support-annotations:24.1.1'
+    compile 'com.android.support:support-annotations:24.2.1'
     compile 'com.github.clans:fab:1.6.3'
-    compile 'com.google.firebase:firebase-auth:9.4.0'
+    compile 'com.google.firebase:firebase-auth:9.6.1'
     compile 'com.firebase:firebase-client-android:2.0.3'
     compile 'com.firebaseui:firebase-ui-database:0.4.1'
-    compile 'com.google.android.gms:play-services-auth:9.4.0'
-    compile 'com.google.android.gms:play-services:9.4.0'
+    compile 'com.google.android.gms:play-services-auth:9.6.1'
+    compile 'com.google.android.gms:play-services:9.6.1'
     compile 'com.afollestad.material-dialogs:core:0.8.6.2'
+    testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'

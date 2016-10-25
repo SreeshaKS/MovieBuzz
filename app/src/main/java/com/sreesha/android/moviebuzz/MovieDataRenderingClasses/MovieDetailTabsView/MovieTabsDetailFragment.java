@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.ParseException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -837,6 +839,43 @@ public class MovieTabsDetailFragment extends Fragment
                         break;
                     case R.id.customMovieReviews:
                         movieDetailTabLayout.getTabAt(7).select();
+                        break;
+                    case R.id.openInPlayStore:
+                        //TODO:Write code to start a play store intent
+                        //https://play.google.com/store/search?q=<Movie Title>&c=movies
+
+                        try {
+                            startActivity(new Intent(Intent.ACTION_VIEW
+                                    , Uri.parse("market://search?q=" + mMovieData.getTitle() + "&c=movies")
+                            ));
+                        } catch (android.content.ActivityNotFoundException anfe) {
+                            startActivity(new Intent(Intent.ACTION_VIEW
+                                    , Uri.parse(
+                                    "https://play.google.com/store/search?q=" + mMovieData.getTitle() + "&c=movies")));
+                        } catch (ParseException e) {
+                            Log.d("StoreDebug", e.getMessage());
+                            e.printStackTrace();
+                        }
+                        break;
+                    case R.id.openInWikipedia:
+                        //TODO:Write code to start a play store intent
+                        //https://play.google.com/store/search?q=<Movie Title>&c=movies
+
+                        try {
+                            /*startActivity(new Intent(Intent.ACTION_VIEW
+                                    , Uri.parse("market://search?q=" + mMovieData.getTitle() + "&c=movies")
+                            ));*/
+                            startActivity(new Intent(Intent.ACTION_VIEW
+                                    , Uri.parse(
+                                    "https://en.wikipedia.org/wiki/"+mMovieData.getTitle().replace(" ","_"))));
+                        } catch (android.content.ActivityNotFoundException anfe) {
+                            startActivity(new Intent(Intent.ACTION_VIEW
+                                    , Uri.parse(
+                                    "https://play.google.com/store/search?q=" + mMovieData.getTitle() + "&c=movies")));
+                        } catch (ParseException e) {
+                            Log.d("StoreDebug", e.getMessage());
+                            e.printStackTrace();
+                        }
                         break;
 
                 }

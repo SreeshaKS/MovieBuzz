@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -32,6 +33,7 @@ import com.sreesha.android.moviebuzz.Networking.MovieDataInstance;
 import com.sreesha.android.moviebuzz.R;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -100,13 +102,13 @@ public class MovieRecyclerViewCursorAdapter
                 parcelableIntentList.add(instance);
                 if (mMovieSelectionListener != null)
                     mMovieSelectionListener.onMovieClicked(parcelableIntentList, instance);
-                if (v.getContext() instanceof WatchToWatchActivity){
+                if (v.getContext() instanceof WatchToWatchActivity) {
                     v.getContext()
                             .startActivity(new Intent(v.getContext(), MovieTabsDetailActivity.class)
-                            .putParcelableArrayListExtra(
-                                    v.getContext()
-                                            .getString(R.string.intent_movie_data_key)
-                                    , parcelableIntentList));
+                                    .putParcelableArrayListExtra(
+                                            v.getContext()
+                                                    .getString(R.string.intent_movie_data_key)
+                                            , parcelableIntentList));
                 }
             }
         });
@@ -183,7 +185,7 @@ public class MovieRecyclerViewCursorAdapter
         Target posterImageTarget = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                holder.moviePosterImageView.setImageBitmap(bitmap);
+                /*holder.moviePosterImageView.setImageBitmap(bitmap);*/
                 Palette.PaletteAsyncListener asyncListener = new Palette.PaletteAsyncListener() {
                     @Override
                     public void onGenerated(Palette palette) {
@@ -237,9 +239,11 @@ public class MovieRecyclerViewCursorAdapter
         Picasso
                 .with(mContext)
                 .load(URL)
-                .networkPolicy(NetworkPolicy.NO_CACHE)
-                .placeholder(R.drawable.ic_movie_white_48dp)
-                .error(R.drawable.ic_error_white_48dp)
+                .fit()
+                .into(holder.moviePosterImageView);
+        Picasso
+                .with(mContext)
+                .load(URL)
                 .into(posterImageTarget);
     }
 

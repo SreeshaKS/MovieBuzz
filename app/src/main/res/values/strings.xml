@@ -281,4 +281,9 @@
     <string name="fragment_person_images_string">Images</string>
     <string name="R.string.tryagain">Try Again</string>
     <string name="cancel_go_back">Cancel And Go Back</string>
+    <string name="view_in_play_store">View In Play Store</string>
+    <string name="view_in_wikipedia">View in Wikipedia</string>
+    <string name="title_activity_rssfeed">YTS.ag</string>
+    <string name="yts_torrents">YTS Torrents</string>
+    <string name="available_in">Available In</string>
 </resources>

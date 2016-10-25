@@ -1,8 +1,10 @@
 package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieDetailTabsView;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.ParseException;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -67,6 +70,7 @@ public class MovieDetailDisplayFragment extends Fragment
     private static final int CREW_LOADER_ID = 1;
     RecyclerView genreRecyclerView;
     GenreRecyclerViewAdapter mGenreRecyclerViewAdapter;
+
 
     public MovieDetailDisplayFragment() {
         // Required empty public constructor
@@ -235,7 +239,14 @@ public class MovieDetailDisplayFragment extends Fragment
         }
     }
 
+    ImageView mGooglePlayImageView;
+    ImageView mYoutubeImageView;
+    ImageView mWikipediaImageView;
+
     private void initializeViewElements(View view) {
+        mGooglePlayImageView = (ImageView) view.findViewById(R.id.googlePlayImageButton);
+        mYoutubeImageView = (ImageView) view.findViewById(R.id.youtubeSocialButton);
+        mWikipediaImageView = (ImageView) view.findViewById(R.id.wikipediaSocialButton);
 
         genreRecyclerView = (RecyclerView) view.findViewById(R.id.genreRecyclerView);
 
@@ -256,6 +267,66 @@ public class MovieDetailDisplayFragment extends Fragment
         movieReleaseDateTextView = (TextView) view.findViewById(R.id.releaseDateTextView);
         movieOverViewTextView = (TextView) view.findViewById(R.id.overViewTextView);
         //movieVoteCountTextView = (TextView) view.findViewById(R.id.voteCountTextView);
+        setListeners();
+    }
+
+    void setListeners() {
+        mGooglePlayImageView .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW
+                            , Uri.parse("market://search?q=" + mMovieData.getTitle() + "&c=movies")
+                    ));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    startActivity(new Intent(Intent.ACTION_VIEW
+                            , Uri.parse(
+                            "https://play.google.com/store/search?q=" + mMovieData.getTitle() + "&c=movies")));
+                } catch (ParseException e) {
+                    Log.d("StoreDebug", e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+        mYoutubeImageView .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW
+                            , Uri.parse(
+                            "https://www.youtube.com/results?search_query=" + mMovieData.getTitle())));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    /*https://www.youtube.com/results?search_query=captain+america%3Athe+winter+soldier*/
+                    startActivity(new Intent(Intent.ACTION_VIEW
+                            , Uri.parse(
+                            "https://www.youtube.com/results?search_query=" + mMovieData.getTitle() + "&c=movies")));
+                } catch (ParseException e) {
+                    Log.d("StoreDebug", e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+        mWikipediaImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                            /*startActivity(new Intent(Intent.ACTION_VIEW
+                                    , Uri.parse("market://search?q=" + mMovieData.getTitle() + "&c=movies")
+                            ));*/
+                    startActivity(new Intent(Intent.ACTION_VIEW
+                            , Uri.parse(
+                            "https://en.wikipedia.org/wiki/"+mMovieData.getTitle().replace(" ","_"))));
+                } catch (android.content.ActivityNotFoundException anfe) {
+                    startActivity(new Intent(Intent.ACTION_VIEW
+                            , Uri.parse(
+                            "https://play.google.com/store/search?q=" + mMovieData.getTitle() + "&c=movies")));
+                } catch (ParseException e) {
+                    Log.d("StoreDebug", e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
@@ -296,7 +367,7 @@ public class MovieDetailDisplayFragment extends Fragment
                 }
                 Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
                     @Override
-                    public void onGenerated(Palette palette)throws IllegalStateException {
+                    public void onGenerated(Palette palette) throws IllegalStateException {
                         if (getActivity() != null) {
                             int primaryDark = getResources().getColor(R.color.colorPrimaryDark);
                             int primary = getResources().getColor(R.color.colorPrimary);

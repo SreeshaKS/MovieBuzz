@@ -3,6 +3,7 @@ package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieGridDisplay
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v4.content.CursorLoader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -307,6 +308,7 @@ public class MoviePosterGridFragment extends Fragment
     private void initializeViewElements(View view) {
         Log.e("OrientationDebug", "OrientationMightHaveChanged");
         mMovieDisplayRecyclerView = (RecyclerView) view.findViewById(R.id.movieDisplayRecyclerView);
+
         mSwipeToRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.movieSwipeToRefreshLayout);
         mSwipeToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

@@ -7,18 +7,25 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
     <style name="LoginActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
     <style name="ReleaseDateActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">#FFC107</item>
         <item name="colorPrimaryDark">#FFA000</item>
         <!--<item name="colorPrimaryLight">#FFECB3</item>-->
         <item name="colorAccent">@color/md_amber_600</item>
     </style>
-
+    <style name="YTSMovieActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#9E9E9E</item>
+        <item name="colorPrimaryDark">#616161</item>
+        <!--<item name="colorPrimaryLight">#FFECB3</item>-->
+        <item name="colorAccent">#607D8B</item>
+    </style>
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

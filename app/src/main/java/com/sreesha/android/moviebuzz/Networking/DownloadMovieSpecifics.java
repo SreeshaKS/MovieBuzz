@@ -8,15 +8,21 @@ import android.util.Log;
 
 import com.sreesha.android.moviebuzz.DataHandlerClasses.MovieContract;
 import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.PeopleDisplay.PersonImage;
+import com.sreesha.android.moviebuzz.RSSFeed.YTSMovie;
+import com.sreesha.android.moviebuzz.RSSFeed.YTSTorrent;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -36,13 +42,15 @@ public class DownloadMovieSpecifics extends AsyncTask<String, Void, String> {
 
     private static String NETWORK_ERROR = "networkError";
     private static String JSON_PARSE_ERROR = "jsonParseError";
+    private static String XML_PULL_PARSER = "xmlParseError";
 
     private static String SQLITE_CAST_INSERT_ERROR = "castDataInsertError";
     private static String SQLITE_CREW_INSERT_ERROR = "crewDataInsertError";
 
     private ArrayList<CastDataInstance> castDataArrayList;
     private ArrayList<CrewDataInstance> crewDataArrayList;
-    ArrayList<PopularPeopleInstance> mPopularPeopleArrayList = new ArrayList<>();
+    private ArrayList<YTSMovie> mYTSMoviesArrayList;
+    private ArrayList<PopularPeopleInstance> mPopularPeopleArrayList = new ArrayList<>();
 
     private ArrayList<MovieImage> mBackDropList;
     private ArrayList<MovieImage> mPosterList;
@@ -52,6 +60,7 @@ public class DownloadMovieSpecifics extends AsyncTask<String, Void, String> {
     ArrayList<ContentValues> contentValueCastCrewArrayList = new ArrayList<>();
     private Context mContext;
     private AsyncMovieSpecificsResults mMovieSpecificResultNotifier;
+    private YTSAsyncResult mYTSMovieResultNotifier;
 
     PersonInstance mRequestedPersonData;
 
@@ -60,9 +69,29 @@ public class DownloadMovieSpecifics extends AsyncTask<String, Void, String> {
         this.mMovieSpecificResultNotifier = mMovieSpecificResultNotifier;
     }
 
+    public DownloadMovieSpecifics(Context mContext, YTSAsyncResult mYTSMovieResultNotifier) {
+        this.mContext = mContext;
+        this.mYTSMovieResultNotifier = mYTSMovieResultNotifier;
+    }
+
     @Override
     protected String doInBackground(String... params) {
         for (String param : params) {
+            try {
+                //Parse YTS Movies
+                if (param.contains("https://yts.ag/api/v2/")) {
+
+                    resultString = downloadUrl(param);
+                    Log.d("torrentDebug", resultString );
+                    parseYTSRSSFeed(resultString);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                ERROR_STRING = NETWORK_ERROR;
+                ERROR_STATUS = e.getMessage();
+                return ERROR_STATUS;
+            }
             try {
                 //Parse Cast/Crew Credits Information
                 if (param.contains("credits")) {
@@ -76,12 +105,24 @@ public class DownloadMovieSpecifics extends AsyncTask<String, Void, String> {
                 ERROR_STATUS = e.getMessage();
                 return ERROR_STATUS;
             }
-
             try {
-                Log.d("RVDebug", "Param URL"+param);
+                //Parse Cast/Crew Credits Information
+                if (param.contains(APIUrls.buildBaseMovieDBURL("").toString())) {
+                    resultString = downloadUrl(param);
+                    parseExtendedMovieData(resultString);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                ERROR_STRING = NETWORK_ERROR;
+                ERROR_STATUS = e.getMessage();
+                return ERROR_STATUS;
+            }
+            try {
+                Log.d("RVDebug", "Param URL" + param);
                 //Parse Movie Image Information
                 //If URL does not contain person path
-                if (param.contains("images") &&!param.contains("person")) {
+                if (param.contains("images") && !param.contains("person")) {
                     resultString = downloadUrl(param);
                     parseMovieImages(resultString);
                 }
@@ -117,6 +158,85 @@ public class DownloadMovieSpecifics extends AsyncTask<String, Void, String> {
         }
         RESULT_STATUS = SUCCESS_STATUS;
         return SUCCESS_STATUS;
+    }
+
+    private void parseYTSRSSFeed(String resultString) {
+        try {
+            Log.d("torrentDebug", "Result String "+resultString);
+            JSONObject resultObject = new JSONObject(resultString);
+            mYTSMovieResultNotifier.onResultJSON(resultObject);
+            JSONObject dataObject = resultObject.getJSONObject("data");
+            JSONArray moviesArray = dataObject.getJSONArray("movies");
+            int page_number = dataObject.getInt("page_number");
+
+            mYTSMoviesArrayList = new ArrayList<>(moviesArray.length());
+
+
+            for (int i = 0; i < moviesArray.length(); i++) {
+                Log.d("torrentDebug", "\t"+i);
+                YTSTorrent[] tA;
+                JSONObject obj =
+                        moviesArray.getJSONObject(i);
+                JSONArray tJA = obj.getJSONArray("torrents");
+                tA = new YTSTorrent[tJA.length()];
+                for (int j = 0; j < tJA.length(); j++) {
+                    JSONObject tObj = tJA.getJSONObject(j);
+                    tA[j] = new YTSTorrent(
+                            tObj.getString("url")
+                            , tObj.getString("hash")
+                            , tObj.getInt("seeds")
+                            , tObj.getInt("peers")
+                            , tObj.getString("size")
+                            , tObj.getLong("size_bytes")
+                            , tObj.getString("date_uploaded")
+                            , tObj.getLong("date_uploaded_unix")
+                    );
+                }
+                mYTSMoviesArrayList.add(
+                        new YTSMovie(
+                                obj.getLong("id")
+                                , obj.getString("url")
+                                , obj.getString("imdb_code")
+                                , obj.getString("title")
+                                , obj.getString("title_english")
+                                , obj.getString("title_long")
+                                , obj.getString("slug")
+                                , obj.getInt("year")
+                                , (float) obj.getDouble("rating")
+                                , obj.getInt("runtime")
+                                , obj.getString("genres")
+                                , obj.getString("summary")
+                                , obj.getString("description_full")
+                                , obj.getString("synopsis")
+                                , obj.getString("yt_trailer_code")
+                                , page_number
+                                , obj.getString("language")
+                                , obj.getString("mpa_rating")
+                                , obj.getString("background_image")
+                                , obj.getString("background_image_original")
+                                , obj.getString("small_cover_image")
+                                , obj.getString("medium_cover_image")
+                                , obj.getString("large_cover_image")
+                                , tA
+                                , obj.getString("date_uploaded_unix")
+
+                        )
+                );
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ERROR_STRING = JSON_PARSE_ERROR;
+        }
+    }
+
+    private void parseExtendedMovieData(String resultString) {
+        try {
+            JSONObject resultObject = new JSONObject(resultString);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ERROR_STRING = JSON_PARSE_ERROR;
+        }
+
     }
 
     private void parsePopularPersonInformation(String resultString) {
@@ -260,15 +380,22 @@ public class DownloadMovieSpecifics extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String s) {
         super.onPostExecute(s);
         if (s.equals(SUCCESS_STATUS) && ERROR_STRING == null) {
-            Log.d("RVDebug", "onPostExecute");
-            mMovieSpecificResultNotifier.onResultParsedIntoCastList(castDataArrayList);
-            mMovieSpecificResultNotifier.onResultParsedIntoCrewList(crewDataArrayList);
-            mMovieSpecificResultNotifier.onResultParsedIntoMovieImages(mBackDropList, mPosterList, mPersonImageList);
-            Log.d("RVDebug", "Executing After calling method");
-            mMovieSpecificResultNotifier.onResultParsedIntoPopularPersonInfo(mPopularPeopleArrayList);
-            mMovieSpecificResultNotifier.onResultParsedIntoPersonData(mRequestedPersonData);
-        } else if (ERROR_STRING.equals(SQLITE_CAST_INSERT_ERROR)) {
-            mMovieSpecificResultNotifier.onResultString(resultString, ERROR_STRING, ERROR_STATUS);
+            if (mMovieSpecificResultNotifier != null) {
+                Log.d("RVDebug", "onPostExecute");
+                mMovieSpecificResultNotifier.onResultParsedIntoCastList(castDataArrayList);
+                mMovieSpecificResultNotifier.onResultParsedIntoCrewList(crewDataArrayList);
+                mMovieSpecificResultNotifier.onResultParsedIntoMovieImages(mBackDropList, mPosterList, mPersonImageList);
+                Log.d("RVDebug", "Executing After calling method");
+                mMovieSpecificResultNotifier.onResultParsedIntoPopularPersonInfo(mPopularPeopleArrayList);
+                mMovieSpecificResultNotifier.onResultParsedIntoPersonData(mRequestedPersonData);
+            } else {
+                mYTSMovieResultNotifier.onMovieDataParsed(mYTSMoviesArrayList);
+            }
+        } else if (ERROR_STRING != null) {
+            if (mYTSMovieResultNotifier != null)
+                mYTSMovieResultNotifier.onResultString(resultString, ERROR_STRING, ERROR_STATUS);
+            else
+                mMovieSpecificResultNotifier.onResultString(resultString, ERROR_STRING, ERROR_STATUS);
         }
     }
 

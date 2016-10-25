@@ -7,8 +7,7 @@
     android:layout_height="match_parent"
     tools:openDrawer="start">
 
-    <android.support.design.widget.CoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:fab="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -83,12 +82,11 @@
             app:behavior_overlapTop="50dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-
         <com.github.clans.fab.FloatingActionMenu
             android:id="@+id/movieDetailFloatingActionMenu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
+            android:layout_gravity="bottom|end"
             android:src="@drawable/ic_favorite_white_48dp"
             fab:fab_colorNormal="@color/colorPrimary"
             fab:fab_colorPressed="@color/colorPrimaryDark"
@@ -142,14 +140,16 @@
                 fab:fab_label="@string/not_in_to_watch_list"
                 fab:fab_size="mini" />
         </com.github.clans.fab.FloatingActionMenu>
+
         <!--<include layout="@layout/fragment_content_movie_tabs_detail" />-->
     </android.support.design.widget.CoordinatorLayout>
-<android.support.design.widget.NavigationView
-android:id="@+id/movieDetailNavigationView"
-android:layout_width="wrap_content"
-android:layout_height="match_parent"
-android:layout_gravity="start"
-app:headerLayout="@layout/movie_detail_header_layout"
-app:menu="@menu/movie_detail_navigation_menu" />
-    </android.support.v4.widget.DrawerLayout>
+
+    <android.support.design.widget.NavigationView
+        android:id="@+id/movieDetailNavigationView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/movie_detail_header_layout"
+        app:menu="@menu/movie_detail_navigation_menu" />
+</android.support.v4.widget.DrawerLayout>
 
