@@ -286,4 +286,6 @@
     <string name="title_activity_rssfeed">YTS.ag</string>
     <string name="yts_torrents">YTS Torrents</string>
     <string name="available_in">Available In</string>
+    <string name="seeds_default_value">0</string>
+    <string name="_0mb">0MB</string>
 </resources>

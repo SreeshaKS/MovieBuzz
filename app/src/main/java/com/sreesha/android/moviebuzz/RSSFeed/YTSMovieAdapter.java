@@ -1,6 +1,8 @@
 package com.sreesha.android.moviebuzz.RSSFeed;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +22,9 @@ import java.util.zip.Inflater;
  * Created by Sreesha on 19-10-2016.
  */
 
-public class YTSMovieAdapter extends RecyclerView.Adapter<YTSMovieAdapter.ViewHolder> {
+public class YTSMovieAdapter extends RecyclerView.Adapter<YTSMovieAdapter.ViewHolder> implements View.OnClickListener {
     ArrayList<YTSMovie> mYTSMovieArrayList;
+    CustomOnClickListener clickListener;
 
     YTSMovieAdapter(ArrayList<YTSMovie> mYTSMovieArrayList) {
         this.mYTSMovieArrayList = mYTSMovieArrayList;
@@ -59,6 +62,13 @@ public class YTSMovieAdapter extends RecyclerView.Adapter<YTSMovieAdapter.ViewHo
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        if (mMovie.getTorrentArray().length == 2) {
+            holder.m3DCardChip.setEnabled(false);
+            holder.m3DCardChip.setVisibility(View.INVISIBLE);
+        } else {
+            holder.m3DCardChip.setEnabled(false);
+            holder.m3DCardChip.setVisibility(View.INVISIBLE);
+        }
         holder.mLangTextView.setText(mMovie.getLanguage());
         holder.mRunTimeTextView.setText(String.valueOf(mMovie.getRuntime()));
         holder.mGenreTextView.setText(genre);
@@ -69,7 +79,12 @@ public class YTSMovieAdapter extends RecyclerView.Adapter<YTSMovieAdapter.ViewHo
         return mYTSMovieArrayList.size();
     }
 
+
     class ViewHolder extends RecyclerView.ViewHolder {
+        CardView m3DCardChip;
+        CardView m720pCardChip;
+        CardView m1080pCardChip;
+
         ImageView mBackGroundImageView;
         ImageView mPosterImageView;
         TextView mSynopsisTextView;
@@ -89,6 +104,45 @@ public class YTSMovieAdapter extends RecyclerView.Adapter<YTSMovieAdapter.ViewHo
             mYearTextView = (TextView) itemView.findViewById(R.id.releaseDateTV);
             mRunTimeTextView = (TextView) itemView.findViewById(R.id.runTimeTextView);
             mLangTextView = (TextView) itemView.findViewById(R.id.languageTextView);
+
+            m3DCardChip = (CardView) itemView.findViewById(R.id.cardChip3D);
+            m720pCardChip = (CardView) itemView.findViewById(R.id.cardChip720p);
+            m1080pCardChip = (CardView) itemView.findViewById(R.id.cardChip1080p);
+
+            m3DCardChip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (clickListener != null)
+                        clickListener.onClick(v, mYTSMovieArrayList.get(getAdapterPosition()));
+                }
+            });
+            m720pCardChip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (clickListener != null)
+                        clickListener.onClick(v, mYTSMovieArrayList.get(getAdapterPosition()));
+                }
+            });
+            m1080pCardChip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (clickListener != null)
+                        clickListener.onClick(v, mYTSMovieArrayList.get(getAdapterPosition()));
+                }
+            });
         }
+    }
+
+    @Override
+    public void onClick(View v) {
+        /*if (clickListener != null) clickListener.onClick(v);*/
+    }
+
+    void setCustomClickListener(CustomOnClickListener clickListener) {
+        this.clickListener = clickListener;
+    }
+
+    interface CustomOnClickListener {
+        void onClick(View v, Object o);
     }
 }

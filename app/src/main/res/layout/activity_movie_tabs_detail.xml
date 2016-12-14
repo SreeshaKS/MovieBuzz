@@ -38,12 +38,12 @@
 
     </android.support.design.widget.CoordinatorLayout>
 
-    <android.support.design.widget.NavigationView
+    <!--<android.support.design.widget.NavigationView
         android:id="@+id/movieDetailNavigationView"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:headerLayout="@layout/movie_detail_header_layout"
-        app:menu="@menu/movie_detail_navigation_menu" />
+        app:menu="@menu/movie_detail_navigation_menu" />-->
 </android.support.v4.widget.DrawerLayout>
 

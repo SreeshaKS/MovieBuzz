@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.ParseException;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -56,15 +57,18 @@ import com.sreesha.android.moviebuzz.MovieDataRenderingClasses.PeopleDisplay.Peo
 import com.sreesha.android.moviebuzz.Networking.APIUrls;
 import com.sreesha.android.moviebuzz.Networking.MovieDataInstance;
 import com.sreesha.android.moviebuzz.Networking.MovieImage;
+import com.sreesha.android.moviebuzz.Networking.Utility;
 import com.sreesha.android.moviebuzz.R;
 import com.sreesha.android.moviebuzz.Settings.LoginActivity;
 import com.sreesha.android.moviebuzz.Settings.SettingsActivity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import android.support.v4.content.CursorLoader;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -276,11 +280,22 @@ public class MovieTabsDetailFragment extends Fragment
             @Override
             public void onClick(View v) {
                 if (mMovieData != null) {
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_SEND);
-                    intent.putExtra(Intent.EXTRA_TEXT, getFormattedMovieDataString());
-                    intent.setType("text/plain");
-                    startActivity(intent);
+                    Uri imageUri = Uri.parse(APIUrls.BASE_IMAGE_URL
+                            + "/" + APIUrls.API_IMG_W_342
+                            + mMovieData
+                            .getPOSTER_PATH());
+                    Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.setPackage("com.whatsapp");
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, getFormattedMovieDataString());
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+                    shareIntent.setType("image/jpeg");
+                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    try {
+                        startActivity(shareIntent);
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         });
@@ -867,7 +882,7 @@ public class MovieTabsDetailFragment extends Fragment
                             ));*/
                             startActivity(new Intent(Intent.ACTION_VIEW
                                     , Uri.parse(
-                                    "https://en.wikipedia.org/wiki/"+mMovieData.getTitle().replace(" ","_"))));
+                                    "https://en.wikipedia.org/wiki/" + mMovieData.getTitle().replace(" ", "_"))));
                         } catch (android.content.ActivityNotFoundException anfe) {
                             startActivity(new Intent(Intent.ACTION_VIEW
                                     , Uri.parse(

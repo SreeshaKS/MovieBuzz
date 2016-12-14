@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 
+import java.util.Random;
+
 /**
  * Created by Sreesha on 28-01-2016.
  */

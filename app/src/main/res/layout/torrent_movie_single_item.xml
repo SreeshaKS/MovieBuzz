@@ -125,7 +125,8 @@
                 android:layout_centerHorizontal="true"
                 android:gravity="center">
 
-                <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                <android.support.v7.widget.CardView
+                    xmlns:android="http://schemas.android.com/apk/res/android"
                     xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/cardChip3D"
                     android:layout_width="wrap_content"

@@ -1,8 +1,12 @@
 package com.sreesha.android.moviebuzz.Networking;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 
 /**
  * Created by Sreesha on 20-03-2016.
@@ -44,5 +48,13 @@ public class Utility {
                 )
                         .getActiveNetworkInfo()
         );
+    }
+
+    public static String getShareIntentString(Context context
+            , MovieDataInstance movieDataInstance, Bitmap bitmap, String formatedMovieString) {
+        Spannable span = new SpannableString(formatedMovieString);
+        ImageSpan image = new ImageSpan(context, bitmap);
+        span.setSpan(image, 3, 4, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+        return span.toString();
     }
 }
