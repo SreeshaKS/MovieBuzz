@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="bottom"
-            app:cardBackgroundColor="#607D8B">
+            app:cardBackgroundColor="@color/md_blue_grey_200">
 
             <FrameLayout
                 android:layout_width="match_parent"

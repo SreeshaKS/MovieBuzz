@@ -45,6 +45,15 @@ public class MovieTorrentFragment extends Fragment {
         return fragment;
     }
 
+    public void onMovieDataChanged(ArrayList<YTSMovie> mYTSMovieArrayList) {
+        this.mYTSMovieArrayList.clear();
+        this.mYTSMovieArrayList.addAll(mYTSMovieArrayList);
+        if (mMovieAdapter != null) {
+            Log.d("MovieTorrentFragment", "Notifying Adapter of data set change");
+            mMovieAdapter.notifyDataSetChanged();
+        }
+    }
+
     boolean isStateRestored = false;
 
     @Override
@@ -162,7 +171,7 @@ public class MovieTorrentFragment extends Fragment {
                                 = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
 
                         mCManager.setPrimaryClip(ClipData.newPlainText("TorrentURL", torrent.getUrl()));
-                        Toast.makeText(getActivity(), "Torrent Copied to ClipBoard"
+                        Toast.makeText(getActivity(), "Torrent URL Copied to ClipBoard"
                                 , Toast.LENGTH_SHORT).show();
                         ((TextView) dialog
                                 .getCustomView()

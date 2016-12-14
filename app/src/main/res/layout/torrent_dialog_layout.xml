@@ -8,7 +8,8 @@
         android:id="@+id/divider1"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_margin="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
         android:background="@color/colorPrimary" />
 
     <LinearLayout
@@ -25,7 +26,8 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Seeds" />
+            android:text="Seeds"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/peersTitleTextView"
@@ -34,7 +36,8 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Peers" />
+            android:text="Peers"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <LinearLayout
@@ -68,14 +71,43 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_below="@+id/valueLayout"
-        android:layout_margin="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
         android:background="@color/colorPrimary" />
+
+    <LinearLayout
+        android:id="@+id/titleLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/divider2"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/dateTitleTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Date Uploaded"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/sizeTitleTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Size"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/dateSizeValueLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/divider2"
+        android:layout_below="@+id/titleLayout2"
         android:gravity="center">
 
         <TextView

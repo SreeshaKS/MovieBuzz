@@ -76,7 +76,10 @@ public class YTSMovieAdapter extends RecyclerView.Adapter<YTSMovieAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return mYTSMovieArrayList.size();
+        if (mYTSMovieArrayList != null)
+            return mYTSMovieArrayList.size();
+
+        return 0;
     }
 
 

@@ -130,6 +130,8 @@ public class RSSFeed extends AppCompatActivity {
     String resolutionQueryParam = "All";
     String genreQueryParam = "All";
     String sortByQueryParam = "All";
+    String titleQueryParam = "null";
+
     View.OnClickListener fCL = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -154,7 +156,7 @@ public class RSSFeed extends AppCompatActivity {
 
         mFilterFrameLayout.requestDisallowInterceptTouchEvent(false);
 
-        mSearchQueryEditText = (EditText) findViewById(R.id.searchEditText);
+        mSearchQueryEditText = (EditText) findViewById(R.id.searchQueryEditText);
 
         ratingCard = (CardView) findViewById(R.id.ratingFilterCard);
         mRatingTextView = (TextView) findViewById(R.id.ratingTextView);
@@ -233,6 +235,7 @@ public class RSSFeed extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 reverseFilterAnimation();
+                gatherFilterDataAndStartQuery();
             }
         });
         fab.setOnClickListener(fCL);
@@ -380,7 +383,8 @@ public class RSSFeed extends AppCompatActivity {
                 set.start();
             }
         });
-        downloadYTSMovieData();
+        if (savedInstanceState == null)
+            downloadYTSMovieData();
     }
 
     private void playReverseExpandedOptionsAnimation(CardView cardView, final TextView textView, final String displayText) {
@@ -482,6 +486,29 @@ public class RSSFeed extends AppCompatActivity {
         finalSet.playSequentially(circularRSet, set);
         /*finalSet.playTogether(mFabYAnimator, mFabXAnimator);*/
         finalSet.start();
+    }
+
+    private void gatherFilterDataAndStartQuery() {
+        titleQueryParam = mSearchQueryEditText.getText().toString();
+        //Update URL Object
+        if (titleQueryParam.equals("null")) {
+            URL = YTSAPI.buildMovieListBaseURI()
+                    .appendQueryParameter(YTSAPI.PARAM_RATING, ratingQueryParam)
+                    .appendQueryParameter(YTSAPI.PARAM_QUALITY, resolutionQueryParam)
+                    .appendQueryParameter(YTSAPI.SORT_TITLE, titleQueryParam)
+                    .appendQueryParameter(YTSAPI.PARAM_GENRE, genreQueryParam)
+                    .appendQueryParameter(YTSAPI.PARAM_SORT, sortByQueryParam)
+                    .build().toString();
+        } else {
+            URL = YTSAPI.buildMovieListBaseURI()
+                    .appendQueryParameter(YTSAPI.PARAM_RATING, ratingQueryParam)
+                    .appendQueryParameter(YTSAPI.PARAM_QUALITY, resolutionQueryParam)
+                    .appendQueryParameter(YTSAPI.PARAM_GENRE, genreQueryParam)
+                    .appendQueryParameter(YTSAPI.PARAM_SORT, sortByQueryParam)
+                    .build().toString();
+        }
+        downloadYTSMovieData();
+        Log.d("Query URL", URL);
     }
 
     private void displayFilterDialogue() {
@@ -640,6 +667,7 @@ public class RSSFeed extends AppCompatActivity {
     }
 
     ArrayList<YTSMovie> mYTSMovieArrayList;
+    String URL = YTSAPI.buildMovieListBaseURI().build().toString();
 
     void downloadYTSMovieData() {
         mMovieSpecificsAsyncTask
@@ -647,10 +675,15 @@ public class RSSFeed extends AppCompatActivity {
                 , new YTSAsyncResult() {
             @Override
             public void onMovieDataParsed(ArrayList<YTSMovie> YTSMovieArrayList) {
-                if (!YTSMovieArrayList.isEmpty()) {
+                if (YTSMovieArrayList != null && !YTSMovieArrayList.isEmpty()) {
                     Log.d("YTSArrayList", "Array Size\t" + YTSMovieArrayList.size());
-                    RSSFeed.this.mYTSMovieArrayList = mYTSMovieArrayList;
-                    startFragmentTransaction(YTSMovieArrayList);
+                    RSSFeed.this.mYTSMovieArrayList = YTSMovieArrayList;
+                    if (mMovieTorrentFragment != null && getSupportFragmentManager()
+                            .findFragmentByTag(MOVIE_TORRENT_FRAGMENT_TAG) != null) {
+                        mMovieTorrentFragment.onMovieDataChanged(RSSFeed.this.mYTSMovieArrayList);
+                    } else {
+                        startFragmentTransaction(YTSMovieArrayList);
+                    }
                 }
             }
 
@@ -664,7 +697,7 @@ public class RSSFeed extends AppCompatActivity {
             }
         });
         mMovieSpecificsAsyncTask.execute(
-                YTSAPI.buildMovieListBaseURI().build().toString()
+                URL
         );
     }
 
