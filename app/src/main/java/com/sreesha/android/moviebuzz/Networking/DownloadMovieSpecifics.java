@@ -80,7 +80,6 @@ public class DownloadMovieSpecifics extends AsyncTask<String, Void, String> {
             try {
                 //Parse YTS Movies
                 if (param.contains("https://yts.ag/api/v2/")) {
-
                     resultString = downloadUrl(param);
                     Log.d("torrentDebug", resultString );
                     parseYTSRSSFeed(resultString);
@@ -190,6 +189,7 @@ public class DownloadMovieSpecifics extends AsyncTask<String, Void, String> {
                             , tObj.getLong("size_bytes")
                             , tObj.getString("date_uploaded")
                             , tObj.getLong("date_uploaded_unix")
+                            ,tObj.getString("quality")
                     );
                 }
                 mYTSMoviesArrayList.add(

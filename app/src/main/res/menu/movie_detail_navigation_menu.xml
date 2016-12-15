@@ -31,5 +31,8 @@
         <item
             android:id="@+id/openInWikipedia"
             android:title="@string/view_in_wikipedia" />
+        <item
+            android:id="@+id/ytsTorrentsNavMenu"
+            android:title="@string/yts_torrents" />
     </group>
 </menu>

@@ -7,7 +7,7 @@ import android.os.Parcelable;
  * Created by Sreesha on 18-10-2016.
  */
 
-public class YTSTorrent implements Parcelable{
+public class YTSTorrent implements Parcelable {
 
     private String url = "defultURL";
     private String hash = "defaultHash";
@@ -16,11 +16,13 @@ public class YTSTorrent implements Parcelable{
     private String size = "0MB";
     private long size_bytes = 0;
     private String date_upload = "defaultDate";
-    private  long date_uploaded_unix = 0;
+    private long date_uploaded_unix = 0;
+    String quality = "1080p";
+
 
     public YTSTorrent(String url, String hash, int seeds
             , int peers, String size, long size_bytes
-            , String date_upload, long date_uploaded_unix) {
+            , String date_upload, long date_uploaded_unix, String quality) {
         this.url = url;
         this.hash = hash;
         this.seeds = seeds;
@@ -29,6 +31,7 @@ public class YTSTorrent implements Parcelable{
         this.size_bytes = size_bytes;
         this.date_upload = date_upload;
         this.date_uploaded_unix = date_uploaded_unix;
+        this.quality = quality;
     }
 
 
@@ -41,6 +44,7 @@ public class YTSTorrent implements Parcelable{
         size_bytes = in.readLong();
         date_upload = in.readString();
         date_uploaded_unix = in.readLong();
+        quality = in.readString();
     }
 
     public static final Creator<YTSTorrent> CREATOR = new Creator<YTSTorrent>() {
@@ -54,6 +58,10 @@ public class YTSTorrent implements Parcelable{
             return new YTSTorrent[size];
         }
     };
+
+    public String getQuality() {
+        return quality;
+    }
 
     public long getSize_bytes() {
         return size_bytes;
@@ -103,5 +111,6 @@ public class YTSTorrent implements Parcelable{
         dest.writeLong(size_bytes);
         dest.writeString(date_upload);
         dest.writeLong(date_uploaded_unix);
+        dest.writeString(quality);
     }
 }

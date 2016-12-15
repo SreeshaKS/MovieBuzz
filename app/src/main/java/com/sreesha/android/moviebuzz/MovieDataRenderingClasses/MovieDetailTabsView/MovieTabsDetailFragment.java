@@ -59,6 +59,8 @@ import com.sreesha.android.moviebuzz.Networking.MovieDataInstance;
 import com.sreesha.android.moviebuzz.Networking.MovieImage;
 import com.sreesha.android.moviebuzz.Networking.Utility;
 import com.sreesha.android.moviebuzz.R;
+import com.sreesha.android.moviebuzz.RSSFeed.MovieTorrentFragment;
+import com.sreesha.android.moviebuzz.RSSFeed.YTSAPI;
 import com.sreesha.android.moviebuzz.Settings.LoginActivity;
 import com.sreesha.android.moviebuzz.Settings.SettingsActivity;
 
@@ -117,6 +119,7 @@ public class MovieTabsDetailFragment extends Fragment
     ReviewsFragment reviewFragment;
     CustomReviewsFragment mCustomReviewsFragment;
 
+    MovieTorrentFragment mTorrentsFragment;
     MovieTrailersFragment trailersFragment;
     MovieDetailDisplayFragment movieDetailDisplayFragment;
     CastFragment mMovieCastFragment;
@@ -214,6 +217,13 @@ public class MovieTabsDetailFragment extends Fragment
         reviewFragment.setMovieData(mMovieData);
 
         mCustomReviewsFragment = CustomReviewsFragment.newInstance(mMovieData, null);
+
+        mTorrentsFragment = MovieTorrentFragment.newInstance(
+                YTSAPI
+                        .buildMovieListBaseURI()
+                        .appendQueryParameter(YTSAPI.PARAM_QUERY_TERM, mMovieData.getTitle())
+                        .build().toString()
+        );
 
         trailersFragment = MovieTrailersFragment.newInstance(null, null);
         trailersFragment.setMovieData(mMovieData);
@@ -519,6 +529,7 @@ public class MovieTabsDetailFragment extends Fragment
         adapter.addFragment(mSimilarMoviesFragment, getActivity().getString(R.string.similar_movies_title_string));
         adapter.addFragment(mMoviePhotosFragment, getActivity().getString(R.string.images_title_string));
         adapter.addFragment(mCustomReviewsFragment, getActivity().getString(R.string.your_review_string));
+        adapter.addFragment(mTorrentsFragment, getActivity().getString(R.string.yts_torrents));
         viewPager.setAdapter(adapter);
     }
 
@@ -891,6 +902,9 @@ public class MovieTabsDetailFragment extends Fragment
                             Log.d("StoreDebug", e.getMessage());
                             e.printStackTrace();
                         }
+                        break;
+                    case R.id.ytsTorrentsNavMenu:
+                        movieDetailTabLayout.getTabAt(8).select();
                         break;
 
                 }

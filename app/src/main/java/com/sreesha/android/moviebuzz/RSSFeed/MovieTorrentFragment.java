@@ -19,17 +19,25 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.sreesha.android.moviebuzz.Networking.DownloadMovieSpecifics;
+import com.sreesha.android.moviebuzz.Networking.YTSAsyncResult;
 import com.sreesha.android.moviebuzz.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 public class MovieTorrentFragment extends Fragment {
     public static final String MOVIE_TORRENT_FRAGMENT_TAG = "MovieTorrentFragment";
     private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
 
     ArrayList<YTSMovie> mYTSMovieArrayList;
     YTSMovieAdapter mMovieAdapter;
     LinearLayoutManager mLinearLayoutManager;
+    boolean isURLPresent = false;
+    String ytsURL;
 
     public MovieTorrentFragment() {
         // Required empty public constructor
@@ -41,6 +49,14 @@ public class MovieTorrentFragment extends Fragment {
         Log.d("YTSArrayList", "Setting Arguments\t" + mYTSMovieArrayList.size());
 
         args.putParcelableArrayList(ARG_PARAM1, mYTSMovieArrayList);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static MovieTorrentFragment newInstance(String URL) {
+        MovieTorrentFragment fragment = new MovieTorrentFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM2, URL);
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,16 +77,32 @@ public class MovieTorrentFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             isStateRestored = true;
-            mYTSMovieArrayList = savedInstanceState.getParcelableArrayList(ARG_PARAM1);
+
+            if (savedInstanceState.getParcelableArrayList(ARG_PARAM2) == null) {
+                mYTSMovieArrayList = savedInstanceState.getParcelableArrayList(ARG_PARAM1);
+            } else {
+                isURLPresent = true;
+                mYTSMovieArrayList = savedInstanceState.getParcelableArrayList(ARG_PARAM1);
+                ytsURL = savedInstanceState.getString(ARG_PARAM2);
+            }
         } else if (getArguments() != null) {
             mYTSMovieArrayList = getArguments().getParcelableArrayList(ARG_PARAM1);
+            if (mYTSMovieArrayList == null) {
+                isURLPresent = true;
+                ytsURL = getArguments().getString(ARG_PARAM2);
+            }
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(ARG_PARAM1, mYTSMovieArrayList);
+        if (ytsURL == null) {
+            outState.putParcelableArrayList(ARG_PARAM1, mYTSMovieArrayList);
+        } else {
+            outState.putParcelableArrayList(ARG_PARAM1, mYTSMovieArrayList);
+            outState.putString(ARG_PARAM2, ytsURL);
+        }
     }
 
     @Override
@@ -88,8 +120,42 @@ public class MovieTorrentFragment extends Fragment {
         if (isStateRestored) {
             initRecyclerView();
         } else {
-            initRecyclerView();
+            if (ytsURL != null) {
+                downloadYTSMovieData();
+            } else {
+                initRecyclerView();
+            }
         }
+    }
+
+    DownloadMovieSpecifics mMovieSpecificsAsyncTask;
+
+    void downloadYTSMovieData() {
+        mMovieSpecificsAsyncTask
+                = new DownloadMovieSpecifics(getActivity()
+                , new YTSAsyncResult() {
+            @Override
+            public void onMovieDataParsed(ArrayList<YTSMovie> YTSMovieArrayList) {
+                if (YTSMovieArrayList != null && !YTSMovieArrayList.isEmpty()) {
+                    MovieTorrentFragment.this.mYTSMovieArrayList = YTSMovieArrayList;
+                    initRecyclerView();
+                }
+            }
+
+            @Override
+            public void onResultJSON(JSONObject object) throws JSONException {
+            }
+
+            @Override
+            public void onResultString(String stringObject, String errorString, String parseStatus) {
+                if (getActivity() != null) {
+                    Toast.makeText(getActivity(), "Torrent not Found", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        mMovieSpecificsAsyncTask.execute(
+                ytsURL
+        );
     }
 
     RecyclerView mYTSMovieRecyclerView;
