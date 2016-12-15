@@ -10,7 +10,7 @@ android {
         applicationId "com.sreesha.android.moviebuzz"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 26
+        versionCode 27
         versionName "4.2"
         multiDexEnabled true
     }

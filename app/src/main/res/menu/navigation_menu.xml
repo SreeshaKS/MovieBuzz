@@ -48,6 +48,7 @@
             android:title="@string/moviebuzz_reviews_string" />
         <item
             android:id="@+id/ytsTorrentsNavMenu"
+            android:icon="@drawable/ic_blur_linear_black_36dp"
             android:title="@string/yts_torrents" />
     </group>
 </menu>
