@@ -490,18 +490,19 @@ public class RSSFeed extends AppCompatActivity {
 
     private void gatherFilterDataAndStartQuery() {
         titleQueryParam = mSearchQueryEditText.getText().toString();
-        Log.d("QueryEditText",titleQueryParam);
+        Log.d("QueryEditText","Edit Test Value : "+titleQueryParam);
         //Update URL Object
-        if ( titleQueryParam != null ) {
-            URL = YTSAPI.buildMovieListBaseURI()
-                    .appendQueryParameter(YTSAPI.PARAM_QUERY_TERM, titleQueryParam)
-                    .build().toString();
-        } else {
+        if ( titleQueryParam == null || titleQueryParam.equals("") || titleQueryParam.isEmpty() ) {
             URL = YTSAPI.buildMovieListBaseURI()
                     .appendQueryParameter(YTSAPI.PARAM_RATING, ratingQueryParam)
                     .appendQueryParameter(YTSAPI.PARAM_QUALITY, resolutionQueryParam)
                     .appendQueryParameter(YTSAPI.PARAM_GENRE, genreQueryParam)
                     .appendQueryParameter(YTSAPI.PARAM_SORT, sortByQueryParam)
+                    .build().toString();
+
+        } else {
+            URL = YTSAPI.buildMovieListBaseURI()
+                    .appendQueryParameter(YTSAPI.PARAM_QUERY_TERM, titleQueryParam)
                     .build().toString();
         }
         downloadYTSMovieData();

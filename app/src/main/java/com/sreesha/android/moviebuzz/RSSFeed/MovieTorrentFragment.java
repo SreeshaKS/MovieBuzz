@@ -136,9 +136,13 @@ public class MovieTorrentFragment extends Fragment {
                 , new YTSAsyncResult() {
             @Override
             public void onMovieDataParsed(ArrayList<YTSMovie> YTSMovieArrayList) {
-                if (YTSMovieArrayList != null && !YTSMovieArrayList.isEmpty()) {
-                    MovieTorrentFragment.this.mYTSMovieArrayList = YTSMovieArrayList;
-                    initRecyclerView();
+                if (YTSMovieArrayList != null && getActivity() != null) {
+                    if (!YTSMovieArrayList.isEmpty()) {
+                        MovieTorrentFragment.this.mYTSMovieArrayList = YTSMovieArrayList;
+                        initRecyclerView();
+                    } else if (YTSMovieArrayList.isEmpty()) {
+                        Toast.makeText(getActivity(), "Torrents not Found", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
