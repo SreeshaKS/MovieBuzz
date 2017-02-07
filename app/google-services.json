@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "533229884084",
+    "firebase_url": "https://moviebuzz-38211.firebaseio.com",
+    "project_id": "moviebuzz-38211",
+    "storage_bucket": "moviebuzz-38211.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:533229884084:android:83844088180e4fc9",
+        "android_client_info": {
+          "package_name": "com.sreesha.android.moviebuzz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "533229884084-7h35t0vldtlvka109etcrnonpu58bm96.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sreesha.android.moviebuzz",
+            "certificate_hash": "FA811F5B9B837626E2ACF2DA14A0F221A991D9DD"
+          }
+        },
+        {
+          "client_id": "533229884084-oiourqp61h7qj1cjgi44617krrvcqhts.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9qKu0EDTzqtj-00xXtomVNNOXWd4YQV8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "533229884084-oiourqp61h7qj1cjgi44617krrvcqhts.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -26,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.sreesha.android.moviebuzz.Networking.DownloadMovieSpecifics;
 import com.sreesha.android.moviebuzz.Networking.YTSAsyncResult;
@@ -490,9 +491,9 @@ public class RSSFeed extends AppCompatActivity {
 
     private void gatherFilterDataAndStartQuery() {
         titleQueryParam = mSearchQueryEditText.getText().toString();
-        Log.d("QueryEditText","Edit Test Value : "+titleQueryParam);
+        Log.d("QueryEditText", "Edit Test Value : " + titleQueryParam);
         //Update URL Object
-        if ( titleQueryParam == null || titleQueryParam.equals("") || titleQueryParam.isEmpty() ) {
+        if (titleQueryParam == null || titleQueryParam.equals("") || titleQueryParam.isEmpty()) {
             URL = YTSAPI.buildMovieListBaseURI()
                     .appendQueryParameter(YTSAPI.PARAM_RATING, ratingQueryParam)
                     .appendQueryParameter(YTSAPI.PARAM_QUALITY, resolutionQueryParam)
@@ -673,14 +674,18 @@ public class RSSFeed extends AppCompatActivity {
                 , new YTSAsyncResult() {
             @Override
             public void onMovieDataParsed(ArrayList<YTSMovie> YTSMovieArrayList) {
-                if (YTSMovieArrayList != null && !YTSMovieArrayList.isEmpty()) {
-                    Log.d("YTSArrayList", "Array Size\t" + YTSMovieArrayList.size());
-                    RSSFeed.this.mYTSMovieArrayList = YTSMovieArrayList;
-                    if (mMovieTorrentFragment != null && getSupportFragmentManager()
-                            .findFragmentByTag(MOVIE_TORRENT_FRAGMENT_TAG) != null) {
-                        mMovieTorrentFragment.onMovieDataChanged(RSSFeed.this.mYTSMovieArrayList);
+                if (YTSMovieArrayList != null) {
+                    if (!YTSMovieArrayList.isEmpty()) {
+                        Log.d("YTSArrayList", "Array Size\t" + YTSMovieArrayList.size());
+                        RSSFeed.this.mYTSMovieArrayList = YTSMovieArrayList;
+                        if (mMovieTorrentFragment != null && getSupportFragmentManager()
+                                .findFragmentByTag(MOVIE_TORRENT_FRAGMENT_TAG) != null) {
+                            mMovieTorrentFragment.onMovieDataChanged(RSSFeed.this.mYTSMovieArrayList);
+                        } else {
+                            startFragmentTransaction(YTSMovieArrayList);
+                        }
                     } else {
-                        startFragmentTransaction(YTSMovieArrayList);
+                        Toast.makeText(getBaseContext(), "No Torrents Found", Toast.LENGTH_SHORT).show();
                     }
                 }
             }

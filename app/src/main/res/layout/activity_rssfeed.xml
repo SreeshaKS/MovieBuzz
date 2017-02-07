@@ -110,7 +110,7 @@
                         android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:tint="#616161"
-                        app:srcCompat="@drawable/places_ic_search" />
+                        app:srcCompat="@drawable/ic_search" />
                 </android.support.v7.widget.CardView>
 
                 <RelativeLayout

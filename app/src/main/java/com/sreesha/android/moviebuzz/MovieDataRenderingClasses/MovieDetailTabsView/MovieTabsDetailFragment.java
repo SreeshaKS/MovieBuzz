@@ -1,5 +1,6 @@
 package com.sreesha.android.moviebuzz.MovieDataRenderingClasses.MovieDetailTabsView;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -194,7 +195,8 @@ public class MovieTabsDetailFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_movie_tabs_detail, container, false);
 
         Toolbar mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        AppCompatActivity mActivity = (MovieTabsDetailActivity) getActivity();
+
+        AppCompatActivity mActivity = (AppCompatActivity) getActivity();
         ActionBar ab = mActivity.getSupportActionBar();
 
         if (ab != null) {
@@ -218,12 +220,7 @@ public class MovieTabsDetailFragment extends Fragment
 
         mCustomReviewsFragment = CustomReviewsFragment.newInstance(mMovieData, null);
 
-        mTorrentsFragment = MovieTorrentFragment.newInstance(
-                YTSAPI
-                        .buildMovieListBaseURI()
-                        .appendQueryParameter(YTSAPI.PARAM_QUERY_TERM, mMovieData.getTitle())
-                        .build().toString()
-        );
+        mTorrentsFragment = MovieTorrentFragment.newInstance(mMovieData);
 
         trailersFragment = MovieTrailersFragment.newInstance(null, null);
         trailersFragment.setMovieData(mMovieData);
@@ -904,7 +901,7 @@ public class MovieTabsDetailFragment extends Fragment
                         }
                         break;
                     case R.id.ytsTorrentsNavMenu:
-                        movieDetailTabLayout.getTabAt(8).select();
+
                         break;
 
                 }

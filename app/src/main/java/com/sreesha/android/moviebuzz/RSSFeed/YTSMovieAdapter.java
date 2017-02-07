@@ -62,12 +62,14 @@ public class YTSMovieAdapter extends RecyclerView.Adapter<YTSMovieAdapter.ViewHo
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        if (mMovie.getTorrentArray().length == 2) {
-            holder.m3DCardChip.setEnabled(false);
-            holder.m3DCardChip.setVisibility(View.INVISIBLE);
-        } else {
-            holder.m3DCardChip.setEnabled(false);
-            holder.m3DCardChip.setVisibility(View.INVISIBLE);
+        holder.m3DCardChip.setEnabled(false);
+        holder.m3DCardChip.setVisibility(View.INVISIBLE);
+        for (YTSTorrent torrent:mMovie.getTorrentArray()
+             ) {
+            if(torrent.getQuality().toLowerCase().equals("3d")){
+                holder.m3DCardChip.setEnabled(true);
+                holder.m3DCardChip.setVisibility(View.VISIBLE);
+            }
         }
         holder.mLangTextView.setText(mMovie.getLanguage());
         holder.mRunTimeTextView.setText(String.valueOf(mMovie.getRuntime()));

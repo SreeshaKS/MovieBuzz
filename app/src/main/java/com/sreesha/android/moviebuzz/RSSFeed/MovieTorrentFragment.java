@@ -3,23 +3,20 @@ package com.sreesha.android.moviebuzz.RSSFeed;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.ShareCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.sreesha.android.moviebuzz.Networking.DownloadMovieSpecifics;
+import com.sreesha.android.moviebuzz.Networking.MovieDataInstance;
 import com.sreesha.android.moviebuzz.Networking.YTSAsyncResult;
 import com.sreesha.android.moviebuzz.R;
 
@@ -36,9 +33,9 @@ public class MovieTorrentFragment extends Fragment {
     ArrayList<YTSMovie> mYTSMovieArrayList;
     YTSMovieAdapter mMovieAdapter;
     LinearLayoutManager mLinearLayoutManager;
-    boolean isURLPresent = false;
+    boolean isMovieDataPresent = false;
     String ytsURL;
-
+    MovieDataInstance mMovieData;
     public MovieTorrentFragment() {
         // Required empty public constructor
     }
@@ -53,10 +50,10 @@ public class MovieTorrentFragment extends Fragment {
         return fragment;
     }
 
-    public static MovieTorrentFragment newInstance(String URL) {
+    public static MovieTorrentFragment newInstance(MovieDataInstance mMovieData) {
         MovieTorrentFragment fragment = new MovieTorrentFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM2, URL);
+        args.putParcelable(ARG_PARAM2, mMovieData);
         fragment.setArguments(args);
         return fragment;
     }
@@ -81,15 +78,15 @@ public class MovieTorrentFragment extends Fragment {
             if (savedInstanceState.getParcelableArrayList(ARG_PARAM2) == null) {
                 mYTSMovieArrayList = savedInstanceState.getParcelableArrayList(ARG_PARAM1);
             } else {
-                isURLPresent = true;
+                isMovieDataPresent = true;
                 mYTSMovieArrayList = savedInstanceState.getParcelableArrayList(ARG_PARAM1);
-                ytsURL = savedInstanceState.getString(ARG_PARAM2);
+                mMovieData = savedInstanceState.getParcelable(ARG_PARAM2);
             }
         } else if (getArguments() != null) {
             mYTSMovieArrayList = getArguments().getParcelableArrayList(ARG_PARAM1);
             if (mYTSMovieArrayList == null) {
-                isURLPresent = true;
-                ytsURL = getArguments().getString(ARG_PARAM2);
+                isMovieDataPresent = true;
+                mMovieData = getArguments().getParcelable(ARG_PARAM2);
             }
         }
     }
@@ -97,11 +94,11 @@ public class MovieTorrentFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (ytsURL == null) {
+        if (mMovieData == null) {
             outState.putParcelableArrayList(ARG_PARAM1, mYTSMovieArrayList);
         } else {
             outState.putParcelableArrayList(ARG_PARAM1, mYTSMovieArrayList);
-            outState.putString(ARG_PARAM2, ytsURL);
+            outState.putParcelable(ARG_PARAM2, mMovieData);
         }
     }
 
@@ -120,7 +117,11 @@ public class MovieTorrentFragment extends Fragment {
         if (isStateRestored) {
             initRecyclerView();
         } else {
-            if (ytsURL != null) {
+            if (mMovieData != null) {
+                ytsURL = YTSAPI
+                        .buildMovieListBaseURI()
+                        .appendQueryParameter(YTSAPI.PARAM_QUERY_TERM, mMovieData.getTitle())
+                        .build().toString();
                 downloadYTSMovieData();
             } else {
                 initRecyclerView();
@@ -191,14 +192,9 @@ public class MovieTorrentFragment extends Fragment {
                     case R.id.cardChip3D:
                         movie = (YTSMovie) o;
                         torrents = movie.getTorrentArray();
-                        int max = 0;
                         for (YTSTorrent tor : torrents) {
-                            if (tor.getSize().toLowerCase().contains("GB")) {
-                                int s = Integer.parseInt(tor.getSize().split(" ")[0].trim());
-                                if (max > s) {
-                                    max = s;
-                                    torrent = tor;
-                                }
+                            if (tor.getQuality().toLowerCase().equals("3d")) {
+                                torrent=tor;
                             }
                         }
                         dialog = new MaterialDialog.Builder(getActivity())
@@ -210,7 +206,7 @@ public class MovieTorrentFragment extends Fragment {
                         movie = (YTSMovie) o;
                         torrents = movie.getTorrentArray();
                         for (YTSTorrent tor : torrents) {
-                            if (tor.getSize().toLowerCase().contains("mb")) {
+                            if (tor.getQuality().toLowerCase().equals("720p")) {
                                 torrent = tor;
                             }
                         }
@@ -224,7 +220,7 @@ public class MovieTorrentFragment extends Fragment {
                         torrents = movie.getTorrentArray();
                         for (YTSTorrent tor : torrents) {
                             Log.d("Torrent", tor.getSize());
-                            if (tor.getSize().toLowerCase().contains("gb")) {
+                            if (tor.getQuality().toLowerCase().equals("1080p")) {
                                 Log.d("Torrent", "GB Found");
                                 torrent = tor;
                             }
