@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="view_in_play_store">View In Play Store</string>
+    <string name="view_in_wikipedia">View in Wikipedia</string>
+    <string name="yts_torrents">YTS Torrents</string>
+    <string name="available_in">Available In</string>
+    <string name="seeds_default_value">0</string>
+    <string name="_0mb">0MB</string>
+</resources>
